@@ -1,0 +1,28 @@
+CREATE TABLE tbl_reparation_seq
+(
+  r_code INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+);
+CREATE TABLE tbl_reparation
+(
+  r_code VARCHAR(255) NOT NULL PRIMARY KEY DEFAULT '0',
+  r_name VARCHAR(255),
+  r_imei VARCHAR(255),
+  r_telephone INT(12),
+  r_defect VARCHAR(255),
+  r_model VARCHAR(255),
+  r_opened datetime,
+  r_status VARCHAR(255),
+  r_assigned VARCHAR(255),
+  r_created VARCHAR(255),
+  r_lastmodified VARCHAR(255)
+);
+
+DELIMITER $$
+CREATE TRIGGER tg_tbl_reparation_insert
+BEFORE INSERT ON tbl_reparation
+FOR EACH ROW
+BEGIN
+  INSERT INTO tbl_reparation_seq VALUES (NULL);
+  SET NEW.r_code = CONCAT('CUS', LPAD(LAST_INSERT_ID(), 5, '0'));
+END$$
+DELIMITER ;
