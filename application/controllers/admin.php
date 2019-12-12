@@ -159,11 +159,14 @@ class admin extends CI_Controller {
 	public function add_stock()
 	{
 		if($this->session->userdata('status') == "login"){
+			$data['productcat'] = $this->d_get->get_productcat()->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
 			$this->load->view('admin/body/logoutmodal-1.php');
-			$this->load->view('admin/body/add-stock-1.php');
+			$this->load->view('admin/body/add-stock-1.php', $data);
+			$this->load->view('admin/body/add-stock-1-category.php', $data);
+			$this->load->view('admin/body/add-stock-1-subcategory.php', $data);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

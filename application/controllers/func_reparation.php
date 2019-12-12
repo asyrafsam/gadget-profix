@@ -85,7 +85,7 @@ class func_reparation extends CI_Controller {
 
 		$unit_price = $quantity * $unit_price;
 
-		var_dump($quantity);
+		// var_dump($quantity); exit();
 		// exit();
 
 		$data = array(
@@ -127,7 +127,7 @@ class func_reparation extends CI_Controller {
 					'<tr>
 						<input type="hidden" name="itemid[itemid][]" value="'.$data->id_item.'">
 						<td><input type="text" name="itemname[itemname][]" value="'.$data->product_name.'"></td>
-						<td><input name="itemquantity[itemquantity][]" type="number" value="'.$data->quantity.'" id="val'.$data->id.'" onchange="kira('.$data->id.')" placeholder="0" / style="width: 50px;">
+						<td><input name="itemquantity[itemquantity][]" type="number" value="'.$data->quantity.'" id="val'.$data->id.'" onchange="kira('.$data->id.')" placeholder="0" style="width: 50px;">
 						</td>
 						<td><input type="text" name="itemprice[itemprice][]" id="unit'.$data->id.'" value="'.$data->unit_price.'"></td>
 						<td><a onclick="deletehold('.$data->id.')"><button type="button">X</button></a></td>
@@ -551,7 +551,7 @@ class func_reparation extends CI_Controller {
 					'<tr>
 						<input type="hidden" name="edititemid[edititemid][]" value="'.$data->id_item.'">
 						<td><input type="text" name="edititemname[edititemname][]" value="'.$data->product_name.'"></td>
-						<td><input name="edititemquantity[edititemquantity][]" type="number" value="'.$data->quantity.'" id="vall'.$data->id.'" onchange="kira('.$data->id.')" placeholder="0" / style="width: 50px;">
+						<td><input name="edititemquantity[edititemquantity][]" type="number" value="'.$data->quantity.'" id="vall'.$data->id.'" onchange="kiraa('.$data->id.')" placeholder="0" / style="width: 50px;">
 						</td>
 						<td><input type="text" name="edititemprice[edititemprice][]" id="unitt'.$data->id.'" value="'.$data->unit_price.'"></td>
 						<td><a onclick="deleteholdEdit('.$data->id.')"><button type="button">X</button></a></td>

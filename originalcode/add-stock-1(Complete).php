@@ -1,11 +1,5 @@
 <div class="container-fluid">
-  <h1 class="h3 mb-2 text-gray-800">Add New Product </h1>
-  <div class="col-lg-6" style="float: right;margin-top: -30px;left: 5%;">
-    <a href="#" onclick="add_category();" style="text-decoration: none;"><i class="fa fa-fw fa-bell-o"></i><i class="fas fa-fw fa-print"></i> Add New <b>Category</b> <span class="badge"></span></a>
-  </div>
-  <div class="col-lg-6" style="float: right;margin-top: -30px;left: 25%;">
-    <a href="#" onclick="add_subcategory();" style="text-decoration: none;"><i class="fa fa-fw fa-bell-o"></i><i class="fas fa-fw fa-print"></i> Add New <b>Sub Category</b> <span class="badge"></span></a>
-  </div>
+  <h1 class="h3 mb-2 text-gray-800">Add New Product</h1>
   <hr>
   <form class="row" action="<?php echo base_url('func_stock/add_stock'); ?>" method="post" id="form" enctype="multipart/form-data">
     
@@ -45,10 +39,10 @@
             <div class="input-group-prepend">
               <span class="input-group-text"> <i class="fas fa-fw fa-folder"></i> </span>
           </div>
-            <!-- <select name="pcategory" onchange="get_categories()" class="form-control">
-              <?php foreach($productcat as $cat):?>
-                <option value="<?php echo $cat->cat_id;?>"><?php echo $cat->cat_name;?></option>
-              <?php endforeach;?>
+            <!-- <select name="pcategory" class="form-control">
+              <option selected=""> Select Product Categories</option>
+              <option>Camera</option>
+              <option>Add On Warranty</option>
             </select> -->
             <input type="text" name="pcategory" id="search" onchange="get_categories()" class="form-control" list="category" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
             <datalist id="category">
@@ -60,7 +54,9 @@
               <span class="input-group-text"> <i class="fas fa-fw fa-folder-open"></i> </span>
             </div>
             <!-- <select name="psubcategory" id="psubcategory" class="form-control">
-              
+              <option selected=""> Select Sub Categories</option>
+              <option value="camera">Camera</option>
+              <option>Add On Warranty</option>
             </select> -->
             <input type="text" name="psubcategory" id="" class="form-control" list="psubcategory" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
             <datalist id="psubcategory">

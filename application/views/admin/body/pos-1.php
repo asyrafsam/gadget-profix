@@ -117,11 +117,13 @@
       text-align: center;
       /*width: 100px;*/
       left: 50%;
-        transform: translate(-50%, -50%);
-        overflow: hidden;
-  max-height: 3.6em;
-  line-height: 1.1em;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      max-height: 3.6em;
+      line-height: 1.1em;
     }
+    input[type="text"] { border: none }
+    input[type="number"] { border: none }
 </style>
 <div class="container-fluid">
   <h1 class="h3 mb-2 text-gray-800">Point of Sale</h1>
@@ -138,10 +140,11 @@
       </div>
       
         <div class="flex-head" id="view1">
+
           <?php 
             foreach ($posdata as $pos) {
           ?>
-          <a onclick="view1('<?php echo $pos->hold_id?>')" class="box1 col-lg-2 col-sm-4">
+          <a onclick="view1('<?php echo $pos->hold_id?>')" class="box1 col-lg-2 col-sm-4" style="margin-top:50px;">
             <img src="../images/nature.jpg">
             <p><?php echo $pos->cat_name?></p>
           </a>
@@ -168,34 +171,10 @@
                     <th width="50">Price</th>
                     <th width="50">Tax</th>
                     <th width="65">Discount</th>
-                    <th width="65">Subtotal</th>
+                    <th width="65">Delete</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td width="80">Tiger</td>
-                    <td width="45">10</td>
-                    <td width="50">110.00</td>
-                    <td width="50">10%</td>
-                    <td width="65">10%</td>
-                    <td width="65">200.00</td>
-                </tr>
-                <tr>
-                    <td width="80">Tiger</td>
-                    <td width="45">10</td>
-                    <td width="50">110.00</td>
-                    <td width="50">10%</td>
-                    <td width="65">10%</td>
-                    <td width="65">200.00</td>
-                </tr>
-                <tr>
-                    <td width="80">Tiger</td>
-                    <td width="45">10</td>
-                    <td width="50">110.00</td>
-                    <td width="50">10%</td>
-                    <td width="65">10%</td>
-                    <td width="65">200.00</td>
-                </tr>
+            <tbody id="dataList">
                 <tr>
                     <td width="80">Tiger</td>
                     <td width="45">10</td>
@@ -214,7 +193,7 @@
             </div>
             <div class="total col-lg-6 right" style="">
               <label>Subtotal :&nbsp;&nbsp;&nbsp;&nbsp;</label>
-              <input type="number" name="" style="width: 70px;float: right;margin-bottom: 10px;" placeholder="0.00" readonly>
+              <input type="number" name="total_subtotal" id="total_subtotal" style="width: 70px;float: right;margin-bottom: 10px;" placeholder="0.00" readonly>
             </div>
             <div class="total col-lg-6 right" style="">
               <label>Order Tax :&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -225,6 +204,8 @@
               <input type="number" name="" style="width: 70px;float: right;" placeholder="0.00" readonly>
             </div>
           </div>
+          <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,10000);?>">
+
           <hr>
           <div class="col-lg-12" style="text-align: center;">
             <button class="btn btn-danger" style="width: 40%; height: 100px;">Clear Sale</button>
@@ -260,42 +241,5 @@
             });
   }
 
-  function totalIt(id)
-  {
-    getDetail(id);
-  }
-  function getDetail(id)
-        {
-          // alert(id);
-          var data = {'id':id}
-          $.ajax({
-                          url: '<?= base_url() ?>func_pos/getDetails',
-                          type: 'POST',
-                          dataType: 'json',
-                          data: data,
-                          beforeSend: function() {
 
-                          },
-                          success: function(response){
-
-                            var id = response.id;
-                            var sub_name = response.i_name;
-                            var sub_price = response.i_price;
-
-                            var id_dummy = id;
-
-                            
-
-
-                            var hold_value = $("#hold_value").val();
-
-                            // alert(i_name);
-                            //$("#lab_cerner").val(response.CERNER_MRN);
-
-                            store(id_dummy,i_name,i_price,hold_value); // add 
-
-
-                          }
-                  });
-        }
 </script>

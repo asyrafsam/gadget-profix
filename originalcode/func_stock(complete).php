@@ -14,32 +14,6 @@ class func_stock extends CI_Controller {
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
 	}
-	function getCategoryDetails(){
-		$id = $this->input->post('send');
-		// $query = $this->d_get->getCategoryDetails($id);
-		$this->db->where('cat_id', $id);
-		$query =  $this->db->get('tbl_lookup_subcategory')->result();
-		$empty = '-';
-		if(empty($query)){
-			echo '<option value="'.$empty.'">'.$empty.'</option>';
-		} else {
-			foreach ($query as $data) 
-			{
-				
-				echo '<option value="'.$data->sub_id.'">'.$data->subCat_name.'</option>';
-
-			}
-			
-
-		}
-	}	
-	function getCategoryDetailsHoldid(){
-		$id = $this->input->post('send');
-		$data = $this->d_get->get_categorydetails($id);
-		echo json_encode($data);
-
-		// This part need to adjust
-	}
 	function add_stock(){
 		
 		$ptype = $this->input->post('ptype');
@@ -61,71 +35,62 @@ class func_stock extends CI_Controller {
 	  	$ubranch = $this->input->post('ubranch');
 	  	$holdid = $this->input->post('formid');
 
-	  	$this->db->select('*');
-		$this->db->where('cat_id', $pcategory);
-		$query1 =  $this->db->get('tbl_lookup_category')->result();
-
-		foreach ($query1 as $data) 
-		{
-			$check1 = $data->cat_name;
-			$check22 = $data->hold_id;
-		}
 
 		// var_dump($c_file); exit();
-		// $this->db->select('*');
-		// $this->db->where('hold_id', $pcategory);
-		// $query1 =  $this->db->get('tbl_lookup_category')->result();
+		$this->db->select('*');
+		$this->db->where('hold_id', $pcategory);
+		$query1 =  $this->db->get('tbl_lookup_category')->result();
 
-		// // echo $this->db->last_query(); die;
+		// echo $this->db->last_query(); die;
 		
 
-		// if($query1 == TRUE){
-		// 	foreach ($query1 as $data) 
-		// 		{
-		// 			$check1 = $data->cat_name;
-		// 			$check22 = $data->hold_id;
-		// 		}
-		// 	if($psubcategory != ''){
-		//   		$datainsubcategory = array(
-		//   					'subCat_name' => $psubcategory,
-		//   					'hold_id' => $check22
-		// 				);
-		//   		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
+		if($query1 == TRUE){
+			foreach ($query1 as $data) 
+				{
+					$check1 = $data->cat_name;
+					$check22 = $data->hold_id;
+				}
+			if($psubcategory != ''){
+		  		$datainsubcategory = array(
+		  					'subCat_name' => $psubcategory,
+		  					'hold_id' => $check22
+						);
+		  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
 
-		// 	}else{
-		// 		$this->db->select('*');
-		// 		$this->db->where('hold_id', $pcategory);
-		// 		$query11 =  $this->db->get('tbl_lookup_category')->result();
-		// 		foreach ($query11 as $data2) 
-		// 		{
-		// 			$check11 = $data2->cat_name;
-		// 		}
-		// 	}
-		// }else{
-		// 	$dataincategory = array(
-		// 				'cat_name' => $pcategory,
-		// 				'hold_id' => $holdid
-		// 			);
+			}else{
+				$this->db->select('*');
+				$this->db->where('hold_id', $pcategory);
+				$query11 =  $this->db->get('tbl_lookup_category')->result();
+				foreach ($query11 as $data2) 
+				{
+					$check11 = $data2->cat_name;
+				}
+			}
+		}else{
+			$dataincategory = array(
+						'cat_name' => $pcategory,
+						'hold_id' => $holdid
+					);
 
-	 //  		$query2 = $this->db->insert('tbl_lookup_category', $dataincategory);
+	  		$query2 = $this->db->insert('tbl_lookup_category', $dataincategory);
 
-	 //  		if($psubcategory != '-'){
-		//   		$datainsubcategory = array(
-		//   					'subCat_name' => $psubcategory,
-		//   					'hold_id' => $holdid
-		// 				);
-		//   		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
+	  		if($psubcategory != '-'){
+		  		$datainsubcategory = array(
+		  					'subCat_name' => $psubcategory,
+		  					'hold_id' => $holdid
+						);
+		  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
 
-		// 	}else{
-		// 		$this->db->select('*');
-		// 		$this->db->where('hold_id', $pcategory);
-		// 		$query11 =  $this->db->get('tbl_lookup_category')->result();
-		// 		foreach ($query11 as $data2) 
-		// 		{
-		// 			$check11 = $data2->cat_name;
-		// 		}
-		// 	}
-		// }
+			}else{
+				$this->db->select('*');
+				$this->db->where('hold_id', $pcategory);
+				$query11 =  $this->db->get('tbl_lookup_category')->result();
+				foreach ($query11 as $data2) 
+				{
+					$check11 = $data2->cat_name;
+				}
+			}
+		}
 						
 
 		$config['upload_path']          = './uploads/';
@@ -158,8 +123,8 @@ class func_stock extends CI_Controller {
 					'p_type' => $ptype,
 					'p_code' => $pcode,
 					'p_name' => $pname,
-					'p_category' => $pcategory,
-					'p_subCategory' => $psubcategory,
+					// 'p_category' => $pcategory,
+					// 'p_subCategory' => $psubcategory,
 					'p_detail' => $pdetail,
 					'p_image' => $fname,
 					'p_unit' => $punit,
@@ -212,71 +177,62 @@ class func_stock extends CI_Controller {
 		$holdid = $this->input->post('hold_id');
 
 		// var_dump($c_file); exit();
+		if($upcategory != ''){
 		$this->db->select('*');
-		$this->db->where('cat_id', $upcategory);
+		$this->db->where('hold_id', $upcategory);
 		$query1 =  $this->db->get('tbl_lookup_category')->result();
 
-		foreach ($query1 as $data) 
-		{
-			$check1 = $data->cat_name;
-			$check22 = $data->hold_id;
-		}
-		// if($upcategory != ''){
-		// $this->db->select('*');
-		// $this->db->where('hold_id', $upcategory);
-		// $query1 =  $this->db->get('tbl_lookup_category')->result();
-
-		// // echo $this->db->last_query(); die;
+		// echo $this->db->last_query(); die;
 		
 
-		// 	if($query1 == TRUE){
-		// 		foreach ($query1 as $data) 
-		// 			{
-		// 				$check1 = $data->cat_name;
-		// 				$check22 = $data->hold_id;
-		// 			}
-		// 		if($upsubcategory != ''){
-		// 	  		$datainsubcategory = array(
-		// 	  					'subCat_name' => $upsubcategory,
-		// 	  					'hold_id' => $check22
-		// 					);
-		// 	  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
+			if($query1 == TRUE){
+				foreach ($query1 as $data) 
+					{
+						$check1 = $data->cat_name;
+						$check22 = $data->hold_id;
+					}
+				if($upsubcategory != ''){
+			  		$datainsubcategory = array(
+			  					'subCat_name' => $upsubcategory,
+			  					'hold_id' => $check22
+							);
+			  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
 
-		// 		}else{
-		// 			$this->db->select('*');
-		// 			$this->db->where('hold_id', $upcategory);
-		// 			$query11 =  $this->db->get('tbl_lookup_category')->result();
-		// 			foreach ($query11 as $data2) 
-		// 			{
-		// 				$check11 = $data2->cat_name;
-		// 			}
-		// 		}
-		// 	}else{
-		// 		$dataincategory = array(
-		// 					'cat_name' => $upcategory,
-		// 					'hold_id' => $holdid
-		// 				);
+				}else{
+					$this->db->select('*');
+					$this->db->where('hold_id', $upcategory);
+					$query11 =  $this->db->get('tbl_lookup_category')->result();
+					foreach ($query11 as $data2) 
+					{
+						$check11 = $data2->cat_name;
+					}
+				}
+			}else{
+				$dataincategory = array(
+							'cat_name' => $upcategory,
+							'hold_id' => $holdid
+						);
 
-		//   		$query2 = $this->db->insert('tbl_lookup_category', $dataincategory);
+		  		$query2 = $this->db->insert('tbl_lookup_category', $dataincategory);
 
-		//   		if($upsubcategory != '-'){
-		// 	  		$datainsubcategory = array(
-		// 	  					'subCat_name' => $upsubcategory,
-		// 	  					'hold_id' => $holdid
-		// 					);
-		// 	  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
+		  		if($upsubcategory != '-'){
+			  		$datainsubcategory = array(
+			  					'subCat_name' => $upsubcategory,
+			  					'hold_id' => $holdid
+							);
+			  		$query3 = $this->db->insert('tbl_lookup_subcategory', $datainsubcategory);
 
-		// 		}else{
-		// 			$this->db->select('*');
-		// 			$this->db->where('hold_id', $upcategory);
-		// 			$query11 =  $this->db->get('tbl_lookup_category')->result();
-		// 			foreach ($query11 as $data2) 
-		// 			{
-		// 				$check11 = $data2->cat_name;
-		// 			}
-		// 		}
-		// 	}
-		// }
+				}else{
+					$this->db->select('*');
+					$this->db->where('hold_id', $upcategory);
+					$query11 =  $this->db->get('tbl_lookup_category')->result();
+					foreach ($query11 as $data2) 
+					{
+						$check11 = $data2->cat_name;
+					}
+				}
+			}
+		}
 
 		$config['upload_path']          = './uploads/';
         $config['allowed_types']        = 'gif|jpg|png';
@@ -297,8 +253,8 @@ class func_stock extends CI_Controller {
 					'p_type' => $uptype,
 					'p_code' => $upcode,
 					'p_name' => $upname,
-					'p_category' => $upcategory,
-					'p_subCategory' => $upsubcategory,
+					// 'p_category' => $upcategory,
+					// 'p_subCategory' => $upsubcategory,
 					'p_detail' => $updetail,
 					'p_unit' => $upunit,
 					'p_cost' => $upcost,
@@ -363,61 +319,26 @@ class func_stock extends CI_Controller {
 		$this->d_post->deleteProduct($where,'tbl_product');
 		redirect(base_url('admin/stock'));
 	}
-	function add_category(){
-		$holdid = $this->input->post('catholdid');
-		$ubranch = $this->input->post('uubranch');
-		$catname = $this->input->post('catname');
-		$subname = $this->input->post('subname');
-		$calc = $this->input->post('kira');
-		$kira = 1 + $calc;
 
-		// var_dump($kira); exit();
-		for($i=0;$i<$kira;$i++){
-			$item0 =  $subname['subname'][$i];
-			// $item1 =  $subname['itemname'][$i];
+	function getCategoryDetails(){
+		$id = $this->input->post('send');
+		// $query = $this->d_get->getCategoryDetails($id);
+		$this->db->where('hold_id', $id);
+		$query =  $this->db->get('tbl_lookup_subcategory')->result();
+		$empty = '-';
+		if(empty($query)){
+			echo '<option value="'.$empty.'">'.$empty.'</option>';
+		} else {
+			foreach ($query as $data) 
+			{
+				
+				echo '<option value="'.$data->subCat_name.'"></option>';
+
+			}
 			
-			$subcategory = array(
-				'hold_id' => $holdid,
-				'u_branch' => $ubranch,
-				'subCat_name' => $item0
-			);
-			$this->db->insert('tbl_lookup_subcategory',$subcategory);
+
 		}
-
-		$datacat = array(
-			'cat_name' => $catname,
-			'hold_id' => $holdid,
-			'u_branch' => $ubranch
-		);
-		$this->db->insert('tbl_lookup_category',$datacat);
-		redirect(base_url('admin/add_stock'));
-	}
-	function add_subcategory(){
-		$holdid = $this->input->post('categoryholdid');
-		$holdidcategory = $this->input->post('holdidcategory');
-		$ubranch = $this->input->post('uuubranch');
-		// $catname = $this->input->post('catname');
-		$subnamee = $this->input->post('subnamee');
-		$calc = $this->input->post('kiraaa');
-		$kira = 1 + $calc;
-
-		// var_dump($kira); exit();
-		for($i=0;$i<$kira;$i++){
-			$item0 =  $subnamee['subnamee'][$i];
-			// $item1 =  $subname['itemname'][$i];
-			
-			$subcategory = array(
-				'hold_id' => $holdid,
-				'u_branch' => $ubranch,
-				'cat_id' => $holdidcategory,
-				'subCat_name' => $item0
-			);
-			$this->db->insert('tbl_lookup_subcategory',$subcategory);
-		}
-		redirect(base_url('admin/add_stock'));
-	}
-
-		
+	}		
 
 	function view1()
 	{

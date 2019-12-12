@@ -214,7 +214,7 @@ class d_get extends CI_Model{
 		//var_dump($query); exit();
 		foreach ($query as $data) {
 			# code...
-			echo '<option value="'.$data->hold_id.'">'.$data->cat_name.'</option>';
+			echo '<option value="'.$data->cat_id.'">'.$data->cat_name.'</option>';
 		}
 	}
 	function getCategoryDetails($id){
@@ -223,6 +223,25 @@ class d_get extends CI_Model{
         $this->db->where('cat_id', $id);
 		return $this->db->get();
 	}
+	function get_productcat(){
+		$this->db->select('*');
+        $this->db->order_by("cat_id", "asc");
+        $this->db->from('tbl_lookup_category');
+		return $this->db->get();
+	}
+	function get_categorydetails($id){
+		$this->db->from('tbl_lookup_category');
+		$this->db->where('cat_id', $id);
+		$query = $this->db->get();
+		return $query->row();
+
+		// echo $this->db->last_query();
+	}
+
+
+
+
+
 
     // Client Section
     function get_client(){
@@ -405,15 +424,98 @@ class d_get extends CI_Model{
 		$this->db->group_by('hold_id');
 		return $this->db->get();
 	}
+	// function get_productposjoin($id){
+	// 	$this->db->select('*');
+	// 	$this->db->from('tbl_product');
+	// 	$this->db->join('tbl_lookup_category', 'tbl_lookup_category.hold_id = tbl_product.hold_id');
+	// 	$this->db->join('tbl_lookup_subcategory', 'tbl_lookup_subcategory.hold_id = tbl_lookup_category.hold_id');
+	// 	// $this->db->group_by('hold_id');
+	// 	$this->db->where('tbl_product.hold_id', $id);
+	// 	return $this->db->get();
+	// }
 	function get_productposjoin($id){
 		$this->db->select('*');
-		$this->db->from('tbl_product');
-		$this->db->join('tbl_lookup_category', 'tbl_lookup_category.hold_id = tbl_product.hold_id');
-		$this->db->join('tbl_lookup_subcategory', 'tbl_lookup_subcategory.hold_id = tbl_lookup_category.hold_id');
+		$this->db->from('tbl_lookup_subcategory');
 		// $this->db->group_by('hold_id');
-		$this->db->where('tbl_product.hold_id', $id);
+		$this->db->where('hold_id', $id);
 		return $this->db->get();
 	}
+	function get_backsubcat($id){
+		$this->db->select('tbl_lookup_subcategory.hold_id');
+		$this->db->from('tbl_product');
+		// $this->db->group_by('hold_id');
+		$this->db->join('tbl_lookup_subcategory', 'tbl_lookup_subcategory.sub_id = tbl_product.p_subCategory');
+		$this->db->where('tbl_lookup_subcategory.sub_id', $id);
+		$this->db->group_by('tbl_lookup_subcategory.hold_id');
+		return $this->db->get();
+		// echo $this->db->last_query(); exit();
+	}
+	function get_backsubcat2($holdidd){
+		$this->db->select('*');
+		$this->db->from('tbl_lookup_subcategory');
+		$this->db->where('hold_id', $holdidd);
+		return $this->db->get();
+	}
+	function get_productbacktosubcategory($holdid){
+		$this->db->select('*');
+		$this->db->from('tbl_lookup_subcategory');
+		// $this->db->group_by('hold_id');
+		$this->db->where('hold_id', $holdid);
+		return $this->db->get();
+	}
+
+
+
+	function get_productposproduct($id){
+		$this->db->select('*');
+		$this->db->from('tbl_product');
+		// $this->db->group_by('hold_id');
+		$this->db->where('p_subCategory', $id);
+		return $this->db->get();
+	}
+	function getDetailsProduct($id)
+	{
+		$result = array();
+        $where = "	SELECT * FROM tbl_product
+        			Where p_id='$id'
+        		 ";
+
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+
+	// function getDetailsHold($hold_id)
+	// {
+	// 	$result = array();
+ //        $where = "	SELECT * FROM tbl_hold
+ //        			Where random_id='$hold_id'
+ //        		 ";
+
+ //        //var_dump($where); exit();
+
+
+ //        $query = $this->db->query($where);
+ //        if ($query->num_rows() >0){ 
+ //            foreach ($query->result() as $data) {
+
+ //            	//var_dump($data); exit();
+ //                $result[] = $data;
+ //            }
+ //        }
+
+ //        return $result;
+	// }
 
 	// Chart Section
 	function get_financedata(){

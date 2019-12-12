@@ -389,7 +389,7 @@ function getDetailEdit(id)
 }
 
 // Pengiraan berlaku disini
-function kira(id_dummy)
+function kiraa(id_dummy)
 {
   var qt = $("#vall"+id_dummy+"").val();
   var unit = $("#unitt"+id_dummy+"").val();
