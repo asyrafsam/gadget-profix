@@ -70,6 +70,15 @@ if ( ! function_exists('lookup_r_client'))
 		$ci->lookup->lookup_r_client();
     }   
 }
+if ( ! function_exists('lookup_rr_client'))
+{
+    function lookup_rr_client($var = '')
+    {
+		$ci = & get_instance();
+		$ci->load->model('d_get','lookup');
+		$ci->lookup->lookup_rr_client();
+    }   
+}
 if ( ! function_exists('lookup_p_category'))
 {
     function lookup_p_category($var = '')

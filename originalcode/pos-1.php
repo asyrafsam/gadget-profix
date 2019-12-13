@@ -159,9 +159,9 @@
         <div class="card shadow mb-4">
           <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary" style="float: left;">POS Section</h6>
-            <input type="text" name="customerlist" id="search" class="form-control" placeholder="Customer Name" list="customerlist" style="float: right; width: 250px;border:1px solid #989898;" required>
+            <input type="text" name="customerlist" id="search" class="form-control" placeholder="Customer Name" list="customerlist" style="float: right; width: 250px;border:1px solid #989898;">
             <datalist id="customerlist">
-              <?= lookup_rr_client();?>
+              <?= lookup_r_client();?>
             </datalist>
           </div>
           <div class="card-body" >
@@ -181,8 +181,23 @@
               </tbody>
           </table>
             <hr style="margin-top: -10%;">
-            <div class="row pos-result" style="font-weight: bold;" id="totaldisctax">
-              
+            <div class="row pos-result" style="font-weight: bold;">
+              <div class="total col-lg-6 right" style="float: right;">
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="number" name="" style="width: 70px;float: right;" placeholder="0.00" readonly>
+              </div>
+              <div class="total col-lg-6 right" style="" id="allsubtotal">
+                <label>Subtotal :&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="number" name="total_subtotal" id="total_subtotal" style="width: 70px;float: right;margin-bottom: 10px;" placeholder="0.00" readonly>
+              </div>
+              <div class="total col-lg-6 right" style="">
+                <label>Order Tax :&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="number" name="alltotaltax" style="width: 70px;float: right;" placeholder="0.00" readonly>
+              </div>
+              <div class="total col-lg-6 right" style="">
+                <label>Discount :&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="number" name="" style="width: 70px;float: right;" placeholder="0.00" readonly>
+              </div>
             </div>
             <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,10000);?>">
 

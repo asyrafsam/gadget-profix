@@ -145,6 +145,15 @@ class d_get extends CI_Model{
 			echo '<option value="'.$data->c_name.'">';
 		}
 	}
+	function lookup_rr_client()
+	{
+		$query = $this->db->get('tbl_client')->result();
+		//var_dump($query); exit();
+		foreach ($query as $data) {
+			# code...
+			echo '<option value="'.$data->c_id.'">'.$data->c_name.'</option>';
+		}
+	}
 	function get_reparationcode($where,$table1){
 		return $this->db->get_where($table1,$where);
 	}
@@ -412,6 +421,7 @@ class d_get extends CI_Model{
 	}
 
 	// POS Section
+
 	// function get_productpos(){
 	// 	$this->db->select('*');
 	// 	$this->db->from('tbl_product');
@@ -463,9 +473,6 @@ class d_get extends CI_Model{
 		$this->db->where('hold_id', $holdid);
 		return $this->db->get();
 	}
-
-
-
 	function get_productposproduct($id){
 		$this->db->select('*');
 		$this->db->from('tbl_product');
@@ -494,28 +501,33 @@ class d_get extends CI_Model{
 
         return $result;
 	}
+	function get_custinfo($cust){
+		$this->db->select('*');
+		$this->db->from('tbl_pospayment');
+		$this->db->join('tbl_client','tbl_client.c_id = tbl_pospayment.c_id');
+		$this->db->group_by('tbl_pospayment.c_id');
 
-	// function getDetailsHold($hold_id)
-	// {
-	// 	$result = array();
- //        $where = "	SELECT * FROM tbl_hold
- //        			Where random_id='$hold_id'
- //        		 ";
+		$this->db->where('tbl_pospayment.c_id', $cust);
 
- //        //var_dump($where); exit();
+		return $this->db->get();
+		// echo $this->db->last_query(); exit();
+	}
+	function get_productinfo($holdid){
+		$this->db->select('*');
+		$this->db->from('tbl_holdproduct');
+		$this->db->where('hold_id', $holdid);
+		return $this->db->get();
+	}
+	function get_paymentinfo($holdid){
+		$this->db->select('*, SUM(pro_price) as alltotal, SUM(pro_tax) as sumtax, SUM(pro_disc) as sumdisc');
+		$this->db->from('tbl_holdproduct');
+		$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
+		// $this->db->group_by('tbl_holdproduct.hold_id');
+		$this->db->where('tbl_holdproduct.hold_id', $holdid);
+		return $this->db->get();
 
-
- //        $query = $this->db->query($where);
- //        if ($query->num_rows() >0){ 
- //            foreach ($query->result() as $data) {
-
- //            	//var_dump($data); exit();
- //                $result[] = $data;
- //            }
- //        }
-
- //        return $result;
-	// }
+		// echo $this->db->last_query(); exit();
+	}
 
 	// Chart Section
 	function get_financedata(){

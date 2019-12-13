@@ -234,16 +234,15 @@ if(empty($test)){
                       },
                       success: function(response){
                         // var test1 = response + tax;
-                        // $("#total_subtotal").val(response.total);
-                        $("#totaldisctax").html(response);
+                        $("#total_subtotal").val(response);
                         getDetailHold(hold_value);
                       
-                        // var a = Number(document.getElementById('valtax').value);
-                        // //var b = Number(document.getElementById('total_subtotal').value);
-                        // var b = response;
-                        // var c = parseFloat(a);
+                        var a = Number(document.getElementById('protax').value);
+                        //var b = Number(document.getElementById('total_subtotal').value);
+                        var b = response;
+                        var c = parseFloat(a) + parseFloat(b);
 
-                        // $('[name="alltotaltax"]').val(c);
+                        $('[name="alltotal"]').val(c);
                       }
             });
     }

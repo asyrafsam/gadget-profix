@@ -257,6 +257,7 @@ class admin extends CI_Controller {
 	{
 		if($this->session->userdata('status') == "login"){
 			$data = array(
+                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result(),
                 'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
             );
 			$this->load->view('admin/header/header.php');
