@@ -530,10 +530,52 @@ class d_get extends CI_Model{
 	}
 
 	// Chart Section
+
+	// function get_financedata(){
+	// 	$this->db->select('extract(month from pay_date) as mon, SUM(pay_amount) as totalpaid');
+	// 	$this->db->group_by('extract(month from pay_date)');
+	//     $result = $this->db->get('tbl_payment');
+	//     return $result;
+	// }
 	function get_financedata(){
-		$this->db->select('extract(month from pay_date) as mon, SUM(pay_amount) as totalpaid');
-		$this->db->group_by('extract(month from pay_date)');
+		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+		$this->db->group_by('r_repairno');
+		$this->db->where('MONTH(pay_date)', date('m'));
+		$this->db->where('YEAR(pay_date)', date('Y'));
 	    $result = $this->db->get('tbl_payment');
 	    return $result;
 	}
+	function get_financedatatotal(){
+		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+		// $this->db->group_by('r_repairno');
+		$this->db->where('MONTH(pay_date)', date('m'));
+		$this->db->where('YEAR(pay_date)', date('Y'));
+	    $result = $this->db->get('tbl_payment');
+	    // echo $this->db->last_query(); exit();
+	    return $result;
+	}
+	function get_financedataselected($m){
+		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+		$this->db->group_by('r_repairno');
+		$this->db->where('MONTH(pay_date)', $m);
+		$this->db->where('YEAR(pay_date)', date('Y'));
+	    $result = $this->db->get('tbl_payment');
+	    // echo $this->db->last_query(); exit();
+	    return $result;
+	}
+	function get_financedataselectedtotal($m){
+		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+		// $this->db->group_by('r_repairno');
+		$this->db->where('MONTH(pay_date)', $m);
+		$this->db->where('YEAR(pay_date)', date('Y'));
+	    $result = $this->db->get('tbl_payment');
+	    // echo $this->db->last_query(); exit();
+	    return $result;
+	}
+	function get_reportproduct(){
+        $this->db->select('*');
+        $this->db->order_by("p_id", "asc");
+        $this->db->from('tbl_product');
+		return $this->db->get();
+    }
 }

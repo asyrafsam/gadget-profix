@@ -364,12 +364,30 @@ class admin extends CI_Controller {
    //              'hold' => $this->d_get->get_holdiditem($id)->result()
    //          );
 			$data = $this->d_get->get_financedata()->result();
-      		$x['data'] = json_encode($data);
+      		$x = array(
+      				'data' => json_encode($data),
+      				'total' => $this->d_get->get_financedatatotal()->result()
+      			);
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
 			$this->load->view('admin/body/logoutmodal-1.php');
 			$this->load->view('admin/body/chart-finance-1.php', $x);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function reportstock()
+	{
+		if($this->session->userdata('status') == "login"){
+			$data['product'] = $this->d_get->get_reportproduct()->result();
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/stockreport-1.php', $data);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

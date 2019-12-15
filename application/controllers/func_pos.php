@@ -134,6 +134,25 @@ class func_pos extends CI_Controller {
 					 );
 		// var_dump($data); exit();
 		$this->db->insert('tbl_holdproduct', $data);
+
+		$this->db->select('*');
+		// $this->db->from('tbl_product');
+		$this->db->where('p_id', $id);
+		$queryselect = $this->db->get('tbl_product')->result();
+
+		foreach ($queryselect as $getqty) {
+			$qtyget = $getqty->p_quantity;
+		}
+
+		$calc = $qtyget - $quantity;
+
+		$dataupdateqty = array(
+								'p_quantity'=>$calc
+							);
+		$this->db->where('p_id', $id);
+		$this->db->update('tbl_product', $dataupdateqty);
+
+		// echo $this->db->last_query(); exit();
 	}
 
 
@@ -157,7 +176,37 @@ class func_pos extends CI_Controller {
 
 		$this->db->where('id',$id);
 		$this->db->update('tbl_holdproduct', $data);
+
+		$this->db->select('*');
+		$this->db->where('id', $id);
+		$queryselect = $this->db->get('tbl_holdproduct')->result();
+
+		foreach ($queryselect as $getidpro) {
+			$proget = $getidpro->pro_id;
+		}
+
+		$this->db->select('*');
+		// $this->db->from('tbl_product');
+		$this->db->where('p_id', $proget);
+		$queryselectpro = $this->db->get('tbl_product')->result();
+
+		foreach ($queryselectpro as $getqty) {
+			$qtyget = $getqty->p_quantity;
+		}
+
+		// echo $qtyget; exit();
+		$calcone = $qtyget + 1;
+		$calc = $calcone - $quantity;
+
+		$dataupdateqty = array(
+								'p_quantity'=>$calc
+							);
+		$this->db->where('p_id', $proget);
+		$this->db->update('tbl_product', $dataupdateqty);
+
+		echo $this->db->last_query(); exit();
 	}
+
 	function update_storetax()
 	{
 		$id = $this->input->post('id');

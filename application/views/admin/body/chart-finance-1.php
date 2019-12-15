@@ -47,6 +47,11 @@ thead, tfoot{
   label{
     text-align: right;
   }
+  .total{
+    display: flex;
+    flex-flow: row;
+
+  }
 </style>
 <div class="container-fluid">
   <?php 
@@ -67,7 +72,7 @@ thead, tfoot{
     </div>
 
 
-    <div class="card-body">
+    <div class="card-body" id="viewgraph">
       <div id="graph"></div>
 
     </div>
@@ -83,12 +88,19 @@ thead, tfoot{
       <div class="col-lg-12">
         
       <div class="form-group input-group col-lg-6">
-        <div class="input-group-prepend">
-          <span class="input-group-text"> <i class="fas fa-fw fa-barcode"></i> </span>
+        <div class="total">
+          <div class="input-group-prepend">
+            <span class="input-group-text"> <i class="fas fa-fw fa-barcode"></i> </span>
+          </div>
+          <input type="month" name="month" id="month" class="form-control">
+          <button class="btn btn-success col-lg-2" type="submit" onclick="viewgraph()" >Update</button>
+          <div style="margin-left: 400px;margin-top: 7px;">
+            <?php foreach ($total as $total) { ?>
+            <h4 style="" id="testt">Total:<?php echo $total->totalpaid?></h4>
+            <?php }?>
+          </div>
         </div>
-          <input name="pcode" class="form-control" placeholder="Product Code" type="text">
-          <button class="btn btn-success col-lg-3">Update</button>
-          <h4 style="float: left;">Total:</h4>
+          
       </div>
         
       </div>
@@ -97,12 +109,53 @@ thead, tfoot{
   </div>
    
 <script type="text/javascript">
+  function viewgraph()
+  {
+    var month = document.getElementById('month').value;
+    // alert(month);
+    var data = {'month':month}
+    $.ajax({
+                    url: '<?= base_url() ?>func_report/viewgraph',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: data,
+                    beforeSend: function() {
+
+                    },
+                    success: function(response){
+
+                        $('#viewgraph').html(response);
+                        viewgraphtotal(month);
+                    }
+            });
+  }
+  function viewgraphtotal(month)
+  {
+    // var month = document.getElementById('month').value;
+    // alert(month);
+    var data = {'month':month}
+    $.ajax({
+                    url: '<?= base_url() ?>func_report/viewgraphtotal',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: data,
+                    beforeSend: function() {
+
+                    },
+                    success: function(response){
+                        var rm = 'RM';
+                        $('#testt').html(rm+response);
+                        // viewgraphtotal(month);
+                    }
+            });
+  }
   Morris.Area({
       element: 'graph',
       data: <?php echo $data;?>,
-      xkey: 'mon',
+      xkey: 'pay_date',
       ykeys: ['totalpaid'],
       labels: ['Sales'],
+      xLabels: 'day',
       fillOpacity: 0.6,
       hideHover: 'auto',
       behaveLikeLine: true,
