@@ -2,7 +2,7 @@
 
 foreach ($salesselect as $d) 
 {
-     $balance = $d->total - $d->payment;
+     $balance = $d->total - $d->totalpaid;
 ?>
 <tr style="background-color: #e3e6f0;">
      <td><input type="checkbox" name=""></td>
@@ -12,9 +12,9 @@ foreach ($salesselect as $d)
      <td><?php echo $d->pro_name?></td>
      <td><?php echo $d->total?></td>
      <td><?php echo $d->totaltax ?></td>
-     <td><?php echo $d->payment?></td>
+     <td><?php echo $d->totalpaid?></td>
      <td><?php echo $balance?></td>
-     <?php if($d->total == $d->payment){?>
+     <?php if($d->total == $d->totalpaid){?>
      <td><button class="btn btn-success" style="height: 30px;font-size: 12px;">Paid</button></td>
      <?php }else{?>
      <td><button class="btn btn-danger" style="height: 30px;font-size: 12px;">Not fully paid</button></td>

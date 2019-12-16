@@ -350,6 +350,12 @@ class func_pos extends CI_Controller {
 		// var_dump($buydata); exit();
 		$this->db->insert('tbl_posdetails',$buydata);
 
+		$paydetails = array(
+						'pay_date'=>$date,
+						'hold_id'=>$holdid
+					 );
+		// var_dump($buydata); exit();
+		$this->db->insert('tbl_pospayment',$paydetails);
 
 		$datastatus = array(
 					'pro_status'=>$status

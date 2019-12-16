@@ -141,7 +141,7 @@
             foreach ($reparation as $r) 
             {
               $totaltax = $r->r_subtotal + $r->r_tax;
-              $all = $totaltax - $r->payTotal;
+              $all = $totaltax - $r->r_paid;
               if($r->r_status == "Pending"){
           ?>
             <tr>
@@ -163,7 +163,7 @@
               <td><?php echo $r->r_file?></td>
               <td><?php echo $totaltax?>.00</td>
               <td><?php echo $all?>.00</td>
-              <td><?php echo $r->payTotal?></td>
+              <td><?php echo $r->r_paid?></td>
               <td>
                 <div class="dropdown no-arrow">
                   <a class="dropdown-toggle text-success" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

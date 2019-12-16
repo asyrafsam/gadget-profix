@@ -51,9 +51,10 @@ class func_report extends CI_Controller {
 		$start = $this->input->post('start');
 		$end = $this->input->post('end');
 
-		$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax');
+		$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax, SUM(tbl_pospayment.pay_amount) as totalpaid');
     	$this->db->from('tbl_holdproduct');
-    	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_holdproduct.hold_id');
+    	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
+    	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
     	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
     	$this->db->where('tbl_posdetails.date_pos BETWEEN "'.$start.'" and "'.$end.'" ');
     	$this->db->group_by('tbl_holdproduct.hold_id');
@@ -89,7 +90,7 @@ class func_report extends CI_Controller {
 		// echo json_encode($data);
 		// $id = $this->input->post('id');
 		// $this->db->where('r_rcode', $id);
-		$query = $this->d_get->show_paymentsales($id,'tbl_posdetails')->result();
+		$query = $this->d_get->show_paymentsales($id,'tbl_pospayment')->result();
 		$i = 1;
 
 		foreach ($query as $data) 
@@ -99,9 +100,9 @@ class func_report extends CI_Controller {
 
 			echo 
 					'<tr>
-						<td>'.$data->date_pos.'</td>
-						<td>'.$data->payment.'</td>
-						<td>'.$data->payment_type.'</td>
+						<td>'.$data->pay_date.'</td>
+						<td>'.$data->pay_amount.'</td>
+						<td>'.$data->pay_type.'</td>
 						<td>
                             
                         </td>

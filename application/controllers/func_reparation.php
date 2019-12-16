@@ -441,6 +441,22 @@ class func_reparation extends CI_Controller {
 				);
 		$this->db->insert('tbl_reparation_log',$logaddpayment);
 
+		$this->db->select('SUM(pay_amount) as sumall');
+		$this->db->from('tbl_payment');
+		$this->db->where('r_repairno', $repairno);
+
+		$gettototal = $this->db->get()->result();
+
+		foreach ($gettototal as $alltotaltoplus) {
+			$testtotalsum = $alltotaltoplus->sumall;
+		}
+
+		// $testtosum = $testtotalsum + $payamount;
+		$dataupdatereparation = array(
+								'r_paid'=>$testtotalsum
+							);
+		$this->db->where('r_repairno', $repairno);
+		$this->db->update('tbl_reparation', $dataupdatereparation);
 		?>
 		<script type="text/javascript">
             alert("Payment Added");
@@ -493,6 +509,28 @@ class func_reparation extends CI_Controller {
 		$changedate = '0000-00-00';
 		$change = '0.00';
 		$change1 = '-';
+		
+
+		$this->db->select('tbl_payment.r_repairno, tbl_reparation.r_paid, tbl_payment.pay_amount');
+		$this->db->from('tbl_payment');
+		$this->db->join('tbl_reparation', 'tbl_reparation.r_repairno = tbl_payment.r_repairno');
+		$this->db->where('tbl_payment.pay_id',$data);
+		$getrepairno = $this->db->get()->result();
+		foreach ($getrepairno as $no) {
+			$repairjoin = $no->r_repairno;
+			$repairpaid = $no->r_paid;
+			$paidamount = $no->pay_amount;
+		}
+
+		$calc = $repairpaid - $paidamount;
+
+		// echo $calc; exit();
+		$updatepaid = array(
+						'r_paid'=>$calc
+					);
+		$this->db->where('r_repairno', $repairjoin);
+		$this->db->update('tbl_reparation', $updatepaid);
+		
 		$where = array(
 					'pay_id' => $data
 				);
@@ -503,6 +541,8 @@ class func_reparation extends CI_Controller {
 					);
 
 		$this->db->delete('tbl_payment', $where);
+		// echo $this->db->last_query(); exit();
+
 
 		$logaddpayment = array(
 					'r_repairno' => $data2,//

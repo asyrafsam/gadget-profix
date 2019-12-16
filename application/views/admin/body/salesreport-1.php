@@ -103,7 +103,7 @@ button{
               <?php 
                 $test = '1';
                 foreach ($sales as $p) {
-                  $balance = $p->total - $p->payment;
+                  $balance = $p->total - $p->totalpaid;
               ?>
                 <tr style="background-color: #e3e6f0;">
                     <td><input type="checkbox" name=""></td>
@@ -113,9 +113,9 @@ button{
                     <td><?php echo $p->pro_name?></td>
                     <td><?php echo $p->total?></td>
                     <td><?php echo $p->totaltax ?></td>
-                    <td><?php echo $p->payment?></td>
+                    <td><?php echo $p->totalpaid?></td>
                     <td><?php echo $balance?></td>
-                    <?php if($p->total == $p->payment){?>
+                    <?php if($p->total == $p->totalpaid){?>
                     <td><button class="btn btn-success" style="height: 30px;font-size: 12px;">Paid</button></td>
                     <?php }else{?>
                     <td><button class="btn btn-danger" style="height: 30px;font-size: 12px;">Not fully paid</button></td>
