@@ -334,14 +334,21 @@ class func_pos extends CI_Controller {
 		$holdid = $this->input->post('hold_value');
 		$cust = $this->input->post('customerlist');
 		$total = $this->input->post('allsubtotal');
+		$uname = $this->input->post('uname');
+		$branch = $this->input->post('ubranch');
 		$status = 1;
+		date_default_timezone_set('Asia/Kuala_lumpur');
+		$date = date('Y-m-d H:i:s');
 		$buydata = array(
 						'c_id'=>$cust,
 						'total'=>$total,
+						'date_pos'=>$date,
+						'user_incharge'=>$uname,
+						'u_branch'=>$branch,
 						'hold_id'=>$holdid 
 					 );
 		// var_dump($buydata); exit();
-		$this->db->insert('tbl_pospayment',$buydata);
+		$this->db->insert('tbl_posdetails',$buydata);
 
 
 		$datastatus = array(
@@ -359,9 +366,6 @@ class func_pos extends CI_Controller {
 			'custinfo' => $this->d_get->get_custinfo($cust)->result(),
 			'productinfo' => $this->d_get->get_productinfo($holdid)->result(),
             'paymentinfo' => $this->d_get->get_paymentinfo($holdid)->result()
-            // 'item' => $this->d_get->get_reparationitem($where,'tbl_reparation')->result(),
-            // 'reparationdetails' => $this->d_get->get_reparationandpayment($where)->result(),
-            // 'client' => $this->d_get->get_client()->result()
         );
 	$this->load->view('admin/header/header.php');
 	$this->load->view('admin/body/print-pos-receipt.php',$data);

@@ -21,6 +21,8 @@
   <!-- Custom Styles -->
   <link href="<?php echo base_url('assets/css/nav-tab-panes.css') ;?>" rel="stylesheet">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
   
 
@@ -37,7 +39,9 @@
   <script src="<?php echo base_url('assets/vendor/datatables/dataTables.bootstrap4.min.js') ;?>"></script>
   <script src='<?= base_url() ?>resources/tinymce/tinymce.min.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsignature@2.1.2/libs/jSignature.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 </head>
 
 

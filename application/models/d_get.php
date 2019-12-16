@@ -179,14 +179,14 @@ class d_get extends CI_Model{
 		return $this->db->get();
 	}
 
-	// function show_payment($id){
-	// 	$this->db->from($this->table1);
- //        $this->db->join('tbl_payment', 'tbl_payment.hold_id = tbl_reparation.hold_id');
- //        $this->db->where('tbl_reparation.r_code', $id);
-	// 	return $this->db->get();
+	function show_payment($id){
+		$this->db->from($this->table1);
+        $this->db->join('tbl_payment', 'tbl_payment.hold_id = tbl_reparation.hold_id');
+        $this->db->where('tbl_reparation.r_code', $id);
+		return $this->db->get();
 
-	// 	echo $this->db->last_query(); die;
-	// }
+		// echo $this->db->last_query(); die;
+	}
 
 	function show_reparationLog($id){
 		$this->db->from($this->table9);
@@ -503,11 +503,11 @@ class d_get extends CI_Model{
 	}
 	function get_custinfo($cust){
 		$this->db->select('*');
-		$this->db->from('tbl_pospayment');
-		$this->db->join('tbl_client','tbl_client.c_id = tbl_pospayment.c_id');
-		$this->db->group_by('tbl_pospayment.c_id');
+		$this->db->from('tbl_posdetails');
+		$this->db->join('tbl_client','tbl_client.c_id = tbl_posdetails.c_id');
+		$this->db->group_by('tbl_posdetails.c_id');
 
-		$this->db->where('tbl_pospayment.c_id', $cust);
+		$this->db->where('tbl_posdetails.c_id', $cust);
 
 		return $this->db->get();
 		// echo $this->db->last_query(); exit();
@@ -521,15 +521,35 @@ class d_get extends CI_Model{
 	function get_paymentinfo($holdid){
 		$this->db->select('*, SUM(pro_price) as alltotal, SUM(pro_tax) as sumtax, SUM(pro_disc) as sumdisc');
 		$this->db->from('tbl_holdproduct');
-		$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
+		$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_holdproduct.hold_id');
 		// $this->db->group_by('tbl_holdproduct.hold_id');
 		$this->db->where('tbl_holdproduct.hold_id', $holdid);
 		return $this->db->get();
 
 		// echo $this->db->last_query(); exit();
 	}
+	function getDetailsStock($id){
+		$result = array();
+        $where = "	SELECT * FROM tbl_product
+        			Where p_id='$id'
+        		 ";
 
-	// Chart Section
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+
+	// Report Section
 
 	// function get_financedata(){
 	// 	$this->db->select('extract(month from pay_date) as mon, SUM(pay_amount) as totalpaid');
@@ -578,4 +598,24 @@ class d_get extends CI_Model{
         $this->db->from('tbl_product');
 		return $this->db->get();
     }
+    function get_salesproduct($m){
+    	$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax');
+    	$this->db->from('tbl_holdproduct');
+    	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_holdproduct.hold_id');
+    	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
+    	$this->db->where('MONTH(tbl_posdetails.date_pos)', $m);
+    	$this->db->group_by('tbl_holdproduct.hold_id');
+    	return $this->db->get();
+	    // echo $this->db->last_query(); exit();
+    }
+    function show_paymentsales($id){
+		$this->db->from('tbl_holdproduct');
+        $this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_holdproduct.hold_id');
+        $this->db->where('tbl_posdetails.hold_id', $id);
+        $this->db->group_by('tbl_holdproduct.hold_id');
+		return $this->db->get();
+
+		// echo $this->db->last_query(); die;
+	}
+
 }

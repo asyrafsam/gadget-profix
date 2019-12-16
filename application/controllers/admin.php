@@ -394,6 +394,24 @@ class admin extends CI_Controller {
 			redirect(base_url("main/index"));
 		}
 	}
+	public function viewsales()
+	{
+		if($this->session->userdata('status') == "login"){
+			$m = date('m');
+
+			$data['sales'] = $this->d_get->get_salesproduct($m)->result();
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/salesreport-1.php', $data);
+			$this->load->view('admin/body/salesreport-1-viewpayment.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
 	public function test()
 	{
 		if($this->session->userdata('status') == "login"){

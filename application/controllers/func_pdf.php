@@ -604,5 +604,87 @@ class func_pdf extends CI_Controller {
 		$pdf->Output();
 
 	}
+	function pdf_stock($hold_value)
+	{
+		// $where = array('hold_id' => $hold_value);
+		// $hold_value = $this->input->post('hold_value');
+    	$this->db->from('tbl_print_stock');
+		// $this->db->join('tbl_print_client', 'tbl_print_client.c_id = tbl_client.c_id');
+		$this->db->where('tbl_print_stock.hold_id', $hold_value);
+		
+	    
+	    $this->load->library('PdfStock');
+	
+		$pdf = new PdfStock(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		// set document information
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor('https://www.roytuts.com');
+		$pdf->SetTitle('Client Information/Report');
+		$pdf->SetSubject('Report generated using Codeigniter and TCPDF');
+		$pdf->SetKeywords('TCPDF, PDF, MySQL, Codeigniter');
+
+		// set default header data
+		//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+		// set header and footer fonts
+		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+		// set default monospaced font
+		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+		// set margins
+		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		// set auto page breaks
+		$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+		// set image scale factor
+		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+		// set font
+		$pdf->SetFont('times', 'BI', 12);
+		
+		// ---------------------------------------------------------
+		
+		
+		//Generate HTML table data from MySQL - start
+		$template = array(
+			'table_open' => '<table border="1" cellpadding="2" cellspacing="1">'
+		);
+
+		$this->table->set_template($template);
+
+		$this->table->set_heading('Product ID', 'Name', 'Code', 'Cost', 'Price', 'Quantity', 'Alert', 'Branch');
+		
+		// $salesinfo = $this->product_model->get_salesinfo();
+		$query = $this->db->get()->result();
+
+		foreach ($query as $sf):
+			$this->table->add_row($sf->p_id, $sf->p_name, $sf->p_code, $sf->p_cost, $sf->p_price, $sf->p_quantity, $sf->p_alertQuantity, $sf->u_branch);
+		endforeach;
+		
+		$html = $this->table->generate();
+		//Generate HTML table data from MySQL - end
+		
+		// add a page
+		$pdf->AddPage();
+		
+		// output the HTML content
+		$pdf->writeHTML($html, true, false, true, false, '');
+		
+		// reset pointer to the last page
+		$pdf->lastPage();
+
+		
+		//Close and output PDF document
+		$pdf->Output(md5(time()).'.pdf', 'D');
+		
+		// return $this->deleteHoldClient($hold_value);
+	    // $this->load->view('admin/body/testpdf.php', $query);
+	    
+	}
 }
 ?>

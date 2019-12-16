@@ -185,7 +185,8 @@
               
             </div>
             <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,10000);?>">
-
+            <input type="hidden" name="uname" value="<?php echo $this->session->userdata('name');?>">
+            <input type="hidden" name="ubranch" value="<?php echo $this->session->userdata('branch');?>">
             <hr>
             <div class="col-lg-12" style="text-align: center;">
               <button class="btn btn-danger" style="width: 40%; height: 100px;">Clear Sale</button>

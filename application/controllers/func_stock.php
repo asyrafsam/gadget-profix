@@ -417,6 +417,59 @@ class func_stock extends CI_Controller {
 		redirect(base_url('admin/add_stock'));
 	}
 
+	function getDetailsStock(){
+		$id = $this->input->post('id');
+		$query = $this->d_get->getDetailsStock($id);
+
+		if(empty($query)){
+			echo 'Tiada Data Ditemui';
+		} else {
+			foreach ($query as $data) 
+			{
+			
+
+			}
+			echo json_encode($data);
+
+		}
+	}
+	function storeStock(){
+		$p_id = $this->input->post('p_id');
+		$p_name = $this->input->post('p_name');
+		$p_code = $this->input->post('p_code');
+		$p_cost = $this->input->post('p_cost');
+		$p_price = $this->input->post('p_price');
+		$p_quantity = $this->input->post('p_quantity');
+		$p_alertQuantity = $this->input->post('p_alertQuantity');
+		$ubranch = $this->input->post('u_branch');
+		$hold_value = $this->input->post('hold_value');
+
+		$data = array(
+						'p_id'=>$p_id,
+						'p_name'=>$p_name,
+						'p_code'=>$p_code,
+						'p_cost'=>$p_cost,
+						'p_price'=>$p_price,
+						'p_quantity'=>$p_quantity,
+						'p_alertQuantity'=>$p_alertQuantity,
+						'u_branch'=>$ubranch,
+						'hold_id'=>$hold_value
+					 );
+
+		$this->db->insert('tbl_print_stock', $data);
+	}
+
+	function deletePrint()
+	{
+		$id = $this->input->post('id');
+		$hold_value = $this->input->post('hold_value');
+
+		$this->db->where('p_id',$id);
+		$this->db->where('hold_id',$hold_value);
+
+		$this->db->delete('tbl_print_stock');
+	}
+
 		
 
 	function view1()

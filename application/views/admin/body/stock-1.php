@@ -30,7 +30,10 @@ button{
 }
 </style>
 <div class="container-fluid">
-
+<?php 
+    $random = rand();
+     echo $hold_value = '<input type="hidden" id="hold_value" value="'.$random.'">'
+  ?>
 <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Inventory <i class="fas fa-clipboard-list"></i></h1>
     <!-- <p class="mb-4">Reparation Table <a target="_blank" href="https://datatables.net">Order & Reparation Record</a>.</p> -->
@@ -48,12 +51,11 @@ button{
           <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i><i class="fas fa-fw fa-print"></i> Export <span class="badge"></span></a>
+                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i><i class="fas fa-fw fa-print"></i> Export <span class="badge"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-barcode"></i> <span class="badge">BARCODE/LABEL</a></li>
-                  <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-file-word"></i> <span class="badge">WORD</a></li>
-                  <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-file-excel"></i> <span class="badge">EXCEL</a></li>
-                  <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-file-pdf"></i> <span class="badge">PDF</a></li>
+                  <!-- <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-barcode"></i> <span class="badge">BARCODE/LABEL</a></li> -->
+                  <li><a href="<?php echo base_url(). 'func_excel/excel_stock/'.$random; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-file-excel"></i> <span class="badge">EXCEL</a></li>
+                  <li><a href="<?php echo base_url(). 'func_pdf/pdf_stock/'.$random; ?>">&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-file-pdf"></i> <span class="badge">PDF</a></li>
                 </ul>
               </li>
             </ul>
@@ -106,7 +108,7 @@ button{
                 <?php }else{?>
                 <tr style="background-color: #fdfafa;">
                 <?php }?>
-                  <td><input type="checkbox" name=""></td>
+                  <td><input type="checkbox" class="chkbox" name="checkstock" id="checkstock" onclick="getDetailStock(<?php echo $p->p_id; ?>)" value="<?php echo $p->p_id?>"></td>
                   <td><?php echo $p->p_name?></td>
                   <td><?php echo $p->p_code?></td>
                   <td><?php echo $p->p_name?></td>
@@ -140,3 +142,89 @@ button{
       </div>
     </div>
   </div>
+  <script type="text/javascript">
+    function getDetailStock(id)
+        {
+          $("#id_stock").val(id);
+          
+        }
+
+
+        //$(document).ready(function() {
+        $("[name='checkstock']").click(function() {
+            var id = $("#id_stock").val();
+            var checked = $(this).is(':checked');
+            if (checked) {
+                //alert('checked');
+                var data = {'id':id}
+                $.ajax({
+                      url: '<?= base_url() ?>func_stock/getDetailsStock',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                        var p_id = response.p_id;
+                        var p_name = response.p_name;
+                        var p_code = response.p_code;
+                        var p_cost = response.p_cost;
+                        var p_price = response.p_price;
+                        var p_quantity = response.p_quantity;
+                        var p_alertQuantity = response.p_alertQuantity;
+                        var ubranch = response.u_branch;
+                        var hold_value = $("#hold_value").val();
+
+                        storeStock(p_id,p_name,p_code,p_cost,p_price,p_quantity,p_alertQuantity,ubranch,hold_value); // add 
+                      }
+              });
+
+
+            } else {
+                //alert('unchecked');
+                deletePrint(id);
+            }
+        });
+
+
+        function deletePrint(id)
+        {
+          var hold_value =  $("#hold_value").val();
+          var data = {'id':id,'hold_value':hold_value}
+          $.ajax({
+                          url: '<?= base_url() ?>func_stock/deletePrint',
+                          type: 'POST',
+                          dataType: 'html',
+                          data: data,
+                          beforeSend: function() {
+
+                          },
+                          success: function(response){
+
+                          }
+                  });
+        }
+
+
+        function storeStock(p_id,p_name,p_code,p_cost,p_price,p_quantity,p_alertQuantity,ubranch,hold_value){
+          var data = {'p_id':p_id,'p_name':p_name,'p_code':p_code,'p_cost':p_cost,'p_price':p_price,'p_quantity':p_quantity,'p_alertQuantity':p_alertQuantity,'u_branch':ubranch,'hold_value':hold_value}
+          $.ajax({
+                          url: '<?= base_url() ?>func_stock/storeStock',
+                          type: 'POST',
+                          dataType: 'html',
+                          data: data,
+                          beforeSend: function() {
+
+                          },
+                          success: function(response){
+                            //var clname = response.
+                            //printClient(c_id,hold_value);
+                          }
+                });
+
+        }
+  </script>
+
+<input type="hidden" id="id_stock" name="id_stock">

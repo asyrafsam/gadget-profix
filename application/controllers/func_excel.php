@@ -141,5 +141,68 @@ class func_excel extends CI_Controller {
 		exit(0);
 	    
 	}
+	function excel_stock($hold_value)
+	{
+		// $where = array('hold_id' => $hold_value);
+		// $hold_value = $this->input->post('hold_value');
+    	$this->db->from('tbl_print_stock');
+		// $this->db->join('tbl_print_client', 'tbl_print_client.c_id = tbl_client.c_id');
+		$this->db->where('tbl_print_stock.hold_id', $hold_value);
+		
+	    
+	    $this->load->library('Excel');
+	
+		
+	    //define column headers
+		$headers = array('Product ID' => 'string', 'Name' => 'string', 'Code' => 'integer', 'Cost' => 'currency', 'Price' => 'currency', 'Quantity' => 'integer', 'Alert' => 'integer', 'Branch' => 'string');
+		
+		//fetch data from database
+		$query = $this->db->get()->result();
+		
+		//create writer object
+		$writer = new Excel();
+		
+	        //meta data info
+		$keywords = array('xlsx','MySQL','Codeigniter');
+		$writer->setTitle('Client Information/Report');
+		$writer->setSubject('Report generated using Codeigniter and XLSXWriter');
+		$writer->setAuthor('https://www.roytuts.com');
+		$writer->setCompany('https://www.roytuts.com');
+		$writer->setKeywords($keywords);
+		$writer->setDescription('Sales information for products');
+		$writer->setTempDir(sys_get_temp_dir());
+		
+		//write headers
+		$writer->writeSheetHeader('Sheet1', $headers);
+		
+		//write rows to sheet1
+		foreach ($query as $sf):
+			$writer->writeSheetRow('Sheet1',array($sf->p_id, $sf->p_name, $sf->p_code, $sf->p_cost, $sf->p_price, $sf->p_quantity, $sf->p_alertQuantity, $sf->u_branch));
+		endforeach;
+		
+		$fileLocation = md5(time()).'.xlsx';
+		
+		//write to xlsx file
+		$writer->writeToFile($fileLocation);
+		//echo $writer->writeToString();
+		
+		//force download
+		header('Content-Description: File Transfer');
+		header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		header("Content-Disposition: attachment; filename=".basename($fileLocation));
+		header("Content-Transfer-Encoding: binary");
+		header("Expires: 0");
+		header("Pragma: public");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header('Content-Length: ' . filesize($fileLocation)); //Remove
+
+		ob_clean();
+		flush();
+
+		readfile($fileLocation);
+		unlink($fileLocation);
+		exit(0);
+	    
+	}
 }
 ?>
