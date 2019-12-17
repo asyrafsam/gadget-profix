@@ -304,6 +304,182 @@ class func_report extends CI_Controller {
 
 		$this->db->insert('tbl_print_sales', $data);
 	}
+	function sendMailSales($hold_id){
+
+		$this->db->select('*');
+		$this->db->from('tbl_posdetails');
+		$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
+		$this->db->where('tbl_posdetails.hold_id', $hold_id);
+		$reparationname = $this->db->get()->result();
+		// echo $this->db->last_query(); exit();
+
+		$this->db->select('*');
+		$this->db->from('tbl_holdproduct');
+		$this->db->where('tbl_holdproduct.hold_id', $hold_id);
+		$item = $this->db->get()->result();
+		// echo $this->db->last_query(); exit();
+
+		$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax, SUM(DISTINCT(tbl_pospayment.pay_amount)) as totalpaid');
+    	$this->db->from('tbl_holdproduct');
+    	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
+    	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
+    	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
+    	$this->db->where('tbl_posdetails.hold_id', $hold_id);
+		$reparationdetails = $this->db->get()->result();
+
+		// echo $this->db->last_query(); exit();
+		include('assets/php-mailer-master/PHPMailerAutoload.php');
+		foreach($reparationname as $name) 
+		{
+			$editclientemail = 'asyrafsam14@gmail.com';
+		}
+		$mail = new PHPMailer;
+
+                   //$mail->SMTPDebug = 2;                               // Enable verbose debug output
+
+	      $mail->IsSMTP();                                      // Set mailer to use SMTP
+	      $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+	      $mail->SMTPAuth = true;
+	      // $mail->SMTPDebug = 2;
+	      $mail->SMTPAutoTLS = false;
+	      $mail->Host = gethostbyname('tls://smtp.gmail.com');                               // Enable SMTP authentication
+	      $mail->Username = 'systemcharity14@gmail.com';                 // SMTP username
+	      $mail->Password = 'systemcharity1996';
+	      $mail->IsHTML(true);                           // SMTP password
+	      $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+	      $mail->Port = 587;                                    // TCP port to connect to
+
+	      $mail->setFrom('systemcharity14@gmail.com', 'Gadget Profix');     // Add a recipient
+	      $mail->addAddress($editclientemail);              // Name is optional
+	      //$mail->addReplyTo('info@example.com', 'Information');
+	      //$mail->addCC('cc@example.com');
+	      //$mail->addBCC('bcc@example.com');
+
+	            // Set email format to HTML
+
+	      $mail->Subject = 'Respond for Your Reparation Status';
+	      // $data_collect = 'asdasd';
+			foreach($reparationname as $name) 
+			{
+			$data_collect .=  "<h2 style='font-size: 0.9em;'>Customer Name: ".$name->c_name ."&nbsp;". $name->transaction_id."</h2>";
+			}
+
+			foreach ($item as $product) 
+			{
+				$data_collect2 .= "<tr class='service' style='border-bottom: 1px solid #EEE;'>
+						<td colspan='3' class='tableitem'><p class='itemtext' style='font-size: .9em;line-height: 1.2em;font-size: .7em;'>
+							<strong>".$product->pro_name."</strong>&nbsp;
+							<strong style='float:right;margin-right:10px;'>Quantity:&nbsp;".$product->pro_qty."</strong>
+						</p></td>
+					</tr>";
+			}
+
+			foreach ($reparationdetails as $details) 
+			{
+				$balance = $details->total - $details->total_paid;
+
+				$data_collect3 .= '<tr class="tabletitle" style="font-size: .7em;background: #EEE;">
+						<td></td>
+						<td class="Rate"><h2 style="font-size: .9em;">Service Charges</h2></td>
+						<td class="payment"><h2 style="font-size: .9em;">'.$details->totaltax.'</h2></td>
+					</tr>
+
+					<tr class="tabletitle" style="font-size: .7em;background: #EEE;">
+						<td></td>
+						<td class="Rate"><h2 style="font-size: .9em;">Grand Total</h2></td>
+						<td class="payment"><h2 style="font-size: .9em;">'.$details->total.'</h2></td>
+					</tr>
+
+					<tr class="tabletitle" style="font-size: .7em;background: #EEE;">
+						<td></td>
+						<td class="Rate"><h2 style="font-size: .9em;">Paid</h2></td>
+						<td class="payment"><h2 style="font-size: .9em;">'.$details->total_paid.'</h2></td>
+					</tr>
+
+					<tr class="tabletitle" style="font-size: .7em;background: #EEE;">
+						<td></td>
+						<td class="Rate"><h2 style="font-size: .9em;">Balance</h2></td>
+						<td class="payment"><h2 style="font-size: .9em;">'.$balance.'.00</h2></td>
+					</tr>';
+			}
+	     // $mail->Body    = 'Your new Password is'.$pass;'<br/>;
+	      $mail->Body    = " 
+
+	      <body style='font-family: 'Arial', sans-serif; font-weight: bold;'>
+			  <div id='invoice-POS' style='box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);padding: 2mm;margin: 0 auto;width:80mm;background:#FFF;'>
+			    
+			    <center id='top' style='border-bottom: 1px solid #EEE;min-height: 100px;''>
+			      <div class='logo'>
+			      	<img src=".base_url('images/ProfixLogin.png')." style='height: 60px;'>
+			      </div>
+			      <div class='info' style='display: block;margin-left: 0;'> 
+			        <h2 style='font-size: .9em;line-height: 1.2em;'>GADGET PROFIX</h2>
+			        <p style='font-size: .7em;color: #666;'> 
+			            Address : No.2B Bandar Pasir Puteh, Jalan Kota Bha</br>
+			            Email   : gadgetprofix@gmail.com</br>
+			            Telephone   : 017 999 0009</br>
+			        </p>
+			      </div>
+			    </center>
+				<div class='clearfix'></div>
+			    
+			    <div id='mid' style='border-bottom: 1px solid #EEE;min-height: 80px;'>
+			      <div class='info' style='display: block;margin-left: 0;'>
+			      	<h2 style='font-size: 0.9em;''></h2>
+			      	<center>
+				    	<div id='' style='margin-left: -10px; margin-top: -3px;margin-bottom: 9px;line-height: 1.2em;'>
+					        <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJoAAAAqCAIAAADEV9U1AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABUklEQVR4nO2c0Q6DIAxFy7L//+XuwYR0pWgdDvV6zxOyAs4zAZfUoqrSp5QiIqpaSlkia6EG1EMbvNTUso1x5UN6aCNdOewzHKINdr3Zc7CFtjdXGTZpv7s9tG1dQMhr5TNyO6gTCuqEgjqhoE4oqBMK6oSCOqGgTiioEwrqhII6oaBOKKgTCuqEgjqhoE4oqBMK6oSCOqGgTiioEwrqhII6oaBOKKgTCuqEgjqhoE4oqBOKsp5gRu7Fe/6QYZ6iTbhc6GU0hpG7hnPJnZkT22ze63MyV5lsVbVeBVseiZTIfdXj0mzbyHzzXp/zuYrOf+ASxfdG5ptv/qqmccJkO438JQ4j85VymckWWWfIsiQPzofuzQnyvYjmb+vDeZxO6exf8mReOXEWyGtnyOCt2dv9nrj9sZwwLaw8k/xcmR9IonVufPSLrJ38GwGKx0222HwAsHIUSuAus3EAAAAASUVORK5CYII=' alt='LILI 191123' class='bcimg' />		    
+					    </div>
+					</center>
+					 ".$data_collect."
+
+					 
+					<div class='clearfix'></div>
+			      </div>
+
+			    </div>
+			   
+			    <div id='bot' style='border-bottom: 1px solid #EEE;min-height: 50px;'>
+					<div id='table'>
+						<table style='width: 100%;border-collapse: collapse;'>
+							
+							<tr class='tabletitle' style='font-size: 0.7em;background: #EEE;'>
+								<td class='item' style='width: 47mm;'><h2 style='font-size: 0.9em;'>Repair Details</h2></td>
+								<td class='Hours'></td>
+								<td class='Rate price'></h2></td>
+							</tr>
+							
+							".$data_collect2."
+								
+								
+							
+							".$data_collect3."
+						</table>
+
+						<small style='text-align: right !important;'></small>
+					</div>
+
+					<div id='legalcopy' style='margin-top: 5mm;'>
+						<p class='legal' style='font-size: .9em;line-height: 1.2em;'> 
+						</p>
+
+
+					</div>
+						<center>
+							<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCAQMAAADZmpKrAAAABlBMVEUAAAD///+l2Z/dAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA40lEQVQokV3SMYpFMQhAUSGtkK0ItgG3LtgGshXBVshkhvcnvm91qlyRADRWR4Iz/5KgYONdRTx6n9zesmgeX5rA+paEWDzvfXRqZ57uo73RRGVrkTMnMjgUaQIYmFWlm25B16I2xBuYQhEEDsw5tCgknTICioBZMjC1SEb0MD21qx6AsFO0KDK3Tz67XRnoQknSIup9rNlP7GrDDo+JVTLQHX+3uqKQpZaqVcuIl7zEMXgMkKq9qQ8RgSJoCZMYtEjCt6v8/YiPiEl4wXiLI9dqX5JJdk5+JZEtcL50ahbeZ9EPspQSxvqg2t0AAAAASUVORK5CYII=' alt='https://gadgettrading.net/repairs/' class='qrimg' />			</center>
+						<div class='clearfix'></div>
+
+
+			        
+				</div>
+		  </div>
+		</body>
+
+		"
+	      ;
+	      $mail->send();
+	      redirect(base_url('admin/viewsales'));
+	}
 
 }
 
