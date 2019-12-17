@@ -187,6 +187,7 @@
             <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,10000);?>">
             <input type="hidden" name="uname" value="<?php echo $this->session->userdata('name');?>">
             <input type="hidden" name="ubranch" value="<?php echo $this->session->userdata('branch');?>">
+            <input type="hidden" name="transactionid" class="form-control" placeholder="Repair" value="POS<?= rand(10,10000);?>">
             <hr>
             <div class="col-lg-12" style="text-align: center;">
               <button class="btn btn-danger" style="width: 40%; height: 100px;">Clear Sale</button>

@@ -336,6 +336,8 @@ class func_pos extends CI_Controller {
 		$total = $this->input->post('allsubtotal');
 		$uname = $this->input->post('uname');
 		$branch = $this->input->post('ubranch');
+		$transactionid = $this->input->post('transactionid');
+		
 		$status = 1;
 		date_default_timezone_set('Asia/Kuala_lumpur');
 		$date = date('Y-m-d H:i:s');
@@ -345,6 +347,7 @@ class func_pos extends CI_Controller {
 						'date_pos'=>$date,
 						'user_incharge'=>$uname,
 						'u_branch'=>$branch,
+						'transaction_id'=>$transactionid,
 						'hold_id'=>$holdid 
 					 );
 		// var_dump($buydata); exit();
@@ -352,6 +355,7 @@ class func_pos extends CI_Controller {
 
 		$paydetails = array(
 						'pay_date'=>$date,
+						'transaction_id'=>$transactionid,
 						'hold_id'=>$holdid
 					 );
 		// var_dump($buydata); exit();

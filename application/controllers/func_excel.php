@@ -204,5 +204,67 @@ class func_excel extends CI_Controller {
 		exit(0);
 	    
 	}
+	function excel_sales($hold_value)
+	{
+		$this->db->from('tbl_print_sales');
+		$this->db->join('tbl_posdetails', 'tbl_posdetails.transaction_id = tbl_print_sales.transaction_id');
+		$this->db->join('tbl_holdproduct', 'tbl_holdproduct.hold_id = tbl_posdetails.hold_id');
+		$this->db->where('tbl_print_sales.hold_id', $hold_value);
+		
+	    
+	    $this->load->library('Excel');
+	
+		
+	    //define column headers
+		$headers = array('Transaction ID' => 'string', 'Product' => 'string', 'Customer' => 'string', 'Phone' => 'integer', 'Email' => 'string', 'Quantity' => 'currency', 'Price Nett' => 'currency', 'Tax' => 'currency', 'Discount' => 'currency');
+		
+		//fetch data from database
+		$query = $this->db->get()->result();
+		
+		//create writer object
+		$writer = new Excel();
+		
+	        //meta data info
+		$keywords = array('xlsx','MySQL','Codeigniter');
+		$writer->setTitle('Client Information/Report');
+		$writer->setSubject('Report generated using Codeigniter and XLSXWriter');
+		$writer->setAuthor('https://www.roytuts.com');
+		$writer->setCompany('https://www.roytuts.com');
+		$writer->setKeywords($keywords);
+		$writer->setDescription('Sales information for products');
+		$writer->setTempDir(sys_get_temp_dir());
+		
+		//write headers
+		$writer->writeSheetHeader('Sheet1', $headers);
+		
+		//write rows to sheet1
+		foreach ($query as $sf):
+			$writer->writeSheetRow('Sheet1',array($sf->transaction_id, $sf->pro_name, $sf->custName, $sf->custPhone, $sf->custEmail, $sf->pro_qty, $sf->pro_price, $sf->pro_tax, $sf->pro_disc));
+		endforeach;
+		
+		$fileLocation = md5(time()).'.xlsx';
+		
+		//write to xlsx file
+		$writer->writeToFile($fileLocation);
+		//echo $writer->writeToString();
+		
+		//force download
+		header('Content-Description: File Transfer');
+		header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		header("Content-Disposition: attachment; filename=".basename($fileLocation));
+		header("Content-Transfer-Encoding: binary");
+		header("Expires: 0");
+		header("Pragma: public");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header('Content-Length: ' . filesize($fileLocation)); //Remove
+
+		ob_clean();
+		flush();
+
+		readfile($fileLocation);
+		unlink($fileLocation);
+		exit(0);
+	    
+	}
 }
 ?>

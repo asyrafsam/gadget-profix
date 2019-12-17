@@ -11,6 +11,7 @@ class d_get extends CI_Model{
 	var $table7 = 'tbl_purchase_item';
 	var $table8 = 'tbl_payment';
 	var $table9 = 'tbl_reparation_log';
+	var $table10 = 'tbl_posdetails';
 	public function __construct()
 	{
 		parent::__construct();
@@ -612,11 +613,43 @@ class d_get extends CI_Model{
     function show_paymentsales($id){
 		$this->db->from('tbl_pospayment');
         // $this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
-        $this->db->where('tbl_pospayment.hold_id', $id);
+        $this->db->where('tbl_pospayment.transaction_id', $id);
         // $this->db->group_by('tbl_holdproduct.hold_id');
 		return $this->db->get();
 
 		// echo $this->db->last_query(); die;
 	}
+	function show_posdetails($id){
+		$this->db->from($this->table10);
+		$this->db->join('tbl_holdproduct', 'tbl_holdproduct.hold_id = tbl_posdetails.hold_id');
+		$this->db->where('tbl_posdetails.transaction_id', $id);
+		$query = $this->db->get();
+		return $query->row();
+	}
+	function getDetailsSales($id){
+		$result = array();
+        $where = "
+        			SELECT *, tbl_client.u_branch as custbranch FROM tbl_holdproduct 
+        			JOIN tbl_posdetails ON tbl_posdetails.hold_id = tbl_holdproduct.hold_id 
+        			JOIN tbl_client ON tbl_client.c_id = tbl_posdetails.c_id 
+        			WHERE tbl_posdetails.id = '$id'
+
+        		 ";
+
+        // var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+
 
 }

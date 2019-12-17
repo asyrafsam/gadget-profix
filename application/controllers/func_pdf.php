@@ -686,5 +686,88 @@ class func_pdf extends CI_Controller {
 	    // $this->load->view('admin/body/testpdf.php', $query);
 	    
 	}
+	function pdf_sales($hold_value)
+	{
+		// $where = array('hold_id' => $hold_value);
+		// $hold_value = $this->input->post('hold_value');
+    	$this->db->from('tbl_print_sales');
+		$this->db->join('tbl_posdetails', 'tbl_posdetails.transaction_id = tbl_print_sales.transaction_id');
+		$this->db->join('tbl_holdproduct', 'tbl_holdproduct.hold_id = tbl_posdetails.hold_id');
+		$this->db->where('tbl_print_sales.hold_id', $hold_value);
+		
+	    
+	    $this->load->library('PdfSales');
+	
+		$pdf = new PdfSales(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		// set document information
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor('https://www.roytuts.com');
+		$pdf->SetTitle('Client Information/Report');
+		$pdf->SetSubject('Report generated using Codeigniter and TCPDF');
+		$pdf->SetKeywords('TCPDF, PDF, MySQL, Codeigniter');
+
+		// set default header data
+		//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+		// set header and footer fonts
+		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+		// set default monospaced font
+		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+		// set margins
+		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		// set auto page breaks
+		$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+		// set image scale factor
+		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+		// set font
+		$pdf->SetFont('times', 'BI', 12);
+		
+		// ---------------------------------------------------------
+		
+		
+		//Generate HTML table data from MySQL - start
+		$template = array(
+			'table_open' => '<table border="1" cellpadding="2" cellspacing="1">'
+		);
+
+		$this->table->set_template($template);
+
+		$this->table->set_heading('Transaction ID', 'Product', 'Customer', 'Phone', 'Email', 'Quantity', 'Price Nett', 'Tax', 'Discount');
+		
+		// $salesinfo = $this->product_model->get_salesinfo();
+		$query = $this->db->get()->result();
+
+		foreach ($query as $sf):
+			$this->table->add_row($sf->transaction_id, $sf->pro_name, $sf->custName, $sf->custPhone, $sf->custEmail, $sf->pro_qty, $sf->pro_price, $sf->pro_tax, $sf->pro_disc);
+		endforeach;
+		
+		$html = $this->table->generate();
+		//Generate HTML table data from MySQL - end
+		
+		// add a page
+		$pdf->AddPage();
+		
+		// output the HTML content
+		$pdf->writeHTML($html, true, false, true, false, '');
+		
+		// reset pointer to the last page
+		$pdf->lastPage();
+
+		
+		//Close and output PDF document
+		$pdf->Output(md5(time()).'.pdf', 'D');
+		
+		// return $this->deleteHoldClient($hold_value);
+	    // $this->load->view('admin/body/testpdf.php', $query);
+	    
+	}
 }
 ?>

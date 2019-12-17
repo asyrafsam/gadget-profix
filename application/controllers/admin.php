@@ -406,6 +406,7 @@ class admin extends CI_Controller {
 			$this->load->view('admin/body/logoutmodal-1.php');
 			$this->load->view('admin/body/salesreport-1.php', $data);
 			$this->load->view('admin/body/salesreport-1-viewpayment.php', $data);
+			$this->load->view('admin/body/salesreport-1-addpayment.php', $data);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

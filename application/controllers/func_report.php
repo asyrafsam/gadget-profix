@@ -104,13 +104,207 @@ class func_report extends CI_Controller {
 						<td>'.$data->pay_amount.'</td>
 						<td>'.$data->pay_type.'</td>
 						<td>
-                            
+							<form action='.base_url('func_report/delete_payment').' method="POST" enctype="multipart/form-data">
+							<input type="hidden" name="payid" value="'.$data->id.'">
+	                        <input type="hidden" name="payholddelete">
+	                        <input type="hidden" name="payholddate"  class="form-control" placeholder="'.date('D-M-Y').'" value="'.date("Y-m-d"). ' ' .date("h:i:sa").'">
+	                        <input type="hidden" name="payholduser" value="'.$this->session->userdata('name').'">
+	                        <input type="hidden" name="payholdbranch" value="'.$this->session->userdata('branch').'">
+	                        <input type="hidden" name="transactionID" value="'.$data->transaction_id.'">
+                            <button class="btn btn-danger" onclick="return confirm(Confirm delete payment?)"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
 					</tr>'
 				     ;
 
 		}
-	}	
+	}
+	function getPosDetails($id){
+		$data = $this->d_get->show_posdetails($id);
+		echo json_encode($data);
+	}
+	function add_payment(){
+		$paymentdateadd = $this->input->post('paymentdateadd');
+		$paymentholdid = $this->input->post('paymentholdid');
+		$paymentbranch = $this->input->post('paymentbranch');
+		$paymentmadeby = $this->input->post('paymentmadeby');
+
+		$transactionID = $this->input->post('transactionID');
+		$paydate = $this->input->post('pay_date');
+		$payref = $this->input->post('pay_ref');
+		$payamount = $this->input->post('pay_amount');
+		$paytype = $this->input->post('pay_type');
+		$paynote = $this->input->post('pay_note');
+		$addpaymentlog = 'Payment Added';
+		$addpay = array(
+						'hold_id' => $paymentholdid,
+						'transaction_id' => $transactionID,
+						'pay_date' => $paydate,
+						'pay_ref' => $payref,
+						'pay_amount' => $payamount,
+						'pay_type' => $paytype,
+						'u_branch' => $paymentbranch,
+						'pay_note' => $paynote
+					);
+		// $where = array(
+		// 			'r_repairno' => $repairno
+		// 		);
+		$this->db->insert('tbl_pospayment',$addpay);
+
+		// $logaddpayment = array(
+		// 			'hold_id' => $paymentholdid,
+		// 			'r_repairno' => $repairno,
+		// 			'log_date' => $paymentdateadd,
+		// 			'log_user' => $paymentmadeby,
+		// 			'log_action' => $addpaymentlog,
+		// 			'u_branch' => $paymentbranch
+		// 		);
+		// $this->db->insert('tbl_reparation_log',$logaddpayment);
+
+		$this->db->select('SUM(pay_amount) as sumall');
+		$this->db->from('tbl_pospayment');
+		$this->db->where('transaction_id', $transactionID);
+
+		$gettototal = $this->db->get()->result();
+
+		foreach ($gettototal as $alltotaltoplus) {
+			$testtotalsum = $alltotaltoplus->sumall;
+		}
+
+		// $testtosum = $testtotalsum + $payamount;
+		$dataupdateposdetails = array(
+								'total_paid'=>$testtotalsum
+							);
+		$this->db->where('transaction_id', $transactionID);
+		$this->db->update('tbl_posdetails', $dataupdateposdetails);
+		?>
+		<script type="text/javascript">
+            alert("Payment Added");
+            window.location.href = '<?php echo base_url();?>admin/viewsales';
+        </script>
+		<?php
+	}
+	function delete_payment(){
+		$holdid = $this->input->post('payholddelete');
+		$paydeletedate = $this->input->post('payholddate');
+		$paydeleteuser = $this->input->post('payholduser');
+		$paydeletebranch = $this->input->post('payholdbranch');
+		$paydeleteaction = 'Payment Deleted';
+		$data = $this->input->post('payid');
+		$data2 = $this->input->post('transactionID');
+		$changedate = '0000-00-00';
+		$change = '0.00';
+		$change1 = '-';
+		
+
+		$this->db->select('tbl_pospayment.transaction_id, tbl_posdetails.total_paid, tbl_pospayment.pay_amount');
+		$this->db->from('tbl_pospayment');
+		$this->db->join('tbl_posdetails', 'tbl_posdetails.transaction_id = tbl_pospayment.transaction_id');
+		$this->db->where('tbl_pospayment.id',$data);
+		$getrepairno = $this->db->get()->result();
+		foreach ($getrepairno as $no) {
+			$posjoin = $no->transaction_id;
+			$pospaid = $no->total_paid;
+			$paidamount = $no->pay_amount;
+		}
+
+		$calc = $pospaid - $paidamount;
+
+		// echo $calc; exit();
+		$updatepaid = array(
+						'total_paid'=>$calc
+					);
+		$this->db->where('transaction_id', $posjoin);
+		$this->db->update('tbl_posdetails', $updatepaid);
+		
+		$where = array(
+					'id' => $data
+				);
+		$addpay = array(
+						'pay_date' => $changedate,
+						'pay_amount' => $change,
+						'pay_type' => $change1
+					);
+
+		$this->db->delete('tbl_pospayment', $where);
+		// echo $this->db->last_query(); exit();
+
+
+		// $logaddpayment = array(
+		// 			'r_repairno' => $data2,//
+		// 			'log_date' => $paydeletedate,
+		// 			'log_user' => $paydeleteuser,
+		// 			'log_action' => $paydeleteaction,
+		// 			'u_branch' => $paydeletebranch
+		// 		);
+		// $this->db->insert('tbl_reparation_log',$logaddpayment);
+
+		redirect(base_url('admin/viewsales'));
+	}
+
+	function getDetailsSales(){
+		$id = $this->input->post('id');
+		$query = $this->d_get->getDetailsSales($id);
+
+		if(empty($query)){
+			echo 'Tiada Data Ditemui';
+		} else {
+			foreach ($query as $data) 
+			{
+			
+
+			}
+			echo json_encode($data);
+
+		}
+	}
+	function deletePrint()
+	{
+		$id = $this->input->post('id');
+		$hold_value = $this->input->post('hold_value');
+		// echo $id; exit();
+		$this->db->where('p_details_id',$id);
+		$this->db->where('hold_id',$hold_value);
+
+		$this->db->delete('tbl_print_sales');
+	}
+	function storeSales(){
+		$id = $this->input->post('detailsid');
+		$transactionid = $this->input->post('transactionid');
+		$custname = $this->input->post('custname');
+		$custaddress = $this->input->post('custaddress');
+		$custphone = $this->input->post('custphone');
+		$custemail = $this->input->post('custemail');
+		$custbranch = $this->input->post('custbranch');
+		$proname = $this->input->post('proname');
+		$proqty = $this->input->post('proqty');
+		$proprice = $this->input->post('proprice');
+
+		$protax = $this->input->post('protax');
+		$userincharge = $this->input->post('userincharge');
+		$ubranch = $this->input->post('ubranch');
+		$hold_value = $this->input->post('hold_value');
+
+		$data = array(
+						'transaction_id'=>$transactionid,
+						'p_details_id'=>$id,
+						'custName'=>$custname,
+						'custAddress'=>$custaddress,
+						'custPhone'=>$custphone,
+						'custEmail'=>$custemail,
+						'custBranch'=>$custbranch,
+						'proName'=>$proname,
+						'proQty'=>$proqty,
+						'proPrice'=>$proprice,
+						'proTax'=>$protax,
+						'user_incharge'=>$userincharge,
+						'u_branch'=>$ubranch,
+						'hold_id'=>$hold_value
+					 );
+
+		$this->db->insert('tbl_print_sales', $data);
+	}
+
 }
 
 
