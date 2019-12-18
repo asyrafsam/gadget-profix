@@ -177,6 +177,13 @@ class func_report extends CI_Controller {
 							);
 		$this->db->where('transaction_id', $transactionID);
 		$this->db->update('tbl_posdetails', $dataupdateposdetails);
+
+		$dataupdaterevenue = array(
+								'revenue_date'=>$paydate,
+								'revenue_subtotal'=>$testtotalsum
+							);
+		$this->db->where('revenue_holdid', $transactionID);
+		$this->db->update('tbl_revenue', $dataupdaterevenue);
 		?>
 		<script type="text/javascript">
             alert("Payment Added");
@@ -216,6 +223,12 @@ class func_report extends CI_Controller {
 					);
 		$this->db->where('transaction_id', $posjoin);
 		$this->db->update('tbl_posdetails', $updatepaid);
+		
+		$updaterevenue = array(
+						'revenue_subtotal'=>$calc
+					);
+		$this->db->where('revenue_holdid', $posjoin);
+		$this->db->update('tbl_revenue', $updaterevenue);
 		
 		$where = array(
 					'id' => $data

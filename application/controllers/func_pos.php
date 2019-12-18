@@ -367,6 +367,13 @@ class func_pos extends CI_Controller {
 
 		$this->db->where('hold_id',$holdid);
 		$this->db->update('tbl_holdproduct',$datastatus);
+
+		// Insert new pos item in tbl_revenue
+		$paymentrevenue = array(
+				'revenue_holdid' => $transactionid
+			);
+		$this->db->insert('tbl_revenue',$paymentrevenue);
+
 		return $this->printreceipt($cust,$holdid);
 	}
 
