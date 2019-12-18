@@ -480,6 +480,15 @@ class func_report extends CI_Controller {
 	      $mail->send();
 	      redirect(base_url('admin/viewsales'));
 	}
+	function getDetailsModal($hold_id){
+		$where = $hold_id;
+		$data = array(
+					'productdataa' => $this->d_get->get_posdetails($where,'tbl_posdetails')->result(),
+					'getproductdetails' => $this->d_get->get_productdetails($where,'tbl_holdproduct')->result(),
+					'getcalculation' => $this->d_get->get_calculation($where)->result()
+				);
+		return $this->load->view('admin/body/salesreport-1-viewsalesdetailstable.php', $data);
+	}
 
 }
 
