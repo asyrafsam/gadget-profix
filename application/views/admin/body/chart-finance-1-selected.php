@@ -3,7 +3,7 @@
 	Morris.Area({
       element: 'graphselect',
       data: <?php echo $data;?>,
-      xkey: 'pay_date',
+      xkey: 'revenue_date',
       ykeys: ['totalpaid'],
       labels: ['Sales'],
       xLabels: 'day',

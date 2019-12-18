@@ -28,11 +28,15 @@ class admin extends CI_Controller {
 
 		// var_dump($this->session->userdata('role')); exit;
 		if($this->session->userdata('status') == "login"){
+			$financerevenue = $this->d_get->get_financedata()->result();
 			$data = array(
+				'data' => json_encode($financerevenue),
                 'getClient' => $this->d_get->getClient()->result(),
                 'getReparation' => $this->d_get->getReparation()->result(),
-                'client' => $this->d_get->get_client()->result()
+                'getRevenue' => $this->d_get->getRevenue()->result(),
+                'getRevenueMonth' => $this->d_get->getRevenuebyMonth()->result()
             );
+
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');

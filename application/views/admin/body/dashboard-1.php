@@ -9,7 +9,9 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Earnings (Monthly)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">RM40,000</div>
+              <?php foreach($getRevenueMonth as $Rmonth){?>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">RM<?php echo $Rmonth->kirarevenue?></div>
+              <?php }?>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -26,7 +28,9 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Earnings (Annual)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">RM215,000</div>
+              <?php foreach($getRevenue as $revenue){?>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">RM<?php echo $revenue->kirarevenue?></div>
+              <?php }?>
             </div>
             <div class="col-auto">
               <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -107,9 +111,9 @@
           </div>
         </div>
         <!-- Card Body -->
-        <div class="card-body">
+        <div class="card-body" id="viewgraph">
           <div class="chart-area">
-            <canvas id="myAreaChart"></canvas>
+            <div id="graph"></div>
           </div>
         </div>
       </div>
@@ -252,6 +256,22 @@
 <a class="scroll-to-top rounded" href="#page-top">
   <i class="fas fa-angle-up"></i>
 </a>
-
+<script type="text/javascript">
+  Morris.Area({
+      element: 'graph',
+      data: <?php echo $data;?>,
+      xkey: 'revenue_date',
+      ykeys: ['totalpaid'],
+      labels: ['Sales'],
+      xLabels: 'day',
+      fillOpacity: 0.6,
+      hideHover: 'auto',
+      behaveLikeLine: true,
+      resize: true,
+      pointFillColors:['green'],
+      pointStrokeColors: ['7BB32E'],
+      lineColors:['#7BB32E','red']
+    });
+</script>
 
 

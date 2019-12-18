@@ -152,7 +152,7 @@ thead, tfoot{
   Morris.Area({
       element: 'graph',
       data: <?php echo $data;?>,
-      xkey: 'pay_date',
+      xkey: 'revenue_date',
       ykeys: ['totalpaid'],
       labels: ['Sales'],
       xLabels: 'day',

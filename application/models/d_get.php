@@ -28,6 +28,18 @@ class d_get extends CI_Model{
 		$this->db->from('tbl_reparation');
 		return $this->db->get();
 	}
+	function getRevenue(){
+		$this->db->select('SUM(revenue_subtotal) as kirarevenue');
+		$this->db->from('tbl_revenue');
+		return $this->db->get();
+	}
+	function getRevenuebyMonth(){
+		$this->db->select('revenue_date,SUM(revenue_subtotal) as kirarevenue');
+		$this->db->from('tbl_revenue');
+		$this->db->where('MONTH(revenue_date)', date('m'));
+		$this->db->where('YEAR(revenue_date)', date('Y'));
+		return $this->db->get();
+	}
 
 	// Reparation Section
 	function show_reparation($id){
@@ -569,29 +581,55 @@ class d_get extends CI_Model{
 	//     $result = $this->db->get('tbl_payment');
 	//     return $result;
 	// }
+	// function get_financedata(){
+	// 	$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+	// 	$this->db->group_by('r_repairno');
+	// 	$this->db->where('MONTH(pay_date)', date('m'));
+	// 	$this->db->where('YEAR(pay_date)', date('Y'));
+	//     $result = $this->db->get('tbl_payment');
+	//     return $result;
+	// }
 	function get_financedata(){
-		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
-		$this->db->group_by('r_repairno');
-		$this->db->where('MONTH(pay_date)', date('m'));
-		$this->db->where('YEAR(pay_date)', date('Y'));
-	    $result = $this->db->get('tbl_payment');
+		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
+		// $this->db->group_by('r_repairno');
+		$this->db->where('MONTH(revenue_date)', date('m'));
+		$this->db->where('YEAR(revenue_date)', date('Y'));
+	    $result = $this->db->get('tbl_revenue');
 	    return $result;
 	}
+	// function get_financedatatotal(){
+	// 	$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+	// 	// $this->db->group_by('r_repairno');
+	// 	$this->db->where('MONTH(pay_date)', date('m'));
+	// 	$this->db->where('YEAR(pay_date)', date('Y'));
+	//     $result = $this->db->get('tbl_payment');
+	//     // echo $this->db->last_query(); exit();
+	//     return $result;
+	// }
 	function get_financedatatotal(){
-		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		// $this->db->group_by('r_repairno');
-		$this->db->where('MONTH(pay_date)', date('m'));
-		$this->db->where('YEAR(pay_date)', date('Y'));
-	    $result = $this->db->get('tbl_payment');
+		$this->db->where('MONTH(revenue_date)', date('m'));
+		$this->db->where('YEAR(revenue_date)', date('Y'));
+	    $result = $this->db->get('tbl_revenue');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
 	}
+	// function get_financedataselected($m){
+	// 	$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+	// 	$this->db->group_by('r_repairno');
+	// 	$this->db->where('MONTH(pay_date)', $m);
+	// 	$this->db->where('YEAR(pay_date)', date('Y'));
+	//     $result = $this->db->get('tbl_payment');
+	//     // echo $this->db->last_query(); exit();
+	//     return $result;
+	// }
 	function get_financedataselected($m){
-		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
-		$this->db->group_by('r_repairno');
-		$this->db->where('MONTH(pay_date)', $m);
-		$this->db->where('YEAR(pay_date)', date('Y'));
-	    $result = $this->db->get('tbl_payment');
+		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
+		$this->db->group_by('revenue_holdid');
+		$this->db->where('MONTH(revenue_date)', $m);
+		$this->db->where('YEAR(revenue_date)', date('Y'));
+	    $result = $this->db->get('tbl_revenue');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
 	}

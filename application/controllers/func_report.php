@@ -31,16 +31,32 @@ class func_report extends CI_Controller {
 
 		return $this->load->view('admin/body/chart-finance-1-selected.php', $x);
 	}
+	// function viewgraphtotal(){
+	// 	$month = $this->input->post('month');
+	// 	$time=strtotime($month);
+	// 	$m=date("m",$time);
+	// 	$y=date("Y",$time);
+
+	// 	$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
+	// 	$this->db->where('MONTH(pay_date)', $m);
+	// 	$this->db->where('YEAR(pay_date)', date('Y'));
+	// 	$query =  $this->db->get('tbl_payment')->result();
+	// 	foreach ($query as $data) 
+	// 	{
+	// 		// echo $data->unit_price;
+	// 		echo $data->totalpaid;
+	// 	}
+	// }
 	function viewgraphtotal(){
 		$month = $this->input->post('month');
 		$time=strtotime($month);
 		$m=date("m",$time);
 		$y=date("Y",$time);
 
-		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
-		$this->db->where('MONTH(pay_date)', $m);
-		$this->db->where('YEAR(pay_date)', date('Y'));
-		$query =  $this->db->get('tbl_payment')->result();
+		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
+		$this->db->where('MONTH(revenue_date)', $m);
+		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$query =  $this->db->get('tbl_revenue')->result();
 		foreach ($query as $data) 
 		{
 			// echo $data->unit_price;
