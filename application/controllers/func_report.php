@@ -357,7 +357,7 @@ class func_report extends CI_Controller {
 
 	            // Set email format to HTML
 
-	      $mail->Subject = 'Respond for Your Reparation Status';
+	      $mail->Subject = 'Order Receipt';
 	      // $data_collect = 'asdasd';
 			foreach($reparationname as $name) 
 			{

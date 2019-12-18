@@ -651,5 +651,29 @@ class d_get extends CI_Model{
         return $result;
 	}
 
-
+	function get_posdetails($where,$tbl_posdetails){
+		$this->db->from($tbl_posdetails);
+		$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
+		$this->db->where('tbl_posdetails.hold_id', $where);
+		return $this->db->get();
+		// echo $this->db->last_query(); exit();
+	}
+	function get_productdetails($where,$tbl_holdproduct){
+		$this->db->from($tbl_holdproduct);
+		$this->db->join('tbl_product', 'tbl_product.p_id = tbl_holdproduct.pro_id');
+		$this->db->where('tbl_holdproduct.hold_id', $where);
+		return $this->db->get();
+		// echo $this->db->last_query(); exit();
+	}
+	function get_calculation($where){
+		$this->db->select('*, SUM(DISTINCT(tbl_holdproduct.pro_tax)) as totaltax, SUM(DISTINCT(tbl_holdproduct.pro_disc)) as totaldisc, SUM(DISTINCT(tbl_pospayment.pay_amount)) as totalpaid');
+    	$this->db->from('tbl_product');
+    	$this->db->join('tbl_holdproduct', 'tbl_holdproduct.pro_id = tbl_product.p_id');
+    	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
+    	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
+    	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
+    	$this->db->where('tbl_posdetails.hold_id', $where);
+    	return $this->db->get();
+    	// echo $this->db->last_query(); exit();
+	}
 }

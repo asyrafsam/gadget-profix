@@ -164,7 +164,7 @@ button{
                          <div class="dropdown-menu dropdown-menu-left shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                            <div class="dropdown-header">Action :</div>
                            <a class="dropdown-item" href="#"><i class="fa fa-fw fa-eye"> &nbsp;Sale Details</i></a>
-                           <a class="dropdown-item" href="#"><i class="fa fa-fw fa-print"> &nbsp;&nbsp;View Sale</i></a>
+                           <a class="dropdown-item" href="<?php echo base_url(). 'admin/print_view_sales/'.$p->hold_id; ?>"><i class="fa fa-fw fa-print"> &nbsp;&nbsp;View Sale</i></a>
                            <a class="dropdown-item" href="<?php echo base_url(). 'func_report/sendMailSales/'.$p->hold_id; ?>"><i class="fa fa-fw fa-cloud"> &nbsp;Email Invoice</i></a>
                            <a class="dropdown-item" href="#" onclick="view_paymentsales('<?php echo $p->transaction_id?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;View Payments</i></a>
                            <a class="dropdown-item" href="#" onclick="add_paymentsales('<?php echo $p->transaction_id?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;Add Payments</i></a>

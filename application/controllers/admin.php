@@ -413,6 +413,24 @@ class admin extends CI_Controller {
 			redirect(base_url("main/index"));
 		}
 	}
+	public function print_view_sales($hold_id){
+		if($this->session->userdata('status') == "login"){
+			// $getCode = $this->input->post('reparationID');
+			$where = $hold_id;
+			$data = array(
+                'getposdetails' => $this->d_get->get_posdetails($where,'tbl_posdetails')->result(),
+                'getproductdetails' => $this->d_get->get_productdetails($where,'tbl_holdproduct')->result(),
+                'getcalculation' => $this->d_get->get_calculation($where)->result()
+            );
+			
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/salesreport-1-viewsales.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
 	public function test()
 	{
 		if($this->session->userdata('status') == "login"){
