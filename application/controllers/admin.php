@@ -28,12 +28,17 @@ class admin extends CI_Controller {
 
 		// var_dump($this->session->userdata('role')); exit;
 		if($this->session->userdata('status') == "login"){
+			$data = array(
+                'getClient' => $this->d_get->getClient()->result(),
+                'getReparation' => $this->d_get->getReparation()->result(),
+                'client' => $this->d_get->get_client()->result()
+            );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
 			$this->load->view('admin/body/logoutmodal-1.php');
-			// $this->load->view('admin/body/dashboard-1.php', $data);
-			$this->load->view('admin/body/dashboard-1.php');
+			$this->load->view('admin/body/dashboard-1.php', $data);
+			// $this->load->view('admin/body/dashboard-1.php');
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

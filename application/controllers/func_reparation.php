@@ -213,6 +213,12 @@ class func_reparation extends CI_Controller {
 			);
 		$this->db->insert('tbl_payment',$payment);
 
+		// Insert new id to refer in tbl_revenue
+		$paymentrevenue = array(
+				'revenue_holdid' => $addrepairno
+			);
+		$this->db->insert('tbl_revenue',$paymentrevenue);
+
 		$config['upload_path']          = './uploads/';
         $config['allowed_types']        = 'gif|jpg|png';
         $config['max_size']             = 10000;
@@ -452,11 +458,20 @@ class func_reparation extends CI_Controller {
 		}
 
 		// $testtosum = $testtotalsum + $payamount;
+		// Update r_paid in tbl_reparation
 		$dataupdatereparation = array(
 								'r_paid'=>$testtotalsum
 							);
 		$this->db->where('r_repairno', $repairno);
 		$this->db->update('tbl_reparation', $dataupdatereparation);
+
+		// // Update Total Revenue and Date in tbl_revenue
+		$dataupdaterevenue = array(
+								'revenue_date'=>$paydate,
+								'revenue_subtotal'=>$testtotalsum
+							);
+		$this->db->where('revenue_holdid', $repairno);
+		$this->db->update('tbl_revenue', $dataupdaterevenue);
 		?>
 		<script type="text/javascript">
             alert("Payment Added");
@@ -525,11 +540,19 @@ class func_reparation extends CI_Controller {
 		$calc = $repairpaid - $paidamount;
 
 		// echo $calc; exit();
+		// Update Total in tbl_reparation
 		$updatepaid = array(
 						'r_paid'=>$calc
 					);
 		$this->db->where('r_repairno', $repairjoin);
 		$this->db->update('tbl_reparation', $updatepaid);
+
+		// Update Total Revenue and Date in tbl_revenue
+		$updaterevenue = array(
+						'revenue_subtotal'=>$calc
+					);
+		$this->db->where('revenue_holdid', $repairjoin);
+		$this->db->update('tbl_revenue', $updaterevenue);
 		
 		$where = array(
 					'pay_id' => $data

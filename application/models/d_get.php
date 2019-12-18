@@ -17,6 +17,17 @@ class d_get extends CI_Model{
 		parent::__construct();
 		$this->load->database();
 	}
+	// Dashboard
+	function getClient(){
+		$this->db->select('count(*) as kiraclient');
+		$this->db->from('tbl_client');
+		return $this->db->get();
+	}
+	function getReparation(){
+		$this->db->select('count(*) as kirareparation');
+		$this->db->from('tbl_reparation');
+		return $this->db->get();
+	}
 
 	// Reparation Section
 	function show_reparation($id){
