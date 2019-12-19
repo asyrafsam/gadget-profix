@@ -17,6 +17,20 @@ class d_post extends CI_Model{
 		parent::__construct();
 		$this->load->database();
 	}
+	// Dashboard Section
+	public function add_event($data)
+	{
+	    $this->db->insert("tbl_calendar_events", $data);
+	}
+	public function update_event($id, $data)
+	{
+	    $this->db->where("id", $id)->update("tbl_calendar_events", $data);
+	}
+
+	public function delete_event($id)
+	{
+	    $this->db->where("id", $id)->delete("tbl_calendar_events");
+	}
 
 	// Reparation Section------------------
 	function view_reparation(){
