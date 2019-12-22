@@ -561,6 +561,12 @@ class d_get extends CI_Model{
 
 		// echo $this->db->last_query(); exit();
 	}
+	function get_paidinfo($holdid){
+		$this->db->select('*');
+		$this->db->from('tbl_pospayment');
+		$this->db->where('hold_id', $holdid);
+		return $this->db->get();
+	}
 	function getDetailsStock($id){
 		$result = array();
         $where = "	SELECT * FROM tbl_product

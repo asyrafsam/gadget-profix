@@ -143,7 +143,7 @@ button{
               ?>
                 <tr style="background-color: #e3e6f0;">
                     <td><input type="checkbox" class="chkbox" name="checksales" id="checksales" onclick="getDetailSales(<?php echo $p->id; ?>)" value="<?php echo $p->id?>"></td>
-                    <td><?php echo $p->hold_id ?></td>
+                    <td><?php echo $p->transaction_id ?></td>
                     <td><?php echo $p->date_pos?></td>
                     <td><?php echo $p->c_name?></td>
                     <td><?php echo $p->pro_name?></td>

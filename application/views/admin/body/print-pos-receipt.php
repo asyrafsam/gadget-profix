@@ -113,6 +113,27 @@
             <td colspan="2" style="text-align: left;"><?php echo $calc->alltotal?></td>
           </tr>
           <?php }?>
+          <?php foreach ($paidinfo as $paided) 
+            {
+            # code...
+               $calcpaid = $totalall - $paided->pay_amount;
+               if($calcpaid < 0){
+                  $totalcalc = abs($calcpaid);
+               }else{
+                  $totalcalc = 0;
+               }
+           ?>
+          <tr>
+            <td class="titletd" style="width: 100px;">Paid:</td>
+            <td colspan="2" style="text-align: left;"><?php echo $paided->pay_amount?></td>
+          </tr>
+          <?php 
+            }
+          ?>
+          <tr>
+            <td class="titletd" style="width: 100px;">Balance:</td>
+            <td colspan="2" style="text-align: left;"><?php echo $totalcalc?>.00</td>
+          </tr>
         </tbody>
       </table>
       </div>

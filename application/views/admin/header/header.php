@@ -33,6 +33,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="<?php echo base_url('assets/chartmorris/morris.js-0.5.1/raphael.js')?>"></script>
   <script src="<?php echo base_url('assets/chartmorris/morris.js-0.5.1/morris.min.js')?>"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="<?php echo base_url('assets/vendor/jquery/jquery.min.js') ;?>"></script>
 
   <script src="https://momentjs.com/downloads/moment.min.js"></script>

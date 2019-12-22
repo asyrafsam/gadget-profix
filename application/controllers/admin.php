@@ -265,16 +265,38 @@ class admin extends CI_Controller {
 	public function pos()
 	{
 		if($this->session->userdata('status') == "login"){
-			$data = array(
-                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result(),
-                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
-            );
-			$this->load->view('admin/header/header.php');
-			$this->load->view('admin/body/sidebar-1.php');
-			$this->load->view('admin/body/topbar-1.php');
-			$this->load->view('admin/body/logoutmodal-1.php');
-			$this->load->view('admin/body/pos-1.php', $data);
-			$this->load->view('admin/footer/footer.php');
+			$branch = $this->session->userdata('branch');
+			date_default_timezone_set("Asia/Kuala_Lumpur");
+			$currentdate = date('Y-m-d');
+			// echo $currentdate; exit();
+			$this->db->select('openTime');
+			$this->db->from('tbl_drawer');
+			// $this->db->where('openTime', $currentdate);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $branch);
+			$query1 = $this->db->get();
+			// echo $this->db->last_query(); exit();
+			if($query1->num_rows() > 0){
+				$data = array(
+	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result(),
+	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
+	            );
+				$this->load->view('admin/header/header.php');
+				$this->load->view('admin/body/sidebar-1.php');
+				$this->load->view('admin/body/topbar-1.php');
+				$this->load->view('admin/body/logoutmodal-1.php');
+				$this->load->view('admin/body/pos-1.php', $data);
+				$this->load->view('admin/footer/footer.php');
+			}else{
+				$this->load->view('admin/header/header.php');
+				$this->load->view('admin/body/sidebar-1.php');
+				$this->load->view('admin/body/topbar-1.php');
+				$this->load->view('admin/body/logoutmodal-1.php');
+				$this->load->view('admin/body/open-drawer-1.php');
+				$this->load->view('admin/footer/footer.php');
+			}
 		}else{
 			$this->session->sess_destroy();
 			redirect(base_url("main/index"));
@@ -356,6 +378,64 @@ class admin extends CI_Controller {
 			$this->load->view('admin/body/topbar-1.php');
 			$this->load->view('admin/body/logoutmodal-1.php');
 			$this->load->view('admin/body/print-barcode-purchase-1.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function stock_chart(){
+		if($this->session->userdata('status') == "login"){
+
+			// $monthQuery =  $this->db->query("SELECT SUM(revenue_subtotal) as total_revenue FROM tbl_revenue WHERE YEAR(revenue_date) = '" . date('Y') . "'"); 
+
+			$query1 =  $this->db->query("SELECT SUM(revenue_subtotal) as total_revenue FROM tbl_revenue"); 
+		       
+		    $query2 =  $this->db->query("SELECT SUM(p_cost) as product_cost, SUM(p_quantity) as product_quantity FROM tbl_product"); 
+		 
+		    $data1 = $query1->result();
+		    $data2 = $query2->result();
+
+		    foreach ($data1 as $rev) {
+		    	$test1 = $rev->total_revenue;
+		    }
+
+		    foreach ($data2 as $pro) {
+		    	$test2 = $pro->product_cost;
+		    	$test3 = $pro->product_quantity;
+		    }
+
+		    // $test4 = array(
+		    // 				'total_revenue' => $test1,
+		    // 				'product_cost' => $test2,
+		    // 				'product_quantity' => $test3
+		    // 			);
+		    $chartdata = array(
+		    				'total_revenue' => $test1,
+		    				'product_cost' => $test2,
+		    				'product_quantity' => $test3
+		    			);
+		    $chartdata = [
+		    	['name' => 'Revenue', 'total' => $test1],
+		    	['name' => 'Cost', 'total' => $test2],
+		    	['name' => 'Quantity','total' => $test3]
+		   ];
+
+
+		    // echo $test4; exit();
+		    // print_r($chartdata); exit();
+		   	// var_dump(json_encode($chartdata));exit();
+		    $jsonecjo['data'] = $chartdata;
+		    // echo "<pre>";
+		    // print_r($chartdata);
+		    // echo "</pre>";
+
+		    // var_dump($jsonecjo); exit();
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/chart-stock-1.php', ['jsonecjo' => $chartdata]);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

@@ -14,7 +14,34 @@ class func_pos extends CI_Controller {
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
 	}
-	
+	function openDrawer(){
+		$result1 = $this->input->post('result1');
+		$result2 = $this->input->post('result2');
+		$result3 = $this->input->post('result3');
+		$result4 = $this->input->post('result4');
+		$result5 = $this->input->post('result5');
+		$result6 = $this->input->post('result6');
+		$result7 = $this->input->post('result7');
+		$result8 = $this->input->post('result8');
+		$result9 = $this->input->post('result9');
+		$result10 = $this->input->post('result10');
+		$uname = $this->input->post('uname');
+		$ubranch = $this->input->post('ubranch');
+		date_default_timezone_set("Asia/Kuala_Lumpur");
+		$currentdate = date('Y-m-d H:i:s');
+
+		$total = $result1 + $result2 + $result3 + $result4 + $result5 + $result6 + $result7 + $result8 + $result9 + $result10;
+
+		$datain = array(
+						'openTime' => $currentdate,
+						'openingCash' => $total,
+						'openBy' => $uname,
+						'u_branch' => $ubranch
+					);
+
+		$this->db->insert('tbl_drawer', $datain);
+		redirect(base_url('admin/pos'));
+	}
 	function viewsubpos(){
 		$id = $this->input->post('id');
 
@@ -265,7 +292,6 @@ class func_pos extends CI_Controller {
 			echo '
                 <div class="total col-lg-6 right" style="float: right;">
 	                <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
-	                <input type="number" name="" style="width: 70px;float: right;" readonly>
 	            </div>
 	            <div class="total col-lg-6 right" style="">
 	                <label>Subtotal :&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -337,29 +363,23 @@ class func_pos extends CI_Controller {
 		$uname = $this->input->post('uname');
 		$branch = $this->input->post('ubranch');
 		$transactionid = $this->input->post('transactionid');
+		// Payment Section
+		$payref = $this->input->post('pay_ref');
+		$payamount = $this->input->post('pay_amount');
+		$paytype = $this->input->post('pay_type');
+		$paynote = $this->input->post('pay_note');
 		
 		$status = 1;
 		date_default_timezone_set('Asia/Kuala_lumpur');
 		$date = date('Y-m-d H:i:s');
-		$buydata = array(
-						'c_id'=>$cust,
-						'total'=>$total,
-						'date_pos'=>$date,
-						'user_incharge'=>$uname,
-						'u_branch'=>$branch,
-						'transaction_id'=>$transactionid,
-						'hold_id'=>$holdid 
-					 );
-		// var_dump($buydata); exit();
-		$this->db->insert('tbl_posdetails',$buydata);
-
-		$paydetails = array(
-						'pay_date'=>$date,
-						'transaction_id'=>$transactionid,
-						'hold_id'=>$holdid
-					 );
-		// var_dump($buydata); exit();
-		$this->db->insert('tbl_pospayment',$paydetails);
+		
+		$balance = $total - $payamount;
+		if ($balance < 0)
+		{
+			$positive = abs($balance);
+		}else{
+			$positive = $balance;
+		}
 
 		$datastatus = array(
 					'pro_status'=>$status
@@ -368,12 +388,100 @@ class func_pos extends CI_Controller {
 		$this->db->where('hold_id',$holdid);
 		$this->db->update('tbl_holdproduct',$datastatus);
 
-		// Insert new pos item in tbl_revenue
+		$balance2 = $total - $payamount;
+		if($balance2 < 0)
+		{
+			$revenuebalance = $total;
+		}else{
+			$revenuebalance = $payamount;
+		}
 		$paymentrevenue = array(
-				'revenue_holdid' => $transactionid
+				'revenue_date'=>$date,
+				'revenue_holdid' => $transactionid,
+				'revenue_subtotal'=>$revenuebalance
 			);
 		$this->db->insert('tbl_revenue',$paymentrevenue);
 
+		$buydata = array(
+						'c_id'=>$cust,
+						'total'=>$total,
+						'date_pos'=>$date,
+						'total_paid'=>$revenuebalance,
+						'user_incharge'=>$uname,
+						'u_branch'=>$branch,
+						'transaction_id'=>$transactionid,
+						'hold_id'=>$holdid 
+					 );
+		// var_dump($buydata); exit();
+		$this->db->insert('tbl_posdetails',$buydata);
+
+		$balance3 = $total - $payamount;
+		if($balance3 < 0)
+		{
+			$cashreturn = abs($balance3);
+			date_default_timezone_set("Asia/Kuala_Lumpur");
+			$currentdate = date('Y-m-d');
+			$this->db->select('openingCash');
+			$this->db->from('tbl_drawer');
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $branch);
+			$query5 = $this->db->get()->result();
+			foreach ($query5 as $drawer) {
+				$cash = $drawer->openingCash;
+			}
+			$dataindrawer = $cash - $cashreturn;
+			$changebalance = array(
+								'currentBalance'=>$dataindrawer
+							);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $branch);
+			$this->db->update('tbl_drawer', $changebalance);
+			// echo $this->db->last_query(); exit();
+		}else{
+
+			date_default_timezone_set("Asia/Kuala_Lumpur");
+			$currentdate = date('Y-m-d');
+			$this->db->select('openingCash');
+			$this->db->from('tbl_drawer');
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $branch);
+			$query5 = $this->db->get()->result();
+			// echo $this->db->last_query(); exit();
+			foreach ($query5 as $drawer) {
+				$cash = $drawer->openingCash;
+			}
+			$dataindrawer = $cash + $payamount;
+			$changebalance = array(
+								'currentBalance'=>$dataindrawer
+							);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $branch);
+			$this->db->update('tbl_drawer', $changebalance);
+
+			// echo $this->db->last_query(); exit();
+		}
+		// Insert new pos item in tbl_pospayment
+		$paydetails = array(
+						'pay_ref' => $payref,
+						'pay_amount' => $payamount,
+						'u_branch' => $branch,
+						'pay_note' => $paynote,
+						'pay_date'=>$date,
+						'transaction_id'=>$transactionid,
+						'hold_id'=>$holdid
+					 );
+		// var_dump($buydata); exit();
+		$this->db->insert('tbl_pospayment',$paydetails);
+
+		// return $this->addpaymentpos($date,$transactionid,$holdid,$positive,$payref,$payamount,$paytype,$paynote);
 		return $this->printreceipt($cust,$holdid);
 	}
 
@@ -382,7 +490,8 @@ class func_pos extends CI_Controller {
 		$data = array(
 			'custinfo' => $this->d_get->get_custinfo($cust)->result(),
 			'productinfo' => $this->d_get->get_productinfo($holdid)->result(),
-            'paymentinfo' => $this->d_get->get_paymentinfo($holdid)->result()
+            'paymentinfo' => $this->d_get->get_paymentinfo($holdid)->result(),
+            'paidinfo' => $this->d_get->get_paidinfo($holdid)->result()
         );
 	$this->load->view('admin/header/header.php');
 	$this->load->view('admin/body/print-pos-receipt.php',$data);

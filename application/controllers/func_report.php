@@ -152,20 +152,7 @@ class func_report extends CI_Controller {
 		$paytype = $this->input->post('pay_type');
 		$paynote = $this->input->post('pay_note');
 		$addpaymentlog = 'Payment Added';
-		$addpay = array(
-						'hold_id' => $paymentholdid,
-						'transaction_id' => $transactionID,
-						'pay_date' => $paydate,
-						'pay_ref' => $payref,
-						'pay_amount' => $payamount,
-						'pay_type' => $paytype,
-						'u_branch' => $paymentbranch,
-						'pay_note' => $paynote
-					);
-		// $where = array(
-		// 			'r_repairno' => $repairno
-		// 		);
-		$this->db->insert('tbl_pospayment',$addpay);
+		
 
 		// $logaddpayment = array(
 		// 			'hold_id' => $paymentholdid,
@@ -186,20 +173,124 @@ class func_report extends CI_Controller {
 		foreach ($gettototal as $alltotaltoplus) {
 			$testtotalsum = $alltotaltoplus->sumall;
 		}
-
+		$this->db->select('*');
+		$this->db->from('tbl_posdetails');
+		$this->db->where('transaction_id', $transactionID);
+		$query7 = $this->db->get()->result();
+		foreach ($query7 as $totalpos) {
+			$totaltopay = $totalpos->total;
+		}
+		$needtopay = $totaltopay - $testtotalsum;
+		// $lastresultpay = $needtopay - $payamount;
+		$balance2 = $needtopay - $payamount;
+		if($balance2 < 0)
+		{
+			$paybalance = $totaltopay;
+		}else{
+			$paybalance = $payamount + $testtotalsum;
+		}
 		// $testtosum = $testtotalsum + $payamount;
+		// echo $paybalance; exit();
 		$dataupdateposdetails = array(
-								'total_paid'=>$testtotalsum
+								'total_paid'=>$paybalance
 							);
 		$this->db->where('transaction_id', $transactionID);
 		$this->db->update('tbl_posdetails', $dataupdateposdetails);
 
+		$this->db->select('total_paid');
+		$this->db->from('tbl_posdetails');
+		$this->db->where('transaction_id', $transactionID);
+		$query11 = $this->db->get()->result();
+		foreach ($query11 as $totalpaided) {
+			$testpaid = $totalpaided->total_paid;
+		}
 		$dataupdaterevenue = array(
 								'revenue_date'=>$paydate,
-								'revenue_subtotal'=>$testtotalsum
+								'revenue_subtotal'=>$testpaid
 							);
 		$this->db->where('revenue_holdid', $transactionID);
 		$this->db->update('tbl_revenue', $dataupdaterevenue);
+
+		$balance3 = $needtopay - $payamount;
+		if($balance3 < 0)
+		{
+			$cashreturn = abs($balance3);
+			date_default_timezone_set("Asia/Kuala_Lumpur");
+			$currentdate = date('Y-m-d');
+			$this->db->select('currentBalance');
+			$this->db->from('tbl_drawer');
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $paymentbranch);
+			$query5 = $this->db->get()->result();
+			foreach ($query5 as $drawer) {
+				$cash = $drawer->currentBalance;
+			}
+			$dataindrawer = $cash - $cashreturn;
+			$totaldrawer =  $dataindrawer + $needtopay;
+			// echo $dataindrawer;
+			// echo $totaldrawer; exit();
+			$changebalance = array(
+								'currentBalance'=>$dataindrawer
+							);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $paymentbranch);
+			$this->db->update('tbl_drawer', $changebalance);
+
+			$changebalanceadd = array(
+								'currentBalance'=>$totaldrawer
+							);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $paymentbranch);
+			$this->db->update('tbl_drawer', $changebalanceadd);
+			// echo $this->db->last_query(); exit();
+		}else{
+
+			date_default_timezone_set("Asia/Kuala_Lumpur");
+			$currentdate = date('Y-m-d');
+			$this->db->select('currentBalance');
+			$this->db->from('tbl_drawer');
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $paymentbranch);
+			$query5 = $this->db->get()->result();
+			// echo $this->db->last_query(); exit();
+			foreach ($query5 as $drawer) {
+				$cash = $drawer->currentBalance;
+			}
+			$dataindrawer = $cash + $payamount;
+			// echo $dataindrawer; exit();
+			$changebalance = array(
+								'currentBalance'=>$dataindrawer
+							);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where('u_branch', $paymentbranch);
+			$this->db->update('tbl_drawer', $changebalance);
+
+			// echo $this->db->last_query(); exit();
+		}
+		$addpay = array(
+						'hold_id' => $paymentholdid,
+						'transaction_id' => $transactionID,
+						'pay_date' => $paydate,
+						'pay_ref' => $payref,
+						'pay_amount' => $payamount,
+						'pay_type' => $paytype,
+						'u_branch' => $paymentbranch,
+						'pay_note' => $paynote
+					);
+		// $where = array(
+		// 			'r_repairno' => $repairno
+		// 		);
+		$this->db->insert('tbl_pospayment',$addpay);
 		?>
 		<script type="text/javascript">
             alert("Payment Added");
@@ -220,7 +311,7 @@ class func_report extends CI_Controller {
 		$change1 = '-';
 		
 
-		$this->db->select('tbl_pospayment.transaction_id, tbl_posdetails.total_paid, tbl_pospayment.pay_amount');
+		$this->db->select('tbl_posdetails.total,tbl_pospayment.transaction_id, tbl_posdetails.total_paid, tbl_pospayment.pay_amount');
 		$this->db->from('tbl_pospayment');
 		$this->db->join('tbl_posdetails', 'tbl_posdetails.transaction_id = tbl_pospayment.transaction_id');
 		$this->db->where('tbl_pospayment.id',$data);
@@ -229,36 +320,82 @@ class func_report extends CI_Controller {
 			$posjoin = $no->transaction_id;
 			$pospaid = $no->total_paid;
 			$paidamount = $no->pay_amount;
+			$paytotal = $no->total;
 		}
-
+		// echo $pospaid;
+		// echo $paidamount; exit();
 		$calc = $pospaid - $paidamount;
 
+		if($calc < 0){
+			$calcreturn = 0;
+		}else{
+			$calcreturn = $calc;
+		}
 		// echo $calc; exit();
-		$updatepaid = array(
-						'total_paid'=>$calc
-					);
-		$this->db->where('transaction_id', $posjoin);
-		$this->db->update('tbl_posdetails', $updatepaid);
+		
+		// echo $this->db->last_query(); exit();
+
 		
 		$updaterevenue = array(
-						'revenue_subtotal'=>$calc
+						'revenue_subtotal'=>$calcreturn
 					);
 		$this->db->where('revenue_holdid', $posjoin);
 		$this->db->update('tbl_revenue', $updaterevenue);
+		// echo $this->db->last_query(); exit();
 		
-		$where = array(
-					'id' => $data
-				);
+		// $where = array(
+		// 			'id' => $data
+		// 		);
 		$addpay = array(
 						'pay_date' => $changedate,
 						'pay_amount' => $change,
 						'pay_type' => $change1
 					);
-
-		$this->db->delete('tbl_pospayment', $where);
+		$this->db->where('id', $data);
+		$this->db->update('tbl_pospayment', $addpay);
 		// echo $this->db->last_query(); exit();
+		$this->db->select('SUM(pay_amount) as totaltinggal');
+		$this->db->from('tbl_pospayment');
+		$this->db->group_by('transaction_id');
+		$this->db->where('transaction_id', $posjoin);
+		$query13 = $this->db->get()->result();
+		foreach ($query13 as $pengiraan) {
+			$tinggal = $pengiraan->totaltinggal;
+		}
+
+		$updatepaid = array(
+						'total_paid'=>$tinggal
+					);
+		$this->db->where('transaction_id', $posjoin);
+		$this->db->update('tbl_posdetails', $updatepaid);
 
 
+		
+		$alltinggal = $paytotal - $tinggal;
+		date_default_timezone_set("Asia/Kuala_Lumpur");
+		$currentdate = date('Y-m-d');
+		$this->db->select('currentBalance');
+		$this->db->from('tbl_drawer');
+		$this->db->where('DAY(openTime)', date('d'));
+		$this->db->where('MONTH(openTime)', date('m'));
+		$this->db->where('YEAR(openTime)', date('Y'));
+		$this->db->where('u_branch', $paydeletebranch);
+		$query5 = $this->db->get()->result();
+		// echo $this->db->last_query(); exit();
+		foreach ($query5 as $drawer) {
+			$cash = $drawer->currentBalance;
+		}
+		$dataindrawer = $cash - $alltinggal;
+		// echo $dataindrawer; exit();
+		$changebalance = array(
+							'currentBalance'=>$dataindrawer
+						);
+		$this->db->where('DAY(openTime)', date('d'));
+		$this->db->where('MONTH(openTime)', date('m'));
+		$this->db->where('YEAR(openTime)', date('Y'));
+		$this->db->where('u_branch', $paydeletebranch);
+		$this->db->update('tbl_drawer', $changebalance);
+		// echo $this->db->last_query(); exit();
 		// $logaddpayment = array(
 		// 			'r_repairno' => $data2,//
 		// 			'log_date' => $paydeletedate,

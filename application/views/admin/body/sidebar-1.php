@@ -79,7 +79,7 @@
     <div id="collapsePages-3" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Chart</h6>
-        <a class="collapse-item" href="stock-1.php">Stock Chart</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/stock_chart') ;?>">Stock Chart</a>
         <a class="collapse-item" href="<?php echo base_url('admin/finance_chart') ;?>">Finance Chart</a>
         <a class="collapse-item" href="<?php echo base_url('admin/reportstock') ;?>">Quantity Alert</a>
         <a class="collapse-item" href="<?php echo base_url('admin/viewsales') ;?>">Sales</a>
