@@ -423,136 +423,6 @@ class func_reparation extends CI_Controller {
 		$paytype = $this->input->post('pay_type');
 		$paynote = $this->input->post('pay_note');
 		$addpaymentlog = 'Payment Added';
-		
-
-		$this->db->select('SUM(pay_amount) as sumall');
-		$this->db->from('tbl_payment');
-		$this->db->where('r_repairno', $repairno);
-		$gettototal = $this->db->get()->result();
-		foreach ($gettototal as $alltotaltoplus) {
-			$testtotalsum = $alltotaltoplus->sumall;
-		}
-		// --------------------------------------------------
-
-		$this->db->select('*');
-		$this->db->from('tbl_reparation');
-		$this->db->where('r_repairno', $repairno);
-		$query7 = $this->db->get()->result();
-		foreach ($query7 as $totalrepair) {
-			$totaltopay = $totalrepair->r_total;
-		}
-		$needtopay = $totaltopay - $testtotalsum;
-		// $lastresultpay = $needtopay - $payamount;
-		$balance2 = $needtopay - $payamount;
-		if($balance2 < 0)
-		{
-			$paybalance = $totaltopay;
-		}else{
-			$paybalance = $payamount + $testtotalsum;
-		}
-		// --------------------------------------------------
-
-		// $testtosum = $testtotalsum + $payamount;
-		// echo $paybalance; exit();
-		$dataupdatereparation = array(
-								'r_paid'=>$paybalance
-							);
-		$this->db->where('r_repairno', $repairno);
-		$this->db->update('tbl_reparation', $dataupdatereparation);
-		// --------------------------------------------------------
-
-		$this->db->select('r_paid');
-		$this->db->from('tbl_reparation');
-		$this->db->where('r_repairno', $repairno);
-		$query11 = $this->db->get()->result();
-		foreach ($query11 as $totalpaided) {
-			$testpaid = $totalpaided->r_paid;
-		}
-		// // Update Total Revenue and Date in tbl_revenue
-		$dataupdaterevenue = array(
-								'revenue_date'=>$paydate,
-								'revenue_subtotal'=>$testpaid
-							);
-		$this->db->where('revenue_holdid', $repairno);
-		$this->db->update('tbl_revenue', $dataupdaterevenue);
-		// -----------------------------------------------------------------
-
-		$balance3 = $needtopay - $payamount;
-		if($balance3 < 0)
-		{
-			$cashreturn = abs($balance3);
-			date_default_timezone_set("Asia/Kuala_Lumpur");
-			$currentdate = date('Y-m-d');
-			$this->db->select('currentBalance');
-			$this->db->from('tbl_drawer');
-			$this->db->where('DAY(openTime)', date('d'));
-			$this->db->where('MONTH(openTime)', date('m'));
-			$this->db->where('YEAR(openTime)', date('Y'));
-			$this->db->where('u_branch', $paymentbranch);
-			$query5 = $this->db->get()->result();
-			foreach ($query5 as $drawer) {
-				$cash = $drawer->currentBalance;
-			}
-			$dataindrawer = $cash - $cashreturn;
-			$totaldrawer =  $dataindrawer + $needtopay;
-			// echo $dataindrawer;
-			// echo $totaldrawer; exit();
-			$changebalance = array(
-								'currentBalance'=>$dataindrawer
-							);
-			$this->db->where('DAY(openTime)', date('d'));
-			$this->db->where('MONTH(openTime)', date('m'));
-			$this->db->where('YEAR(openTime)', date('Y'));
-			$this->db->where('u_branch', $paymentbranch);
-			$this->db->update('tbl_drawer', $changebalance);
-
-			$changebalanceadd = array(
-								'currentBalance'=>$totaldrawer
-							);
-			$this->db->where('DAY(openTime)', date('d'));
-			$this->db->where('MONTH(openTime)', date('m'));
-			$this->db->where('YEAR(openTime)', date('Y'));
-			$this->db->where('u_branch', $paymentbranch);
-			$this->db->update('tbl_drawer', $changebalanceadd);
-			// echo $this->db->last_query(); exit();
-		}else{
-
-			date_default_timezone_set("Asia/Kuala_Lumpur");
-			$currentdate = date('Y-m-d');
-			$this->db->select('currentBalance');
-			$this->db->from('tbl_drawer');
-			$this->db->where('DAY(openTime)', date('d'));
-			$this->db->where('MONTH(openTime)', date('m'));
-			$this->db->where('YEAR(openTime)', date('Y'));
-			$this->db->where('u_branch', $paymentbranch);
-			$query5 = $this->db->get()->result();
-			// echo $this->db->last_query(); exit();
-			foreach ($query5 as $drawer) {
-				$cash = $drawer->currentBalance;
-			}
-			$dataindrawer = $cash + $payamount;
-			// echo $dataindrawer; exit();
-			$changebalance = array(
-								'currentBalance'=>$dataindrawer
-							);
-			$this->db->where('DAY(openTime)', date('d'));
-			$this->db->where('MONTH(openTime)', date('m'));
-			$this->db->where('YEAR(openTime)', date('Y'));
-			$this->db->where('u_branch', $paymentbranch);
-			$this->db->update('tbl_drawer', $changebalance);
-
-			// echo $this->db->last_query(); exit();
-		}
-
-
-
-		// Asal
-		// $testtosum = $testtotalsum + $payamount;
-		// Update r_paid in tbl_reparation
-		
-		
-
-
 		$addpay = array(
 						'hold_id' => $paymentholdid,
 						'r_repairno' => $repairno,
@@ -576,6 +446,32 @@ class func_reparation extends CI_Controller {
 					'u_branch' => $paymentbranch
 				);
 		$this->db->insert('tbl_reparation_log',$logaddpayment);
+
+		$this->db->select('SUM(pay_amount) as sumall');
+		$this->db->from('tbl_payment');
+		$this->db->where('r_repairno', $repairno);
+
+		$gettototal = $this->db->get()->result();
+
+		foreach ($gettototal as $alltotaltoplus) {
+			$testtotalsum = $alltotaltoplus->sumall;
+		}
+
+		// $testtosum = $testtotalsum + $payamount;
+		// Update r_paid in tbl_reparation
+		$dataupdatereparation = array(
+								'r_paid'=>$testtotalsum
+							);
+		$this->db->where('r_repairno', $repairno);
+		$this->db->update('tbl_reparation', $dataupdatereparation);
+
+		// // Update Total Revenue and Date in tbl_revenue
+		$dataupdaterevenue = array(
+								'revenue_date'=>$paydate,
+								'revenue_subtotal'=>$testtotalsum
+							);
+		$this->db->where('revenue_holdid', $repairno);
+		$this->db->update('tbl_revenue', $dataupdaterevenue);
 		?>
 		<script type="text/javascript">
             alert("Payment Added");
@@ -629,8 +525,8 @@ class func_reparation extends CI_Controller {
 		$change = '0.00';
 		$change1 = '-';
 		
-		// ------------------------------------------------------------------------------------------------------------------
-		$this->db->select('tbl_reparation.r_total,tbl_payment.r_repairno, tbl_reparation.r_paid, tbl_payment.pay_amount');
+
+		$this->db->select('tbl_payment.r_repairno, tbl_reparation.r_paid, tbl_payment.pay_amount');
 		$this->db->from('tbl_payment');
 		$this->db->join('tbl_reparation', 'tbl_reparation.r_repairno = tbl_payment.r_repairno');
 		$this->db->where('tbl_payment.pay_id',$data);
@@ -639,84 +535,35 @@ class func_reparation extends CI_Controller {
 			$repairjoin = $no->r_repairno;
 			$repairpaid = $no->r_paid;
 			$paidamount = $no->pay_amount;
-			$paytotal = $no->r_total;
 		}
-		// ---------------------------------------------------------------------------------------------------------------------
+
 		$calc = $repairpaid - $paidamount;
 
-		if($calc < 0){
-			$calcreturn = 0;
-		}else{
-			$calcreturn = $calc;
-		}
-
 		// echo $calc; exit();
-		// ----------------------------------------------------------------------------------------------------------------
 		// Update Total in tbl_reparation
+		$updatepaid = array(
+						'r_paid'=>$calc
+					);
+		$this->db->where('r_repairno', $repairjoin);
+		$this->db->update('tbl_reparation', $updatepaid);
 
 		// Update Total Revenue and Date in tbl_revenue
 		$updaterevenue = array(
-						'revenue_subtotal'=>$calcreturn
+						'revenue_subtotal'=>$calc
 					);
 		$this->db->where('revenue_holdid', $repairjoin);
 		$this->db->update('tbl_revenue', $updaterevenue);
-		// -----------------------------------------------------------------------------------------------------------------
-		// $where = array(
-		// 			'pay_id' => $data
-		// 		);
+		
+		$where = array(
+					'pay_id' => $data
+				);
 		$addpay = array(
 						'pay_date' => $changedate,
 						'pay_amount' => $change,
 						'pay_type' => $change1
 					);
-		$this->db->where('pay_id', $data);
-		$this->db->update('tbl_payment', $addpay);
-		// ----------------------------------------------------------------------------------------------------------------
-		$this->db->select('SUM(pay_amount) as totaltinggal');
-		$this->db->from('tbl_payment');
-		$this->db->group_by('r_repairno');
-		$this->db->where('r_repairno', $repairjoin);
-		$query13 = $this->db->get()->result();
-		foreach ($query13 as $pengiraan) {
-			$tinggal = $pengiraan->totaltinggal;
-		}
-		// $updatepaid = array(
-		// 				'r_paid'=>$calc
-		// 			);
-		// $this->db->where('r_repairno', $repairjoin);
-		// $this->db->update('tbl_reparation', $updatepaid);
-		$updatepaid = array(
-						'r_paid'=>$tinggal
-					);
-		$this->db->where('r_repairno', $repairjoin);
-		$this->db->update('tbl_reparation', $updatepaid);
-		// -----------------------------------------------------------------------------------------------------------------
-		$alltinggal = $paytotal - $tinggal;
-		date_default_timezone_set("Asia/Kuala_Lumpur");
-		$currentdate = date('Y-m-d');
-		$this->db->select('currentBalance');
-		$this->db->from('tbl_drawer');
-		$this->db->where('DAY(openTime)', date('d'));
-		$this->db->where('MONTH(openTime)', date('m'));
-		$this->db->where('YEAR(openTime)', date('Y'));
-		$this->db->where('u_branch', $paydeletebranch);
-		$query5 = $this->db->get()->result();
-		// echo $this->db->last_query(); exit();
-		foreach ($query5 as $drawer) {
-			$cash = $drawer->currentBalance;
-		}
-		$dataindrawer = $cash - $alltinggal;
-		// echo $dataindrawer; exit();
-		$changebalance = array(
-							'currentBalance'=>$dataindrawer
-						);
-		$this->db->where('DAY(openTime)', date('d'));
-		$this->db->where('MONTH(openTime)', date('m'));
-		$this->db->where('YEAR(openTime)', date('Y'));
-		$this->db->where('u_branch', $paydeletebranch);
-		$this->db->update('tbl_drawer', $changebalance);
 
-		
+		$this->db->delete('tbl_payment', $where);
 		// echo $this->db->last_query(); exit();
 
 

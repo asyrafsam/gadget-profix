@@ -167,12 +167,12 @@ class func_report extends CI_Controller {
 		$this->db->select('SUM(pay_amount) as sumall');
 		$this->db->from('tbl_pospayment');
 		$this->db->where('transaction_id', $transactionID);
-
 		$gettototal = $this->db->get()->result();
-
 		foreach ($gettototal as $alltotaltoplus) {
 			$testtotalsum = $alltotaltoplus->sumall;
 		}
+		// ---------------------------------------------------------------
+
 		$this->db->select('*');
 		$this->db->from('tbl_posdetails');
 		$this->db->where('transaction_id', $transactionID);
@@ -189,6 +189,9 @@ class func_report extends CI_Controller {
 		}else{
 			$paybalance = $payamount + $testtotalsum;
 		}
+		// -------------------------------------------------------------------
+
+
 		// $testtosum = $testtotalsum + $payamount;
 		// echo $paybalance; exit();
 		$dataupdateposdetails = array(
@@ -196,6 +199,7 @@ class func_report extends CI_Controller {
 							);
 		$this->db->where('transaction_id', $transactionID);
 		$this->db->update('tbl_posdetails', $dataupdateposdetails);
+		// -------------------------------------------------------------------
 
 		$this->db->select('total_paid');
 		$this->db->from('tbl_posdetails');
@@ -204,12 +208,15 @@ class func_report extends CI_Controller {
 		foreach ($query11 as $totalpaided) {
 			$testpaid = $totalpaided->total_paid;
 		}
+		// -------------------------------------------------------------------
+
 		$dataupdaterevenue = array(
 								'revenue_date'=>$paydate,
 								'revenue_subtotal'=>$testpaid
 							);
 		$this->db->where('revenue_holdid', $transactionID);
 		$this->db->update('tbl_revenue', $dataupdaterevenue);
+		// ---------------------------------------------------------------------
 
 		$balance3 = $needtopay - $payamount;
 		if($balance3 < 0)
@@ -277,6 +284,7 @@ class func_report extends CI_Controller {
 
 			// echo $this->db->last_query(); exit();
 		}
+		// Lek lu
 		$addpay = array(
 						'hold_id' => $paymentholdid,
 						'transaction_id' => $transactionID,
@@ -310,7 +318,7 @@ class func_report extends CI_Controller {
 		$change = '0.00';
 		$change1 = '-';
 		
-
+		// -------------------------------------------------------------------------------------------------------
 		$this->db->select('tbl_posdetails.total,tbl_pospayment.transaction_id, tbl_posdetails.total_paid, tbl_pospayment.pay_amount');
 		$this->db->from('tbl_pospayment');
 		$this->db->join('tbl_posdetails', 'tbl_posdetails.transaction_id = tbl_pospayment.transaction_id');
@@ -322,6 +330,8 @@ class func_report extends CI_Controller {
 			$paidamount = $no->pay_amount;
 			$paytotal = $no->total;
 		}
+		// ---------------------------------------------------------------------------------------------------------
+
 		// echo $pospaid;
 		// echo $paidamount; exit();
 		$calc = $pospaid - $paidamount;
@@ -334,15 +344,16 @@ class func_report extends CI_Controller {
 		// echo $calc; exit();
 		
 		// echo $this->db->last_query(); exit();
+		// -------------------------------------------------------------------------------------------------------------
 
-		
 		$updaterevenue = array(
 						'revenue_subtotal'=>$calcreturn
 					);
 		$this->db->where('revenue_holdid', $posjoin);
 		$this->db->update('tbl_revenue', $updaterevenue);
 		// echo $this->db->last_query(); exit();
-		
+		// -------------------------------------------------------------------------------------------------------------
+
 		// $where = array(
 		// 			'id' => $data
 		// 		);
@@ -354,6 +365,8 @@ class func_report extends CI_Controller {
 		$this->db->where('id', $data);
 		$this->db->update('tbl_pospayment', $addpay);
 		// echo $this->db->last_query(); exit();
+		// ---------------------------------------------------------------------------------------------------------------
+
 		$this->db->select('SUM(pay_amount) as totaltinggal');
 		$this->db->from('tbl_pospayment');
 		$this->db->group_by('transaction_id');
@@ -362,14 +375,14 @@ class func_report extends CI_Controller {
 		foreach ($query13 as $pengiraan) {
 			$tinggal = $pengiraan->totaltinggal;
 		}
-
+		
+		// -----------------------------------------------------------------------------------------------------------------
 		$updatepaid = array(
 						'total_paid'=>$tinggal
 					);
 		$this->db->where('transaction_id', $posjoin);
 		$this->db->update('tbl_posdetails', $updatepaid);
-
-
+		// -----------------------------------------------------------------------------------------------------------------
 		
 		$alltinggal = $paytotal - $tinggal;
 		date_default_timezone_set("Asia/Kuala_Lumpur");
