@@ -98,17 +98,26 @@
   <div id="invoice-POS">
     
     <center id="top">
+	<?php foreach ($invoicedetails as $invoice) 
+    	{
+			$testimage = $invoice->invoiceLogo;
+    ?>
       <div class="logo">
-      	<img src="<?php echo base_url('images/ProfixLogin.png') ;?>">
+      	<img src="<?php  echo base_url()."uploads/".$testimage; ?>">
       </div>
       <div class="info"> 
         <h2>GADGET PROFIX</h2>
+        
         <p> 
-            Address : No.2B Bandar Pasir Puteh, Jalan Kota Bha</br>
-            Email   : gadgetprofix@gmail.com</br>
-            Telephone   : 017 999 0009</br>
+            Address : <?php echo $invoice->invoiceAddr;?></br>
+            Email   : <?php echo $invoice->invoiceEmail;?></br>
+            Telephone   : <?php echo $invoice->invoiceTel;?></br>
         </p>
+        
       </div><!--End Info-->
+  	<?php
+    	}
+    ?>
     </center><!--End InvoiceTop-->
 	<div class="clearfix"></div>
     
@@ -158,6 +167,11 @@
 					foreach ($reparationdetails as $details) {
 					$totaltax = $details->r_subtotal + $details->r_tax;
 					$balance = $totaltax - $details->payTotal;
+
+					if($balance < 0)
+					{
+						$balanceresult = abs($balance);
+					}
 				?>
 				<tr class="tabletitle">
 					<td></td>
@@ -180,7 +194,7 @@
 				<tr class="tabletitle">
 					<td></td>
 					<td class="Rate"><h2>Balance</h2></td>
-					<td class="payment"><h2><?php echo $balance?>.00</h2></td>
+					<td class="payment"><h2><?php echo $balanceresult?>.00</h2></td>
 				</tr>
 				<?php
 					}

@@ -101,6 +101,17 @@ class func_report extends CI_Controller {
 			
 		// }
 	}
+	function viewdrawerselected(){
+		$start = $this->input->post('start');
+		$end = $this->input->post('end');
+
+		$this->db->select('*');
+    	$this->db->from('tbl_drawer');
+    	$this->db->where('tbl_drawer.closedTime BETWEEN "'.$start.'" and "'.$end.'" ');
+    	$query['drawerselect'] = $this->db->get()->result();
+    	// echo $this->db->last_query(); exit();
+    	return $this->load->view('admin/body/viewdrawerselected-1.php',$query);
+	}
 	function getPaymentSales($id){
 		// $data = $this->d_get->show_payment($id);
 		// echo json_encode($data);

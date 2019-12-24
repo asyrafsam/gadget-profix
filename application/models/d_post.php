@@ -136,4 +136,12 @@ class d_post extends CI_Model{
 		$this->db->where($where);
 		$this->db->update($tablepurchase,$datain);
 	}
+
+	// System Setting
+	function updateGroup($where,$datain,$tbl_user_group){
+		$this->db->where($where);
+		$this->db->update($tbl_user_group,$datain);
+
+		// echo $this->db->last_query(); exit();
+	}
 }

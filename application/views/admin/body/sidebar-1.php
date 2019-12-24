@@ -83,7 +83,7 @@
         <a class="collapse-item" href="<?php echo base_url('admin/finance_chart') ;?>">Finance Chart</a>
         <a class="collapse-item" href="<?php echo base_url('admin/reportstock') ;?>">Quantity Alert</a>
         <a class="collapse-item" href="<?php echo base_url('admin/viewsales') ;?>">Sales</a>
-        <a class="collapse-item" href="add-stock-1.php">Drawer Report</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/viewdrawer') ;?>">Drawer Report</a>
       </div>
     </div>
   </li>
@@ -102,13 +102,17 @@
   <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
       <i class="fas fa-fw fa-cog"></i>
-      <span>User Settings</span>
+      <span>System Settings</span>
     </a>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-        <h6 class="collapse-header">User (Review/Update):</h6>
-        <a class="collapse-item" href="buttons.html">User Profile</a>
-        <a class="collapse-item" href="cards.html">User Qualifications</a>
+        <h6 class="collapse-header">System (Review/Update):</h6>
+        <a class="collapse-item" href="<?php echo base_url('admin/setting') ;?>">General Setting</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/userlist') ;?>">Users</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/usergroup') ;?>">User Group</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/repairstatus') ;?>">Repair Statuses</a>
+        <a class="collapse-item" href="cards.html">Tax Rates</a>
+        <a class="collapse-item" href="cards.html">Database Utilities</a>
       </div>
     </div>
   </li>

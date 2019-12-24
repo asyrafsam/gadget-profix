@@ -18,6 +18,12 @@ class d_get extends CI_Model{
 		$this->load->database();
 	}
 	// Dashboard
+	function get_invoicedetails($branch,$tbl_invoice_details){
+		$this->db->select('*');
+		$this->db->from('tbl_invoice_details');
+		$this->db->where('u_branch', $branch);
+		return $this->db->get();
+	}
 	function getClient(){
 		$this->db->select('count(*) as kiraclient');
 		$this->db->from('tbl_client');
@@ -197,7 +203,14 @@ class d_get extends CI_Model{
 		$this->db->group_by('tbl_hold.random_id');
 		return $this->db->get();
 	}
+	// function get_reparationitem($id){
+	// 	$this->db->from($this->table1);
+	// 	$this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_reparation.hold_id');
+	// 	$this->db->where('tbl_reparation.r_repairno', $id);
+	// 	return $this->db->get();
+	// }
 	function get_reparationitem($id){
+		$this->db->select('*, SUM(DISTINCT(tbl_reparation.r_model))as testdisc');
 		$this->db->from($this->table1);
 		$this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_reparation.hold_id');
 		$this->db->where('tbl_reparation.r_repairno', $id);
@@ -674,6 +687,13 @@ class d_get extends CI_Model{
     	return $this->db->get();
 	    // echo $this->db->last_query(); exit();
     }
+    function get_drawerreport($m){
+    	$this->db->select('*');
+    	$this->db->from('tbl_drawer');
+    	$this->db->where('MONTH(tbl_drawer.closedTime)', $m);
+    	return $this->db->get();
+	    // echo $this->db->last_query(); exit();
+    }
     function show_paymentsales($id){
 		$this->db->from('tbl_pospayment');
         // $this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
@@ -739,5 +759,72 @@ class d_get extends CI_Model{
     	$this->db->where('tbl_posdetails.hold_id', $where);
     	return $this->db->get();
     	// echo $this->db->last_query(); exit();
+	}
+
+	// System Setting Section
+	function get_users($branch,$tbl_user){
+		$this->db->select('*');
+		$this->db->from('tbl_user');
+		$this->db->where('u_branch', $branch);
+		return $this->db->get();
+	}
+	function get_usersupdate($id,$tbl_user){
+		$this->db->select('*');
+		$this->db->from('tbl_user');
+		$this->db->where('id', $id);
+		return $this->db->get();
+	}
+	function get_usersgroup($tbl_user_group){
+		$this->db->select('*');
+		$this->db->from('tbl_user_group');
+		return $this->db->get();
+	}
+	function getGroup($id){
+		$result = array();
+        $where = "	SELECT * FROM tbl_user_group
+        			Where id='$id'
+        		 ";
+
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+		// echo $this->db->last_query(); exit();
+	}
+	function get_repairstatus($branch,$tbl_repair_status){
+		$this->db->select('*');
+		$this->db->from('tbl_repair_status');
+		$this->db->where('u_branch', $branch);
+		$this->db->order_by('position_order', 'asc');
+		return $this->db->get();
+	}
+	function getStatus($id){
+		$result = array();
+        $where = "	SELECT * FROM tbl_repair_status
+        			Where id='$id'
+        		 ";
+
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
 	}
 }

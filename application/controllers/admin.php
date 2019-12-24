@@ -119,7 +119,10 @@ class admin extends CI_Controller {
 		if($this->session->userdata('status') == "login"){
 			// $getCode = $this->input->post('reparationID');
 			$where = $id;
+			$detailsid = 1;
+			$branch = $this->session->userdata('branch');
 			$data = array(
+				'invoicedetails' => $this->d_get->get_invoicedetails($branch,'tbl_invoice_details')->result(),
                 'reparationname' => $this->d_get->get_reparationandhold($where,'tbl_reparation')->result(),
                 'item' => $this->d_get->get_reparationitem($where,'tbl_reparation')->result(),
                 'reparationdetails' => $this->d_get->get_reparationandpayment($where)->result(),
@@ -268,6 +271,7 @@ class admin extends CI_Controller {
 			$branch = $this->session->userdata('branch');
 			date_default_timezone_set("Asia/Kuala_Lumpur");
 			$currentdate = date('Y-m-d');
+			$currentdatetime = date('H');
 			// echo $currentdate; exit();
 			$this->db->select('openTime');
 			$this->db->from('tbl_drawer');
@@ -275,6 +279,7 @@ class admin extends CI_Controller {
 			$this->db->where('DAY(openTime)', date('d'));
 			$this->db->where('MONTH(openTime)', date('m'));
 			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where(array('closedTime' => NULL));
 			$this->db->where('u_branch', $branch);
 			$query1 = $this->db->get();
 			// echo $this->db->last_query(); exit();
@@ -283,12 +288,33 @@ class admin extends CI_Controller {
 	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result(),
 	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
 	            );
-				$this->load->view('admin/header/header.php');
-				$this->load->view('admin/body/sidebar-1.php');
-				$this->load->view('admin/body/topbar-1.php');
-				$this->load->view('admin/body/logoutmodal-1.php');
-				$this->load->view('admin/body/pos-1.php', $data);
-				$this->load->view('admin/footer/footer.php');
+
+	            if($currentdatetime <= 18)
+	            {
+	            	$this->load->view('admin/header/header.php');
+					$this->load->view('admin/body/sidebar-1.php');
+					$this->load->view('admin/body/topbar-1.php');
+					$this->load->view('admin/body/logoutmodal-1.php');
+					$this->load->view('admin/body/pos-1.php', $data);
+					$this->load->view('admin/footer/footer.php');
+	            }else{
+	            	$this->db->select('currentBalance');
+					$this->db->from('tbl_drawer');
+					// $this->db->where('openTime', $currentdate);
+					$this->db->where('DAY(openTime)', date('d'));
+					$this->db->where('MONTH(openTime)', date('m'));
+					$this->db->where('YEAR(openTime)', date('Y'));
+					$this->db->where(array('closedTime' => NULL));
+					$this->db->where('u_branch', $branch);
+					$query2['drawercurrent'] = $this->db->get()->result();
+	            	$this->load->view('admin/header/header.php');
+					$this->load->view('admin/body/sidebar-1.php');
+					$this->load->view('admin/body/topbar-1.php');
+					$this->load->view('admin/body/logoutmodal-1.php');
+					$this->load->view('admin/body/close-drawer-1.php', $query2);
+					$this->load->view('admin/footer/footer.php');
+	            }
+				
 			}else{
 				$this->load->view('admin/header/header.php');
 				$this->load->view('admin/body/sidebar-1.php');
@@ -515,6 +541,129 @@ class admin extends CI_Controller {
 			
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/salesreport-1-viewsales.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function viewdrawer()
+	{
+		if($this->session->userdata('status') == "login"){
+			$m = date('m');
+
+			$data['drawer'] = $this->d_get->get_drawerreport($m)->result();
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/drawerreport-1.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function setting(){
+		if($this->session->userdata('status') == "login"){
+			// $getCode = $this->input->post('reparationID');
+			// $where = $hold_id;
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'invoicedetails' => $this->d_get->get_invoicedetails($branch,'tbl_invoice_details')->result()
+            );
+			
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/systemsetting-1-invoice.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function userlist(){
+		if($this->session->userdata('status') == "login"){
+			// $getCode = $this->input->post('reparationID');
+			// $where = $hold_id;
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'userdetails' => $this->d_get->get_users($branch,'tbl_user')->result()
+            );
+			
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/userlist-1.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function userlist_add(){
+		if($this->session->userdata('status') == "login"){
+			
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/userlist-1-add.php');
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function userlist_update($id){
+		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'userdetails' => $this->d_get->get_usersupdate($id,'tbl_user')->result(),
+				'usergroup' => $this->d_get->get_usersgroup('tbl_user_group')->result()
+            );
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/userlist-1-update.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function usergroup(){
+		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'usergroup' => $this->d_get->get_usersgroup('tbl_user_group')->result(),
+            );
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/grouplist-1.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function repairstatus(){
+		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'repairstatus' => $this->d_get->get_repairstatus($branch,'tbl_repair_status')->result(),
+            );
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/repairstatus-1.php', $data);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

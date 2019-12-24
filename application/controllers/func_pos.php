@@ -35,12 +35,74 @@ class func_pos extends CI_Controller {
 		$datain = array(
 						'openTime' => $currentdate,
 						'openingCash' => $total,
+						'currentBalance' => $total,
 						'openBy' => $uname,
 						'u_branch' => $ubranch
 					);
 
 		$this->db->insert('tbl_drawer', $datain);
 		redirect(base_url('admin/pos'));
+	}
+	function closeDrawer(){
+		$result1 = $this->input->post('result1');
+		$result2 = $this->input->post('result2');
+		$result3 = $this->input->post('result3');
+		$result4 = $this->input->post('result4');
+		$result5 = $this->input->post('result5');
+		$result6 = $this->input->post('result6');
+		$result7 = $this->input->post('result7');
+		$result8 = $this->input->post('result8');
+		$result9 = $this->input->post('result9');
+		$result10 = $this->input->post('result10');
+		$currentBalance = $this->input->post('currentBalance');
+		$uname = $this->input->post('uname');
+		$ubranch = $this->input->post('ubranch');
+		date_default_timezone_set("Asia/Kuala_Lumpur");
+		$currentdate = date('Y-m-d H:i:s');
+		$currentdatewhere = date('Y-m-d');
+
+		$total = $result1 + $result2 + $result3 + $result4 + $result5 + $result6 + $result7 + $result8 + $result9 + $result10;
+		if($total != $currentBalance)
+		{
+			?>
+			<script type="text/javascript">
+	            alert("Sorry, Not Equal to Current Balance");
+	            window.location.href = '<?php echo base_url();?>admin/pos';
+	        </script>
+			<?php
+		}
+		else
+		{
+			$this->db->select('*');
+			$this->db->from('tbl_drawer');
+			// $this->db->where('openTime', $currentdate);
+			$this->db->where('DAY(openTime)', date('d'));
+			$this->db->where('MONTH(openTime)', date('m'));
+			$this->db->where('YEAR(openTime)', date('Y'));
+			$this->db->where(array('closedTime' => NULL));
+			$this->db->where('u_branch', $ubranch);
+			$query11 = $this->db->get()->result();
+			foreach ($query11 as $getid) {
+				$idtorefer = $getid->id;
+			}
+			$datain = array(
+						'closedTime' => $currentdate,
+						'closingCash' => $total,
+						'closedBy' => $uname,
+						'u_branch' => $ubranch
+					);
+			$this->db->where('id', $idtorefer);
+			$this->db->where('u_branch', $ubranch);
+			$this->db->update('tbl_drawer', $datain);
+			// echo $this->db->last_query(); exit();
+			?>
+			<script type="text/javascript">
+	            alert("Shift Closed");
+	            window.location.href = '<?php echo base_url();?>admin/pos';
+	        </script>
+			<?php
+			// redirect(base_url('admin/pos'));
+		}
 	}
 	function viewsubpos(){
 		$id = $this->input->post('id');
