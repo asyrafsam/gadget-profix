@@ -25,8 +25,8 @@ class func_report extends CI_Controller {
 
 		// echo $m; exit();
         // $data['productdataa'] = $this->d_get->get_productposjoin($month)->result();
-
-        $data = $this->d_get->get_financedataselected($m)->result();
+		$branch = $this->session->userdata('branch');
+        $data = $this->d_get->get_financedataselected($m,$branch)->result();
       	$x['data'] = json_encode($data);
 
 		return $this->load->view('admin/body/chart-finance-1-selected.php', $x);

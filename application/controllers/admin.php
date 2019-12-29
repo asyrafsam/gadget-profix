@@ -27,8 +27,10 @@ class admin extends CI_Controller {
 		// $data['admin'] = $this->m_data->view_user($where,'admin')->result();
 
 		// var_dump($this->session->userdata('role')); exit;
+		$branch = $this->session->userdata('branch');
+
 		if($this->session->userdata('status') == "login"){
-			$financerevenue = $this->d_get->get_financedata()->result();
+			$financerevenue = $this->d_get->get_financedata($branch)->result();
 			$data = array(
 				'data' => json_encode($financerevenue),
                 'getClient' => $this->d_get->getClient()->result(),
@@ -52,23 +54,27 @@ class admin extends CI_Controller {
 	public function reparation()
 	{
 		if($this->session->userdata('status') == "login"){
-			$data = array(
-                'reparation' => $this->d_get->view_reparation()->result(),
-                'item' => $this->d_get->get_item()->result(),
-                'client' => $this->d_get->get_client()->result()
-            );
-			$this->load->view('admin/header/header.php');
-			$this->load->view('admin/body/sidebar-1.php');
-			$this->load->view('admin/body/topbar-1.php');
-			$this->load->view('admin/body/logoutmodal-1.php');
-			// $this->load->view('admin/body/dashboard-1.php', $data);
-			$this->load->view('admin/body/reparation-1.php',$data);
-			$this->load->view('admin/body/reparation-1-view.php',$data);
-			$this->load->view('admin/body/reparation-1-payment.php',$data);
-			$this->load->view('admin/body/reparation-1-edit.php',$data);
-			$this->load->view('admin/body/reparation-1-viewpayment.php',$data);
-			$this->load->view('admin/body/reparation-1-log.php',$data);
-			$this->load->view('admin/footer/footer.php');
+			if($this->session->userdata('repairview') > 0){
+				$data = array(
+	                'reparation' => $this->d_get->view_reparation()->result(),
+	                'item' => $this->d_get->get_item()->result(),
+	                'client' => $this->d_get->get_client()->result()
+	            );
+				$this->load->view('admin/header/header.php');
+				$this->load->view('admin/body/sidebar-1.php');
+				$this->load->view('admin/body/topbar-1.php');
+				$this->load->view('admin/body/logoutmodal-1.php');
+				// $this->load->view('admin/body/dashboard-1.php', $data);
+				$this->load->view('admin/body/reparation-1.php',$data);
+				$this->load->view('admin/body/reparation-1-view.php',$data);
+				$this->load->view('admin/body/reparation-1-payment.php',$data);
+				$this->load->view('admin/body/reparation-1-edit.php',$data);
+				$this->load->view('admin/body/reparation-1-viewpayment.php',$data);
+				$this->load->view('admin/body/reparation-1-log.php',$data);
+				$this->load->view('admin/footer/footer.php');
+			}else{
+				return $this->index();
+			}
 		}else{
 			$this->session->sess_destroy();
 			redirect(base_url("main/index"));
@@ -414,10 +420,10 @@ class admin extends CI_Controller {
 		if($this->session->userdata('status') == "login"){
 
 			// $monthQuery =  $this->db->query("SELECT SUM(revenue_subtotal) as total_revenue FROM tbl_revenue WHERE YEAR(revenue_date) = '" . date('Y') . "'"); 
-
-			$query1 =  $this->db->query("SELECT SUM(revenue_subtotal) as total_revenue FROM tbl_revenue"); 
+			$branch = $this->session->userdata('branch');
+			$query1 =  $this->db->query("SELECT SUM(revenue_subtotal) as total_revenue FROM tbl_revenue WHERE u_branch = '".$branch."'"); 
 		       
-		    $query2 =  $this->db->query("SELECT SUM(p_cost) as product_cost, SUM(p_quantity) as product_quantity FROM tbl_product"); 
+		    $query2 =  $this->db->query("SELECT SUM(p_cost) as product_cost, SUM(p_quantity) as product_quantity FROM tbl_product WHERE u_branch = '".$branch."'"); 
 		 
 		    $data1 = $query1->result();
 		    $data2 = $query2->result();
@@ -478,10 +484,11 @@ class admin extends CI_Controller {
    //              'itempurchase' => $this->d_get->get_purchasebyholditempurchase($id),
    //              'hold' => $this->d_get->get_holdiditem($id)->result()
    //          );
-			$data = $this->d_get->get_financedata()->result();
+			$branch = $this->session->userdata('branch');
+			$data = $this->d_get->get_financedata($branch)->result();
       		$x = array(
       				'data' => json_encode($data),
-      				'total' => $this->d_get->get_financedatatotal()->result()
+      				'total' => $this->d_get->get_financedatatotal($branch)->result()
       			);
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
@@ -653,6 +660,23 @@ class admin extends CI_Controller {
 			redirect(base_url("main/index"));
 		}
 	}
+	public function usergroup_permission(){
+		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'usergroup' => $this->d_get->get_usersgroup('tbl_user_group')->result(),
+            );
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/grouplist-1-changepermission.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
 	public function repairstatus(){
 		if($this->session->userdata('status') == "login"){
 			$branch = $this->session->userdata('branch');
@@ -664,6 +688,23 @@ class admin extends CI_Controller {
 			$this->load->view('admin/body/topbar-1.php');
 			$this->load->view('admin/body/logoutmodal-1.php');
 			$this->load->view('admin/body/repairstatus-1.php', $data);
+			$this->load->view('admin/footer/footer.php');
+		}else{
+			$this->session->sess_destroy();
+			redirect(base_url("main/index"));
+		}
+	}
+	public function viewdatabase(){
+		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
+			$data = array(
+				'viewdatabase' => $this->d_get->get_database($branch,'tbl_database')->result(),
+            );
+			$this->load->view('admin/header/header.php');
+			$this->load->view('admin/body/sidebar-1.php');
+			$this->load->view('admin/body/topbar-1.php');
+			$this->load->view('admin/body/logoutmodal-1.php');
+			$this->load->view('admin/body/viewdatabase-1.php', $data);
 			$this->load->view('admin/footer/footer.php');
 		}else{
 			$this->session->sess_destroy();

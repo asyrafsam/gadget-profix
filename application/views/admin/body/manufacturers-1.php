@@ -71,12 +71,16 @@
             <?php }?>
               <td><?php echo $m->m_name?></td>
               <td>
+                <?php if($this->session->userdata('manufactureredit') > 0){?>
                 <a href="#" onclick="edit_manufacturer(<?php echo $m->m_id; ?>)">
                   <button type="button" class="btn btn-warning" style="width: 35px;height: 35px;font-size: 11px;text-align: center;"><i class="fa fa-fw fa-pen"></i></button>
                 </a>
+                <?php }?>
+                <?php if($this->session->userdata('manufacturerdelete') > 0){?>
                 <a href="<?php echo base_url(). 'func_manufacturer/delete_Manufacturer/'.$m->m_id; ?>" onclick="return confirm('Confirm delete supplier?');">
                   <button type="button" class="btn btn-danger" style="width: 35px;height: 35px;font-size: 11px;text-align: center;"><i class="fa fa-fw fa-trash"></i></button>
                 </a>
+                <?php }?>
               </td>
             </tr>
           </tbody>

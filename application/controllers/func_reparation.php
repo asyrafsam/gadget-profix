@@ -158,7 +158,7 @@ class func_reparation extends CI_Controller {
 		$adddefect = $this->input->post('adddefect');
 		$addservicecharge = $this->input->post('addservicecharge');
 		$dateopen = $this->input->post('dateopen');
-
+		$branch1 = $this->session->userdata('branch');
 
 		$reparationstatus = 'Pending';
  		
@@ -206,24 +206,27 @@ class func_reparation extends CI_Controller {
 		$addrepairstatus = $this->input->post('addrepairstatus');
 		$addrepairno = $this->input->post('addrepairno');
 		$addfile = $this->input->post('addfile');
-
+		$branch1 = $this->session->userdata('branch');
 		$payment = array(
 				'r_repairno' => $addrepairno,
-				'hold_id' => $hold_id
+				'hold_id' => $hold_id,
+				'u_branch'=> $branch1
 			);
 		$this->db->insert('tbl_payment',$payment);
 
 		// Insert new id to refer in tbl_revenue
+		$branch1 = $this->session->userdata('branch');
 		$paymentrevenue = array(
-				'revenue_holdid' => $addrepairno
+				'revenue_holdid' => $addrepairno,
+				'u_branch' => $branch1
 			);
 		$this->db->insert('tbl_revenue',$paymentrevenue);
 
 		$config['upload_path']          = './uploads/';
         $config['allowed_types']        = 'gif|jpg|png';
-        $config['max_size']             = 10000;
-        $config['max_width']            = 2024;
-        $config['max_height']           = 1068;
+        $config['max_size']             = 100000;
+        $config['max_width']            = 20024;
+        $config['max_height']           = 10068;
         $config['encrypt_name']           = TRUE;
         $config['remove_spaces']           = TRUE;
 
@@ -243,13 +246,14 @@ class func_reparation extends CI_Controller {
                 $data = array('upload_data' => $this->upload->data());
                 $fname = $this->upload->data('file_name');
                 // $fname = base_url().'/uploads/'.$fname;
-
+                $branch = $this->session->userdata('branch');
                 $datarepair = array(
 					'hold_id' => $hold_id,
 					'r_diagnostics' => $adddiagnostics,
 					'r_repairstatus' => $addrepairstatus,
 					'r_repairno' => $addrepairno,
-					'r_file' => $fname
+					'r_file' => $fname,
+					'u_branch' => $branch
 				);
 				$query0 = $this->d_post->addrepairdetails($datarepair,'tbl_repair_details');
 
@@ -551,7 +555,7 @@ class func_reparation extends CI_Controller {
 		// Update r_paid in tbl_reparation
 		
 		
-
+		$branch1 = $this->session->userdata('branch');
 
 		$addpay = array(
 						'hold_id' => $paymentholdid,
@@ -560,7 +564,8 @@ class func_reparation extends CI_Controller {
 						'pay_ref' => $payref,
 						'pay_amount' => $payamount,
 						'pay_type' => $paytype,
-						'pay_note' => $paynote
+						'pay_note' => $paynote,
+						'u_branch' => $branch1
 					);
 		$where = array(
 					'r_repairno' => $repairno

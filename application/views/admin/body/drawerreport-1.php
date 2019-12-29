@@ -73,7 +73,7 @@ button{
      echo $hold_value = '<input type="hidden" id="hold_value" value="'.$random.'">'
   ?>
 <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Sales Report <i class="fas fa-clipboard-list"></i></h1>
+    <h1 class="h3 mb-2 text-gray-800">Drawer Report <i class="fas fa-clipboard-list"></i></h1>
     <!-- <p class="mb-4">Reparation Table <a target="_blank" href="https://datatables.net">Order & Reparation Record</a>.</p> -->
     <hr>
     <!-- DataTales Example -->
@@ -153,6 +153,14 @@ button{
     </div>
   </div>
 <script type="text/javascript">
+$(document).ready(function() {
+  $('#dataTable').DataTable( {
+      "dom": 'Bfrtip',
+      "buttons": ['csv', 'excel', 'pdf'],   
+      "pageLength": 100,
+      "processing": false,   
+      });
+  });
   $(function() {
   $('input[name="daterange"]').daterangepicker({
     opens: 'left'

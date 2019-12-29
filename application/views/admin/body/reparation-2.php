@@ -454,6 +454,27 @@
       // function getDetailEmail($id){
       //   alert($id);
       // }
+      $(document).ready(function() {
+        $('#dataTable').DataTable( {
+            "dom": 'Bfrtip',
+            "buttons": [
+                        {
+                       extend: 'pdf',
+                       exportOptions: {
+                       columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
+                           }
+                         },
+                         {
+                          extend: 'excel',
+                          exportOptions: {
+                          columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
+                         }
+                       },
+                     ],   
+            "pageLength": 100,
+            "processing": false,   
+            });
+        });
       function getClient(){
         var send = $('[name="clientid"]').val();
         var data = {'send':send}

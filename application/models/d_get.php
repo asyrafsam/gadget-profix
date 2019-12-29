@@ -46,9 +46,12 @@ class d_get extends CI_Model{
 		$this->db->where('YEAR(revenue_date)', date('Y'));
 		return $this->db->get();
 	}
-	public function get_events($start, $end)
+	public function get_events($start, $end, $branch)
 	{
-	    return $this->db->where("start >=", $start)->where("end <=", $end)->get("tbl_calendar_events");
+	    $this->db->where("start >=", $start);
+	    $this->db->where("end <=", $end);
+	    $this->db->where("u_branch", $branch);
+	    return $this->db->get("tbl_calendar_events");
 	}
 	public function get_event($id)
 	{
@@ -120,7 +123,7 @@ class d_get extends CI_Model{
 	}
 	function lookup_reparation_status()
 	{
-		$query = $this->db->get('tbl_reparation_status')->result();
+		$query = $this->db->get('tbl_repair_status')->result();
 		//var_dump($query); exit();
 		foreach ($query as $data) {
 			# code...
@@ -617,11 +620,12 @@ class d_get extends CI_Model{
 	//     $result = $this->db->get('tbl_payment');
 	//     return $result;
 	// }
-	function get_financedata(){
+	function get_financedata($branch){
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		// $this->db->group_by('r_repairno');
 		$this->db->where('MONTH(revenue_date)', date('m'));
 		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('u_branch', $branch);
 	    $result = $this->db->get('tbl_revenue');
 	    return $result;
 	}
@@ -634,11 +638,12 @@ class d_get extends CI_Model{
 	//     // echo $this->db->last_query(); exit();
 	//     return $result;
 	// }
-	function get_financedatatotal(){
+	function get_financedatatotal($branch){
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		// $this->db->group_by('r_repairno');
 		$this->db->where('MONTH(revenue_date)', date('m'));
 		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('u_branch', $branch);
 	    $result = $this->db->get('tbl_revenue');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
@@ -652,11 +657,12 @@ class d_get extends CI_Model{
 	//     // echo $this->db->last_query(); exit();
 	//     return $result;
 	// }
-	function get_financedataselected($m){
+	function get_financedataselected($m,$branch){
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		$this->db->group_by('revenue_holdid');
 		$this->db->where('MONTH(revenue_date)', $m);
 		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('u_branch', $branch);
 	    $result = $this->db->get('tbl_revenue');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
@@ -826,5 +832,33 @@ class d_get extends CI_Model{
         }
 
         return $result;
+	}
+	function getPermission($name){
+		$result = array();
+        $where = "	SELECT * FROM tbl_group_permission
+        			Where groupId='$name'
+        		 ";
+
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+
+	// Database Section
+	function get_database($branch,$tbl_database){
+		$this->db->select('*');
+		$this->db->from('tbl_database');
+		$this->db->where('u_branch', $branch);
+		return $this->db->get();
 	}
 }

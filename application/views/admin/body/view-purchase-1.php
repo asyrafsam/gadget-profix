@@ -107,14 +107,18 @@
                 <!-- <button class="dropdown-toggle btn btn-success" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 12px">Action</button> -->
                 <div class="dropdown-menu dropdown-menu-bottom shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                   <div class="dropdown-header">Export in:</div>
+                  <?php if($this->session->userdata('purchaseedit') > 0){?>
                   <?php if($p->pur_status == 'Pending'){?>
                   <a class="dropdown-item" href="<?php echo base_url(). 'admin/editPurchase/'.$p->hold_id; ?>"><i class="fa fa-fw fa-edit"> &nbsp;Edit Purchase</i></a>
                   <?php }else{?>
                   <a class="dropdown-item" href="#"><i class="fa fa-fw fa-edit"> &nbsp;Uneditable Purchase</i></a>
                   <?php }?>
+                  <?php }?>
                   <a class="dropdown-item" href="<?php echo base_url(). 'func_pdf/pdf_purchase_unit/'.$p->hold_id ?>"><i class="fa fa-fw fa-file-pdf"> &nbsp;&nbsp;Download Pdf</i></a>
                   <!-- <a class="dropdown-item" href="<?php echo base_url(). 'admin/purchaseBarcode/'.$p->hold_id; ?>"><i class="fa fa-fw fa-barcode"> &nbsp;Print Barcode</i></a> -->
+                  <?php if($this->session->userdata('purchasedelete') > 0){?>
                   <a class="dropdown-item" href="<?php echo base_url(). 'func_purchase/deletePurchase/'.$p->hold_id; ?>"><i class="fa fa-fw fa-trash"> &nbsp;Delete Purchase</i></a>
+                  <?php }?>
                 </div>
               </div>
             </td>

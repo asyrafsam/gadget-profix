@@ -126,8 +126,12 @@ thead, tfoot{
                     <div class="dropdown-header">Action :</div>
                     <a class="dropdown-item" href="#" onclick="view_client(<?php echo $c->c_id; ?>)"><i class="fa fa-fw fa-eye"> &nbsp;View Client</i></a>
                     <a class="dropdown-item" href="#" onclick="view_clientRepair(<?php echo $c->c_id; ?>)"><i class="fa fa-fw fa-print"> &nbsp;&nbsp;View Client Repairs</i></a>
+                    <?php if($this->session->userdata('clientedit') > 0){?>
                     <a class="dropdown-item" href="#" onclick="edit_client(<?php echo $c->c_id; ?>)"><i class="fa fa-fw fa-cloud"> &nbsp;Edit Client</i></a>
+                    <?php }?>
+                    <?php if($this->session->userdata('clientdelete') > 0){?>
                     <a class="dropdown-item" href="<?php echo base_url(). 'func_client/deleteClient/'.$c->c_id; ?>" onclick="return confirm('Confirm delete client?');"><i class="fa fa-fw fa-clipboard"> &nbsp;Delete Client</i></a>
+                    <?php }?>
                     <a class="dropdown-item" href="#" onclick="view_clientProfile(<?php echo $c->c_id; ?>)"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;View Image</i></a>
                   </div>
                 </div>

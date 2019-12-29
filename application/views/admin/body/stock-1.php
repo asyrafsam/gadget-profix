@@ -124,9 +124,13 @@ button{
                       <div class="dropdown-menu dropdown-menu-left shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                         <div class="dropdown-header">Action :</div>
                         <a class="dropdown-item" href="<?php echo base_url(). 'admin/duplicateProduct/'.$p->p_id; ?>"><i class="fa fa-fw fa-clipboard-list"> &nbsp;Duplicate Product</i></a>
+                        <?php if($this->session->userdata('stockedit') > 0){?>
                         <a class="dropdown-item" href="<?php echo base_url(). 'admin/editStock/'.$p->p_id; ?>"><i class="fa fa-fw fa-pen"> &nbsp;Edit Product</i></a>
+                        <?php }?>
+                        <?php if($this->session->userdata('stockdelete') > 0){?>
                         <!-- <a class="dropdown-item" href="#" onclick="edit_supplier(<?php echo $p->p_id; ?>)"><i class="fa fa-fw fa-print"> &nbsp;Print Barcode</i></a> -->
                         <a class="dropdown-item" href="<?php echo base_url(). 'func_stock/deleteStock/'.$p->p_id; ?>" onclick="return confirm('Confirm delete product?');"><i class="fa fa-fw fa-trash"> &nbsp;Delete Product</i></a>
+                        <?php }?>
                       </div>
                     </div>
                 </td>

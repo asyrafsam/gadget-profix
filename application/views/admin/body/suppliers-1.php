@@ -57,7 +57,9 @@ label{
   <div class="card shadow mb-4">
     <div class="card-header py-3">
         <div class="header-card col-md-3 py-2" style="float: left; width: 500px;">
+          <?php if($this->session->userdata('supplieradd') > 0){?>
           <button class="btn btn-dark" style="text-align: center;height: 33px" data-toggle="modal" data-target="#addSupplierModal"><h6 class="font-weight-bold center">+ New Suppliers</h6></button>
+          <?php }?>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
       <div class="card-body">
@@ -118,8 +120,12 @@ label{
                     <div class="dropdown-menu dropdown-menu-left shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Action :</div>
                       <a class="dropdown-item" href="#" onclick="view_supplier(<?php echo $s->s_id; ?>)"><i class="fa fa-fw fa-eye"> &nbsp;View Supplier</i></a>
+                      <?php if($this->session->userdata('supplieredit') > 0){?>
                       <a class="dropdown-item" href="#" onclick="edit_supplier(<?php echo $s->s_id; ?>)"><i class="fa fa-fw fa-cloud"> &nbsp;Edit Supplier</i></a>
+                      <?php }?>
+                      <?php if($this->session->userdata('supplierdelete') > 0){?>
                       <a class="dropdown-item" href="<?php echo base_url(). 'func_supplier/deleteSupplier/'.$s->s_id; ?>" onclick="return confirm('Confirm delete supplier?');"><i class="fa fa-fw fa-clipboard"> &nbsp;Delete Supplier</i></a>
+                      <?php }?>
                     </div>
                   </div>
                 </td>

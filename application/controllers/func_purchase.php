@@ -162,7 +162,7 @@ class func_purchase extends CI_Controller {
 
 		$kira = $this->input->post('kirakira');
 		// echo $kira;
-
+		$branch1 = $this->session->userdata('branch');
 		for($i=0;$i<$kira;$i++){
 			$item0 =  $test0['itemid'][$i];
 			$item1 =  $test1['itemname'][$i];
@@ -174,7 +174,8 @@ class func_purchase extends CI_Controller {
 				'itemName' => $item1,
 				'itemPrice' => $item2,
 				'itemQuantity' => $item3,
-				'hold_id' => $key
+				'hold_id' => $key,
+				'u_branch' => $branch1
 			);
 			$this->db->insert('tbl_purchase_item',$products);
 		}
@@ -253,7 +254,7 @@ class func_purchase extends CI_Controller {
 
 		$kira = $this->input->post('kirakira');
 		// echo $kira;
-
+		$branch1 = $this->session->userdata('branch');
 		for($i=0;$i<$kira;$i++){
 			$item1 =  $test1['itemname'][$i];
 			$item2 =  $test2['itemprice'][$i];
@@ -263,7 +264,8 @@ class func_purchase extends CI_Controller {
 				'itemName' => $item1,
 				'itemPrice' => $item2,
 				'itemQuantity' => $item3,
-				'hold_id' => $key
+				'hold_id' => $key,
+				'u_branch' => $branch1
 			);
 			$this->db->where('hold_id',$id);
 			$this->db->update('tbl_purchase_item', $products);

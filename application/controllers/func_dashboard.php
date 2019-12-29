@@ -55,6 +55,7 @@ class func_dashboard extends CI_Controller {
 	     // Our Start and End Dates
 	     $start = $this->input->get("start");
 	     $end = $this->input->get("end");
+	     $branch = $this->session->userdata('branch');
 
 	     $startdt = new DateTime('now'); // setup a local datetime
 	     $startdt->setTimestamp($start); // Set the date based on timestamp
@@ -64,7 +65,7 @@ class func_dashboard extends CI_Controller {
 	     $enddt->setTimestamp($end); // Set the date based on timestamp
 	     $end_format = $enddt->format('Y-m-d H:i:s');
 
-	     $events = $this->d_get->get_events($start_format, $end_format);
+	     $events = $this->d_get->get_events($start_format, $end_format, $branch);
 
 	     $data_events = array();
 
@@ -86,6 +87,7 @@ class func_dashboard extends CI_Controller {
 	public function add_event() 
 	{
 	    /* Our calendar data */
+	    $branch = $this->session->userdata('branch');
 	    $name = $this->input->post("name", TRUE);
 	    $desc = $this->input->post("description", TRUE);
 	    $start_date = $this->input->post("start_date", TRUE);
@@ -114,7 +116,8 @@ class func_dashboard extends CI_Controller {
 	       "title" => $name,
 	       "description" => $desc,
 	       "start" => $start_date,
-	       "end" => $end_date
+	       "end" => $end_date,
+	       "u_branch" => $branch
 	       )
 	    );
 

@@ -73,65 +73,52 @@ button{
      echo $hold_value = '<input type="hidden" id="hold_value" value="'.$random.'">'
   ?>
 <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-clipboard-list"></i>List of Users </h1>
+    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-clipboard-list"></i>Database Utilities </h1>
     <!-- <p class="mb-4">Reparation Table <a target="_blank" href="https://datatables.net">Order & Reparation Record</a>.</p> -->
     <hr>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <div class="container">
-          <a href="<?php echo base_url(). 'admin/userlist_add/'; ?>"><button class="btn btn-default" style="float:right;text-align: center;height: 33px" data-toggle="modal" data-target="#reparationModal"><h6 class="font-weight-bold center">+ Add New Users</h6></button></a>
+          <a href="<?php echo base_url(). 'func_setting/backup/'; ?>">
+            <button class="btn btn-default" style="float:right;text-align: center;height: 33px"><h6 class="font-weight-bold center">+ Backup Current Database</h6></button>
+          </a>
         </div>
 
         <div class="card-body">
           <div class="table-responsive">
             <hr>
-            <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size: 13px;color: #000;">
+            <table class="table table-striped table-bordered" width="100%" cellspacing="0" style="font-size: 13px;color: #000;">
               <thead>
                 <tr>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
+                  <th>Version</th>
+                  <th>File Path</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tfoot>
                 <tr>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
+                  <th>Version</th>
+                  <th>File Path</th>
                   <th>Action</th>
                 </tr>
               </tfoot>
-              <tbody id="tablereportsales">
+              <tbody class="row_position" id="tablereportsales">
 
               <?php 
                 $test = '1';
-                foreach ($userdetails as $p) {
+                foreach ($viewdatabase as $p) {
               ?>
-                <tr style="background-color: #e3e6f0;">
-                    <td><?php echo $p->u_name ?></td>
-                    <td><?php echo $p->ul_name?></td>
-                    <td><?php echo $p->u_email?></td>
-                    <td><?php echo $p->u_role?></td>
+                <tr id="<?php echo $p->id ?>" style="background-color: #e3e6f0;">
                     <td>
-                      <?php if($p->u_status == 'Active'){?>
-                      <button class="btn btn-success"><?php echo $p->u_status?></button>
-                      <?php }else{?>
-                      <button class="btn btn-danger"><?php echo $p->u_status?></button>
-                      <?php }?>
+                      <?php echo $p->version?>
                     </td>
                     <td>
-                      <?php if($this->session->userdata('useredit') > 0){?>
-                      <a href="<?php echo base_url(). 'admin/userlist_update/'.$p->id; ?>"><button class="btn btn-warning"><i class="fa fa-fw fa-pen"></i></button></a>
-                      <?php }?>
-                      <?php if($this->session->userdata('userdelete') > 0){?>
-                      <a href="<?php echo base_url(). 'func_setting/userlist_delete/'.$p->id; ?>"><button class="btn btn-danger"><i class="fa fa-fw fa-trash"></i></button></a>
-                      <?php }?>
+                      <?php echo $p->file_name?>
+                    </td>
+                    <td>
+                      <button class="btn btn-warning" onclick="editModal(<?php echo $p->id;?>);"><i class="fa fa-fw fa-pen" ></i></button>
+                      <a href="<?php echo base_url(). 'func_setting/deletestatus/'.$p->id; ?>" onclick="return confirm('Are you sure you want to delete this status?');"><button class="btn btn-danger"><i class="fa fa-fw fa-trash"></i></button></a>
                     </td>
                 </tr>
               <?php
@@ -144,7 +131,8 @@ button{
       </div>
     </div>
   </div>
+  
 <script type="text/javascript">
-
+ 
 </script>
 <input type="hidden" id="id_sales" name="id_sales">

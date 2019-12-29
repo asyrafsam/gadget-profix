@@ -14,6 +14,19 @@ class M_data extends CI_Model{
 	function check_login_2($table,$where){		
 		return $this->db->get_where($table,$where);
 	}
+	public function select_array($column_name,$namadb,$where)
+	{
+		$this->db->select('*');
+		$this->db->from($namadb);
+
+		// check if set by where or not 
+		if(!empty($where)){
+			$this->db->where($where); 
+		}	
+
+		$query = $this->db->get()->result();
+		return $query;
+	}
 
 	// function view_user($where,$table){
 		

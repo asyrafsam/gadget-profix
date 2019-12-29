@@ -68,9 +68,11 @@
   <div class="card shadow mb-4">
     <div class="card-header py-3">
       <div class="header-card col-md-0" style="float: left; width: 500px;">
+        <?php if($this->session->userdata('repairadd') > 0){?>
         <button class="btn btn-dark" style="text-align: center;height: 33px" data-toggle="modal" data-target="#reparationModal"><h6 class="font-weight-bold center">+ New Reparation</h6></button>
+        <?php }?>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <div class="print">
+        <!-- <div class="print">
           <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 20px;">
               <i class="fas fa-print fa-sm fa-fw text-blue-400"> Print</i>
@@ -83,7 +85,7 @@
               <a class="dropdown-item" href="#">Something else here</a>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       
       <ul class="nav nav-tabs" style="float: right;">
@@ -177,8 +179,12 @@
                     <a class="dropdown-item" href="#" onclick="view_reparationlog('<?php echo $r->r_repairno?>')"><i class="fa fa-fw fa-clipboard"> &nbsp;View Log</i></a>
                     <a class="dropdown-item" href="#" onclick="view_payment('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;View Payments</i></a>
                     <a class="dropdown-item" href="#" onclick="add_payment('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;Add Payment</i></a>
+                    <?php if($this->session->userdata('repairedit') > 0){?>
                     <a class="dropdown-item" href="#" onclick="editReparation('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-edit"> &nbsp;Edit</i></a>
+                    <?php }?>
+                    <?php if($this->session->userdata('repairdelete') > 0){?>
                     <a class="dropdown-item" href="#" onclick="deleteReparation('<?php echo $r->r_repairno?>')"><i class="fa fa-fw fa-trash"> &nbsp;Delete</i></a>
+                    <?php }?>
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-fw fa-barcode"> &nbsp;Print Barcode</i></a> -->
                   </div>
                 </div>
@@ -454,6 +460,27 @@
       // function getDetailEmail($id){
       //   alert($id);
       // }
+      $(document).ready(function() {
+        $('#dataTable').DataTable( {
+            "dom": 'Bfrtip',
+            "buttons": [
+                        {
+                       extend: 'pdf',
+                       exportOptions: {
+                       columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
+                           }
+                         },
+                         {
+                          extend: 'excel',
+                          exportOptions: {
+                          columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
+                         }
+                       },
+                     ],   
+            "pageLength": 100,
+            "processing": false,   
+            });
+        });
       function getClient(){
         var send = $('[name="clientid"]').val();
         var data = {'send':send}

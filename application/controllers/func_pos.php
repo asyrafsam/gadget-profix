@@ -450,6 +450,8 @@ class func_pos extends CI_Controller {
 		$this->db->where('hold_id',$holdid);
 		$this->db->update('tbl_holdproduct',$datastatus);
 
+		$branch1 = $this->session->userdata('branch');
+
 		$balance2 = $total - $payamount;
 		if($balance2 < 0)
 		{
@@ -460,7 +462,8 @@ class func_pos extends CI_Controller {
 		$paymentrevenue = array(
 				'revenue_date'=>$date,
 				'revenue_holdid' => $transactionid,
-				'revenue_subtotal'=>$revenuebalance
+				'revenue_subtotal'=>$revenuebalance,
+				'u_branch'=>$branch1
 			);
 		$this->db->insert('tbl_revenue',$paymentrevenue);
 

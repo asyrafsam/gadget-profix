@@ -98,11 +98,15 @@ label{
               <td><?php echo $md->md_name?></td>
               <td><?php echo $md->md_manufacturer?></td>
               <td>
+                <?php if($this->session->userdata('modeledit') > 0){?>
                 <a href="#" onclick="edit_model(<?php echo $md->md_id; ?>)">
                   <button type="button" class="btn btn-warning" style="width: 35px;height: 35px;font-size: 11px;text-align: center;"><i class="fa fa-fw fa-pen"></i></button>
                 </a>
+                <?php }?>
+                <?php if($this->session->userdata('modeldelete') > 0){?>
                 <a href="<?php echo base_url(). 'func_model/delete_Model/'.$md->md_id; ?>" onclick="return confirm('Confirm delete model?');">
                   <button type="button" class="btn btn-danger" style="width: 35px;height: 35px;font-size: 11px;text-align: center;"><i class="fa fa-fw fa-trash"></i></button>
+                <?php }?>
                 </a>
               </td>
             </tr>

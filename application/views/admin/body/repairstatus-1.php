@@ -73,7 +73,7 @@ button{
      echo $hold_value = '<input type="hidden" id="hold_value" value="'.$random.'">'
   ?>
 <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-clipboard-list"></i>List of Group </h1>
+    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-clipboard-list"></i>List of Statuses </h1>
     <!-- <p class="mb-4">Reparation Table <a target="_blank" href="https://datatables.net">Order & Reparation Record</a>.</p> -->
     <hr>
     <!-- DataTales Example -->
@@ -107,7 +107,7 @@ button{
               ?>
                 <tr id="<?php echo $p->id ?>" style="background-color: #e3e6f0;">
                     <td>
-                      <button class="btn" style="background-color:<?php echo $p->statusBGColor?>;color: <?php echo $p->statusTextColor?>;font-weight: bold;"><?php echo $p->statusName ?></button>
+                      <?php echo $p->statusName?>
                     </td>
                     <td>
                       <button class="btn btn-warning" onclick="editModal(<?php echo $p->id;?>);"><i class="fa fa-fw fa-pen" ></i></button>
