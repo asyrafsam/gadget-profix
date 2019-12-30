@@ -24,26 +24,30 @@ class d_get extends CI_Model{
 		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
-	function getClient(){
+	function getClient($branch){
 		$this->db->select('count(*) as kiraclient');
 		$this->db->from('tbl_client');
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
-	function getReparation(){
+	function getReparation($branch){
 		$this->db->select('count(*) as kirareparation');
 		$this->db->from('tbl_reparation');
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
-	function getRevenue(){
+	function getRevenue($branch){
 		$this->db->select('SUM(revenue_subtotal) as kirarevenue');
 		$this->db->from('tbl_revenue');
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
-	function getRevenuebyMonth(){
+	function getRevenuebyMonth($branch){
 		$this->db->select('revenue_date,SUM(revenue_subtotal) as kirarevenue');
 		$this->db->from('tbl_revenue');
 		$this->db->where('MONTH(revenue_date)', date('m'));
 		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	public function get_events($start, $end, $branch)
@@ -76,11 +80,12 @@ class d_get extends CI_Model{
  //        $this->db->group_by('tbl_reparation_item.hold_id');
 	// 	return $this->db->get();
 	// }		
-	function view_reparation(){
+	function view_reparation($branch){
 		$this->db->select('*, SUM(DISTINCT(tbl_hold.unit_price)) as creditTotal, SUM(DISTINCT(tbl_payment.pay_amount)) as payTotal');
         $this->db->from('tbl_reparation');
         $this->db->join('tbl_payment', 'tbl_payment.r_repairno = tbl_reparation.r_repairno','LEFT');
         $this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_payment.hold_id','LEFT');
+        $this->db->where('tbl_reparation.u_branch', $branch);
         $this->db->group_by('tbl_hold.random_id');
 		return $this->db->get();
 	}	
@@ -130,9 +135,10 @@ class d_get extends CI_Model{
 			echo '<option value="'.$data->statusName.'">';
 		}
 	}
-	function get_item(){
+	function get_item($branch){
         $this->db->select('*');
         $this->db->from('tbl_lookup_item');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
     function getDetails($id)
@@ -247,10 +253,11 @@ class d_get extends CI_Model{
 
     // Stock Section
     // Add Product
-    function get_product(){
+    function get_product($branch){
         $this->db->select('*');
         $this->db->order_by("p_id", "asc");
         $this->db->from('tbl_product');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
     function lookup_p_supplier()
@@ -281,10 +288,11 @@ class d_get extends CI_Model{
         $this->db->where('cat_id', $id);
 		return $this->db->get();
 	}
-	function get_productcat(){
+	function get_productcat($branch){
 		$this->db->select('*');
         $this->db->order_by("cat_id", "asc");
         $this->db->from('tbl_lookup_category');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	function get_categorydetails($id){
@@ -302,10 +310,11 @@ class d_get extends CI_Model{
 
 
     // Client Section
-    function get_client(){
+    function get_client($branch){
         $this->db->select('*');
         $this->db->order_by("c_id", "asc");
         $this->db->from('tbl_client');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
     function get_clientDetails($id)
@@ -354,10 +363,11 @@ class d_get extends CI_Model{
 	function checkSupplier($table2,$where){		
 		return $this->db->get_where($table2,$where);
 	}
-	function get_supplier(){
+	function get_supplier($branch){
         $this->db->select('*');
         $this->db->order_by("s_id", "asc");
         $this->db->from('tbl_supplier');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
     function show_supplier($id){
@@ -368,7 +378,7 @@ class d_get extends CI_Model{
 	}
 
 	// Manufacturer Section
-	function get_manufacturer(){
+	function get_manufacturer($branch){
         $this->db->select('*');
         $this->db->order_by("m_id", "asc");
         $this->db->from('tbl_manufacturer');
@@ -382,10 +392,11 @@ class d_get extends CI_Model{
 	}
 
 	// Models Section
-	function get_model(){
+	function get_model($branch){
 		$this->db->select('*');
         $this->db->order_by("md_id", "asc");
         $this->db->from('tbl_model');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	function show_model($id){
@@ -417,10 +428,11 @@ class d_get extends CI_Model{
 	}
 
 	//purchase
-	function get_purchase(){
+	function get_purchase($branch){
 		$this->db->select('*');
         $this->db->order_by("id", "asc");
         $this->db->from('tbl_purchase');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	function get_purchasebyholdid($id){
@@ -477,10 +489,11 @@ class d_get extends CI_Model{
 	// 	$this->db->group_by('p_category');
 	// 	return $this->db->get();
 	// }
-	function get_posdata(){
+	function get_posdata($branch, $tbl_lookup_category){
 		$this->db->select('*');
 		$this->db->from('tbl_lookup_category');
 		$this->db->group_by('hold_id');
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	// function get_productposjoin($id){
@@ -682,21 +695,23 @@ class d_get extends CI_Model{
         $this->db->from('tbl_product');
 		return $this->db->get();
     }
-    function get_salesproduct($m){
+    function get_salesproduct($m,$branch){
     	$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax, SUM(DISTINCT(tbl_pospayment.pay_amount)) as totalpaid');
     	$this->db->from('tbl_holdproduct');
     	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
     	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
     	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
     	$this->db->where('MONTH(tbl_posdetails.date_pos)', $m);
+    	$this->db->where('tbl_posdetails.u_branch', $branch);
     	$this->db->group_by('tbl_pospayment.hold_id');
     	return $this->db->get();
 	    // echo $this->db->last_query(); exit();
     }
-    function get_drawerreport($m){
+    function get_drawerreport($m,$branch){
     	$this->db->select('*');
     	$this->db->from('tbl_drawer');
     	$this->db->where('MONTH(tbl_drawer.closedTime)', $m);
+    	$this->db->where('u_branch', $branch);
     	return $this->db->get();
 	    // echo $this->db->last_query(); exit();
     }
@@ -780,9 +795,10 @@ class d_get extends CI_Model{
 		$this->db->where('id', $id);
 		return $this->db->get();
 	}
-	function get_usersgroup($tbl_user_group){
+	function get_usersgroup($branch,$tbl_user_group){
 		$this->db->select('*');
 		$this->db->from('tbl_user_group');
+		$this->db->where('u_branch', $branch);
 		return $this->db->get();
 	}
 	function getGroup($id){

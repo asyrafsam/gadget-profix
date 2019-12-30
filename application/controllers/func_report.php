@@ -52,10 +52,11 @@ class func_report extends CI_Controller {
 		$time=strtotime($month);
 		$m=date("m",$time);
 		$y=date("Y",$time);
-
+		$branch = $this->session->userdata('branch');
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		$this->db->where('MONTH(revenue_date)', $m);
 		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('u_branch', $branch);
 		$query =  $this->db->get('tbl_revenue')->result();
 		foreach ($query as $data) 
 		{
@@ -66,13 +67,14 @@ class func_report extends CI_Controller {
 	function viewsalesselected(){
 		$start = $this->input->post('start');
 		$end = $this->input->post('end');
-
+		$branch = $this->session->userdata('branch');
 		$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax, SUM(tbl_pospayment.pay_amount) as totalpaid');
     	$this->db->from('tbl_holdproduct');
     	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
     	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
     	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
     	$this->db->where('tbl_posdetails.date_pos BETWEEN "'.$start.'" and "'.$end.'" ');
+    	$this->db->where('tbl_posdetails.u_branch', $branch);
     	$this->db->group_by('tbl_holdproduct.hold_id');
     	$query['salesselect'] = $this->db->get()->result();
     	// echo $this->db->last_query(); exit();
@@ -104,10 +106,11 @@ class func_report extends CI_Controller {
 	function viewdrawerselected(){
 		$start = $this->input->post('start');
 		$end = $this->input->post('end');
-
+		$branch = $this->session->userdata('branch');
 		$this->db->select('*');
     	$this->db->from('tbl_drawer');
     	$this->db->where('tbl_drawer.closedTime BETWEEN "'.$start.'" and "'.$end.'" ');
+    	$this->db->where('u_branch', $branch);
     	$query['drawerselect'] = $this->db->get()->result();
     	// echo $this->db->last_query(); exit();
     	return $this->load->view('admin/body/viewdrawerselected-1.php',$query);

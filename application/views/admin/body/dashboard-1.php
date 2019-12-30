@@ -5,8 +5,9 @@
     }
   </style>
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Hye, Welcome <!-- <?php foreach($admin as $ad){ echo $ad->ad_name; }?> -->!</h1>
-    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+    <h1 class="h3 mb-0 text-gray-800">Hye, Welcome <?php echo $this->session->userdata('name'); ?>!</h1>
+    <h3 class="d-sm-inline-block" style="text-transform: capitalize;">From Branch: <?php echo $this->session->userdata('branch');?></h3>
+    <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
   </div>
   <div class="row">
     <div class="col-xl-3 col-md-6 mb-4">

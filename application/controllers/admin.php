@@ -27,16 +27,15 @@ class admin extends CI_Controller {
 		// $data['admin'] = $this->m_data->view_user($where,'admin')->result();
 
 		// var_dump($this->session->userdata('role')); exit;
-		$branch = $this->session->userdata('branch');
-
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$financerevenue = $this->d_get->get_financedata($branch)->result();
 			$data = array(
 				'data' => json_encode($financerevenue),
-                'getClient' => $this->d_get->getClient()->result(),
-                'getReparation' => $this->d_get->getReparation()->result(),
-                'getRevenue' => $this->d_get->getRevenue()->result(),
-                'getRevenueMonth' => $this->d_get->getRevenuebyMonth()->result()
+                'getClient' => $this->d_get->getClient($branch)->result(),
+                'getReparation' => $this->d_get->getReparation($branch)->result(),
+                'getRevenue' => $this->d_get->getRevenue($branch)->result(),
+                'getRevenueMonth' => $this->d_get->getRevenuebyMonth($branch)->result()
             );
 
 			$this->load->view('admin/header/header.php');
@@ -54,11 +53,12 @@ class admin extends CI_Controller {
 	public function reparation()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			if($this->session->userdata('repairview') > 0){
 				$data = array(
-	                'reparation' => $this->d_get->view_reparation()->result(),
-	                'item' => $this->d_get->get_item()->result(),
-	                'client' => $this->d_get->get_client()->result()
+	                'reparation' => $this->d_get->view_reparation($branch)->result(),
+	                'item' => $this->d_get->get_item($branch)->result(),
+	                'client' => $this->d_get->get_client($branch)->result()
 	            );
 				$this->load->view('admin/header/header.php');
 				$this->load->view('admin/body/sidebar-1.php');
@@ -83,10 +83,11 @@ class admin extends CI_Controller {
 	public function reparation_completed()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$data = array(
-                'reparation' => $this->d_get->view_reparation()->result(),
-                'item' => $this->d_get->get_item()->result(),
-                'client' => $this->d_get->get_client()->result()
+                'reparation' => $this->d_get->view_reparation($branch)->result(),
+                'item' => $this->d_get->get_item($branch)->result(),
+                'client' => $this->d_get->get_client($branch)->result()
             );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
@@ -146,8 +147,9 @@ class admin extends CI_Controller {
 	public function client()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$this->session->set_flashdata('item',"item");
-			$data['client'] = $this->d_get->get_client()->result();
+			$data['client'] = $this->d_get->get_client($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -162,7 +164,8 @@ class admin extends CI_Controller {
 	public function stock()
 	{
 		if($this->session->userdata('status') == "login"){
-			$data['product'] = $this->d_get->get_product()->result();
+			$branch = $this->session->userdata('branch');
+			$data['product'] = $this->d_get->get_product($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -177,7 +180,8 @@ class admin extends CI_Controller {
 	public function add_stock()
 	{
 		if($this->session->userdata('status') == "login"){
-			$data['productcat'] = $this->d_get->get_productcat()->result();
+			$branch = $this->session->userdata('branch');
+			$data['productcat'] = $this->d_get->get_productcat($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -226,8 +230,9 @@ class admin extends CI_Controller {
 	public function suppliers()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$this->session->set_flashdata('item',"item");
-			$data['supplier'] = $this->d_get->get_supplier()->result();
+			$data['supplier'] = $this->d_get->get_supplier($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -242,8 +247,9 @@ class admin extends CI_Controller {
 	public function manufacturers()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$this->session->set_flashdata('item',"item");
-			$data['manufacturer'] = $this->d_get->get_manufacturer()->result();
+			$data['manufacturer'] = $this->d_get->get_manufacturer($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -258,8 +264,9 @@ class admin extends CI_Controller {
 	public function models()
 	{
 		if($this->session->userdata('status') == "login"){
+			$branch = $this->session->userdata('branch');
 			$this->session->set_flashdata('item',"item");
-			$data['model'] = $this->d_get->get_model()->result();
+			$data['model'] = $this->d_get->get_model($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -291,8 +298,8 @@ class admin extends CI_Controller {
 			// echo $this->db->last_query(); exit();
 			if($query1->num_rows() > 0){
 				$data = array(
-	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result(),
-	                'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
+	                'posdata' => $this->d_get->get_posdata($branch,'tbl_lookup_category')->result(),
+	                'posdata' => $this->d_get->get_posdata($branch, 'tbl_lookup_category')->result()
 	            );
 
 	            if($currentdatetime <= 18)
@@ -337,7 +344,8 @@ class admin extends CI_Controller {
 	public function view_purchase()
 	{
 		if($this->session->userdata('status') == "login"){
-			$data['purchase'] = $this->d_get->get_purchase()->result();
+			$branch = $this->session->userdata('branch');
+			$data['purchase'] = $this->d_get->get_purchase($branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -359,10 +367,11 @@ class admin extends CI_Controller {
 			// 	$data['content'] = $content;
 						
 			//     }
+			$branch = $this->session->userdata('branch');
 			$data = array(
 				$content = $this->input->post('content'),
-                'reparation' => $this->d_get->view_reparation()->result(),
-                'item' => $this->d_get->get_item()->result()
+                'reparation' => $this->d_get->view_reparation($branch)->result(),
+                'item' => $this->d_get->get_item($branch)->result()
             );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
@@ -379,9 +388,10 @@ class admin extends CI_Controller {
 	{
 		if($this->session->userdata('status') == "login"){
 			// $where = array('hold_id' => $id);
+			$branch = $this->session->userdata('branch');
 			$data = array(
                 'purchase' => $this->d_get->get_purchasebyholdid($id)->result(),
-                'item' => $this->d_get->get_item()->result()
+                'item' => $this->d_get->get_item($branch)->result()
             );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
@@ -520,8 +530,8 @@ class admin extends CI_Controller {
 	{
 		if($this->session->userdata('status') == "login"){
 			$m = date('m');
-
-			$data['sales'] = $this->d_get->get_salesproduct($m)->result();
+			$branch = $this->session->userdata('branch');
+			$data['sales'] = $this->d_get->get_salesproduct($m,$branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -558,8 +568,8 @@ class admin extends CI_Controller {
 	{
 		if($this->session->userdata('status') == "login"){
 			$m = date('m');
-
-			$data['drawer'] = $this->d_get->get_drawerreport($m)->result();
+			$branch = $this->session->userdata('branch');
+			$data['drawer'] = $this->d_get->get_drawerreport($m,$branch)->result();
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
 			$this->load->view('admin/body/topbar-1.php');
@@ -647,7 +657,7 @@ class admin extends CI_Controller {
 		if($this->session->userdata('status') == "login"){
 			$branch = $this->session->userdata('branch');
 			$data = array(
-				'usergroup' => $this->d_get->get_usersgroup('tbl_user_group')->result(),
+				'usergroup' => $this->d_get->get_usersgroup($branch,'tbl_user_group')->result(),
             );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
@@ -664,7 +674,7 @@ class admin extends CI_Controller {
 		if($this->session->userdata('status') == "login"){
 			$branch = $this->session->userdata('branch');
 			$data = array(
-				'usergroup' => $this->d_get->get_usersgroup('tbl_user_group')->result(),
+				'usergroup' => $this->d_get->get_usersgroup($branch,'tbl_user_group')->result(),
             );
 			$this->load->view('admin/header/header.php');
 			$this->load->view('admin/body/sidebar-1.php');
