@@ -107,7 +107,7 @@ button{
               ?>
                 <tr id="<?php echo $p->id ?>" style="background-color: #e3e6f0;">
                     <td>
-                      <?php echo $p->statusName?>
+                      <button class="btn" style="background-color:<?php echo $p->statusBGColor?>;color: <?php echo $p->statusTextColor?>;font-weight: bold;"><?php echo $p->statusName?></button>
                     </td>
                     <td>
                       <button class="btn btn-warning" onclick="editModal(<?php echo $p->id;?>);"><i class="fa fa-fw fa-pen" ></i></button>
@@ -152,13 +152,13 @@ button{
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 180px;"><i class="fas fa-fw fa-mobile-alt"></i>| Background Color</span>
                       </div>
-                        <input type="text" name="statusbgcolor" id="groupname" placeholder="#000000" class="form-control">
+                        <input type="text" name="statusbgcolor" id="groupname" placeholder="#000000" value="#fff" class="form-control">
                     </div>
                     <div class="form-group input-group col-lg-6">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"><i class="fas fa-fw fa-mobile-alt"></i>| Text Color</span>
                       </div>
-                        <input type="text" name="statustextcolor" id="groupname" placeholder="#000000" class="form-control">
+                        <input type="text" name="statustextcolor" id="groupname" placeholder="#000000" value="#000000" class="form-control">
                     </div>
                   </div>
                 </div>
@@ -212,12 +212,33 @@ button{
                         <input type="text" name="editstatustextcolor" id="editstatustextcolor" placeholder="#000000" class="form-control">
                     </div>
                   </div>
+                  <div class="flex-row">
+                    <div class="form-group input-group col-lg-12">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text span-modal" style="width: 250px;"><i class="fas fa-fw fa-mobile-alt"></i>| Able to send email</span>
+                      </div>
+                      <div class="col-lg-2">
+                        <input type="checkbox" name="editemail" id="editemail" class="form-control">
+                      </div>
+                      <div id="emailtemplate" style="margin-top: 10px;">
+                        <textarea name="emailtemplatetext" id="emailtemplatetext" rows="10" cols="70"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group input-group col-lg-12">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text span-modal" style="width: 250px;"><i class="fas fa-fw fa-mobile-alt"></i>| Tick status as completed</span>
+                      </div>
+                      <div class="col-lg-2">
+                        <input type="checkbox" name="editcompleted" id="editcompleted"class="form-control">
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                 <!-- <input type='button' id='click' value='click'> -->
-                <button class="btn btn-primary" type="submit">Edit Group</button>
+                <button class="btn btn-primary" type="submit">Edit Status</button>
               </div>
             </form>      
           </div>
@@ -250,6 +271,10 @@ button{
     }
     function editModal(id)
     {
+
+      $('#editemail').prop('checked',false);
+      $('#editcompleted').prop('checked',false);
+      $('#emailtemplate').hide();
       var data = {'id':id}
       $.ajax({
                 url: '<?= base_url() ?>func_setting/getstatus',
@@ -265,9 +290,102 @@ button{
                     var editstatus2 = $('#editstatusname').val(response.statusName);
                     var editstatus3 = $('#editstatusbgcolor').val(response.statusBGColor);
                     var editstatus4 = $('#editstatustextcolor').val(response.statusTextColor);
-                    
+                    var editstatus5 = $('#editcompleted').val(response.status_completed);
+                    var editstatus6 = $('#editemail').val(response.status_email);
+                    var editstatus7 = response.status_completed;
+                    var editstatus8 = response.status_email;
+                    if(editstatus7 == 1){
+                        // $('#editcompleted').attr("checked", "checked");
+                        $('#editcompleted').prop('checked',true);
+                    }
+                    if(editstatus8 == 1){
+                        $('#editemail').prop('checked',true);
+                    }
                 }
         });
+    }
+    $("[name='editemail']").click(function() {
+      var popup = $('#emailtemplate');
+      var id = $("#editid").val();
+      var checked = $(this).is(':checked');
+      if (checked) {
+          //alert('checked');
+          $('#emailtemplate').show();
+          var data = {'id':id}
+          $.ajax({
+                url: '<?= base_url() ?>func_setting/changeEmailstatus',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                beforeSend: function() {
+
+                },
+                success: function(response){
+                  
+                }
+        });
+
+
+      } else {
+          
+          uncheckEmail(id);
+      }
+  });
+    function uncheckEmail(id){
+      var data = {'id':id}
+      $('#emailtemplate').hide();
+      $.ajax({
+                      url: '<?= base_url() ?>func_setting/changeEmailstatus0',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                      }
+              });
+    }
+    $("[name='editcompleted']").click(function() {
+      var id = $("#editid").val();
+      var checked = $(this).is(':checked');
+      if (checked) {
+          //alert('checked');
+          var data = {'id':id}
+          $.ajax({
+                url: '<?= base_url() ?>func_setting/changeCompletedstatus',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                beforeSend: function() {
+
+                },
+                success: function(response){
+                  
+                }
+        });
+
+
+      } else {
+          
+          uncheckCompleted(id);
+      }
+  });
+    function uncheckCompleted(id){
+      var data = {'id':id}
+      $.ajax({
+                      url: '<?= base_url() ?>func_setting/changeCompletedstatus0',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                      }
+              });
     }
 </script>
 <input type="hidden" id="id_sales" name="id_sales">

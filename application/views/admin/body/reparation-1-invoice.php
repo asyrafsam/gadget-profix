@@ -171,6 +171,7 @@
 					if($balance < 0)
 					{
 						$balanceresult = abs($balance);
+
 					}
 				?>
 				<tr class="tabletitle">
@@ -194,7 +195,18 @@
 				<tr class="tabletitle">
 					<td></td>
 					<td class="Rate"><h2>Balance</h2></td>
-					<td class="payment"><h2><?php echo $balanceresult?>.00</h2></td>
+					<td class="payment">
+						<h2>
+							<?php
+								if(empty($balanceresult))
+									{
+										echo '';
+									}else{
+										echo $balanceresult;
+									}
+							?>.00
+						</h2>
+					</td>
 				</tr>
 				<?php
 					}

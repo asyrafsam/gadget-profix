@@ -154,7 +154,7 @@ button{
                     <?php if($p->total <= $p->total_paid){?>
                     <td><button class="btn btn-success" style="height: 30px;font-size: 12px;">Paid</button></td>
                     <?php }else{?>
-                    <td><button class="btn btn-danger" style="height: 30px;font-size: 12px;">Not fully paid</button></td>
+                    <td><button class="btn btn-danger" style="height: 30px;font-size: 12px;width: 100px;">Not fully paid</button></td>
                     <?php }?>
                     <td>
                       <div class="dropdown no-arrow">
@@ -184,6 +184,12 @@ button{
     </div>
   </div>
 <script type="text/javascript">
+  $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        "order": [2,'desc']
+        
+        });
+    });
   $(function() {
   $('input[name="daterange"]').daterangepicker({
     opens: 'left'

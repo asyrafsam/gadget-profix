@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_supplier extends CI_Controller {
+class Func_supplier extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		$this->load->library('session','upload');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	function add_supplier(){
 		
@@ -32,8 +36,8 @@ class func_supplier extends CI_Controller {
 			's_name' => $sname,
 			'u_branch' => $ubranch
 			);
-		$check = $this->d_get->checkSupplier("tbl_supplier",$where)->num_rows();
-		$data['tbl_supplier'] = $this->d_get->checkSupplier("tbl_supplier",$where)->result();
+		$check = $this->D_get->checkSupplier("tbl_supplier",$where)->num_rows();
+		$data['tbl_supplier'] = $this->D_get->checkSupplier("tbl_supplier",$where)->result();
 		if($check > 0){
 
 			?>
@@ -56,7 +60,25 @@ class func_supplier extends CI_Controller {
 				's_vat' => $svat,
 				'u_branch' => $ubranch
 				);
-			$query = $this->d_post->addsupplier($datain,'tbl_supplier');
+			$query = $this->D_post->addsupplier($datain,'tbl_supplier');
+
+			$logactivity = 'Add';
+	        $moduleclient = 'tbl_supplier';
+	        $logid = $this->session->userdata('id');
+	        $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $logid,
+	        			'log_user' =>$loguser,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+		    $this->db->insert('tbl_log_activity', $datalog);
 
 			redirect(base_url('admin/suppliers'));
 		}
@@ -65,7 +87,7 @@ class func_supplier extends CI_Controller {
 
 	function edit_supplier($id){
 
-    	$data = $this->d_get->show_supplier($id);
+    	$data = $this->D_get->show_supplier($id);
 		echo json_encode($data);
     }
 
@@ -100,15 +122,51 @@ class func_supplier extends CI_Controller {
 		    $where = array(
 				's_id' => $sid
 			);
-		    $query = $this->d_post->updateSuppliers($where,$datainn,'tbl_supplier');
+		    $query = $this->D_post->updateSuppliers($where,$datainn,'tbl_supplier');
+
+		    $logactivity = 'Edit';
+	        $moduleclient = 'tbl_supplier';
+	        $logid = $this->session->userdata('id');
+	        $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $logid,
+	        			'log_user' =>$loguser,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+		    $this->db->insert('tbl_log_activity', $datalog);
 
 			redirect(base_url('admin/suppliers'));
     }
 	
 
 	function deleteSupplier($id){
+		$logactivity = 'Delete';
+        $moduleclient = 'tbl_supplier';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		$where = array('s_id' => $id);
-		$this->d_post->deleteSupplier($where,'tbl_supplier');
+		$this->D_post->deleteSupplier($where,'tbl_supplier');
 		redirect(base_url('admin/suppliers'));
 	}		
 }

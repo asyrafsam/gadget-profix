@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_pos extends CI_Controller {
+class Func_pos extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		// $this->load->library('form_validation');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	function openDrawer(){
 		$result1 = $this->input->post('result1');
@@ -41,6 +45,25 @@ class func_pos extends CI_Controller {
 					);
 
 		$this->db->insert('tbl_drawer', $datain);
+
+		$logactivity = 'Open';
+        $moduleclient = 'tbl_drawer';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url('admin/pos'));
 	}
 	function closeDrawer(){
@@ -95,6 +118,24 @@ class func_pos extends CI_Controller {
 			$this->db->where('u_branch', $ubranch);
 			$this->db->update('tbl_drawer', $datain);
 			// echo $this->db->last_query(); exit();
+			$logactivity = 'Closed';
+	        $moduleclient = 'tbl_drawer';
+	        $logid = $this->session->userdata('id');
+	        $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $logid,
+	        			'log_user' =>$loguser,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+		    $this->db->insert('tbl_log_activity', $datalog);
+
 			?>
 			<script type="text/javascript">
 	            alert("Shift Closed");
@@ -104,25 +145,30 @@ class func_pos extends CI_Controller {
 			// redirect(base_url('admin/pos'));
 		}
 	}
+	// function clearpos(){
+	// 	$holdid = $this->input->post('id');
+
+	// 	redirect(base_url('admin/pos'));
+	// }
 	function viewsubpos(){
 		$id = $this->input->post('id');
 
-        $data['productdataa'] = $this->d_get->get_productposjoin($id)->result();
+        $data['productdataa'] = $this->D_get->get_productposjoin($id)->result();
 		return $this->load->view('admin/body/possubcategory-1',$data);
 	}
 	function viewsubposproduct(){
 		$id = $this->input->post('id');
-
+		$branch = $this->session->userdata('branch');
         $data = array(
-        		'productpos' => $this->d_get->get_productposproduct($id)->result(),
-        		'posdata' => $this->d_get->get_posdata('tbl_lookup_category')->result()
+        		'productpos' => $this->D_get->get_productposproduct($id)->result(),
+        		'posdata' => $this->D_get->get_posdata($branch,'tbl_lookup_category')->result()
         	);
 
 		return $this->load->view('admin/body/posproduct-1',$data);
 	}
 	function backviewsubcat(){
 		$id = $this->input->post('id');
-		// $data['productdataa'] = $this->d_get->get_backsubcat($id)->result();
+		// $data['productdataa'] = $this->D_get->get_backsubcat($id)->result();
 		// $this->db->where('r_repairno', $id);
 		$this->db->select('*');
 		// $this->db->join('tbl_lookup_subcategory', 'tbl_lookup_subcategory.sub_id = tbl_product.p_subCategory');
@@ -134,7 +180,7 @@ class func_pos extends CI_Controller {
 			$holdidd = $hold->hold_id;
 		}
 		if(empty($holdidd)){
-			// $data['productdataa'] = $this->d_get->get_productposjoin($id)->result();
+			// $data['productdataa'] = $this->D_get->get_productposjoin($id)->result();
 			// return $this->load->view('admin/body/possubcategory-1',$data);
 		}else{
 			return $this->backviewsubcat2($holdidd);
@@ -142,26 +188,28 @@ class func_pos extends CI_Controller {
 		// return $this->load->view('admin/body/possubcategory-1',$data);
 	}
 	function backviewsubcat2($holdidd){
-		$data['productdataa'] = $this->d_get->get_backsubcat2($holdidd)->result();
+		$data['productdataa'] = $this->D_get->get_backsubcat2($holdidd)->result();
 		// $id = $this->input->post('id');
-		// $data['productdataa'] = $this->d_get->get_backsubcat($id)->result();
+		// $data['productdataa'] = $this->D_get->get_backsubcat($id)->result();
 
 		return $this->load->view('admin/body/possubcategory-1',$data);
 	}
 	function backviewcategory(){
 		$holdid = $this->input->post('id');
 		// var_dump($holdid); exit();
-        $data['productdataa'] = $this->d_get->get_productbacktosubcategory($holdid)->result();
+        $data['productdataa'] = $this->D_get->get_productbacktosubcategory($holdid)->result();
 		return $this->load->view('admin/body/possubcategory-1',$data);
 	}
 	function backviewallcat(){
-		$data['posdata'] = $this->d_get->get_posdata('tbl_lookup_category')->result();
+		$branch = $this->input->post('ubranch');
+		$branch = $this->session->userdata('branch');
+		$data['posdata'] = $this->D_get->get_posdata($branch,'tbl_lookup_category')->result();
         return $this->load->view('admin/body/posallcategory-1',$data);
 	}
 	function getDetailsProduct()
 	{
 		$id = $this->input->post('id');
-		$query = $this->d_get->getDetailsProduct($id);
+		$query = $this->D_get->getDetailsProduct($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -169,15 +217,13 @@ class func_pos extends CI_Controller {
 			foreach ($query as $data) 
 			{
 			
-
 			}
 			echo json_encode($data);
-
 		}
 	}
 	function getClientDetails(){
 		$id = $this->input->post('send');
-		$query = $this->d_get->get_clientDetails($id);
+		$query = $this->D_get->get_clientDetails($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -192,7 +238,7 @@ class func_pos extends CI_Controller {
 		}
 	}
 	function dropdown_item_drop(){
-		$data['item'] = $this->d_get->get_item()->result();
+		$data['item'] = $this->D_get->get_item()->result();
 		$this->load->view('reparation-1.php',$data);
 	}
 	
@@ -357,11 +403,11 @@ class func_pos extends CI_Controller {
 	            </div>
 	            <div class="total col-lg-6 right" style="">
 	                <label>Subtotal :&nbsp;&nbsp;&nbsp;&nbsp;</label>
-	                <input type="number" name="allsubtotal" style="width: 70px;float: right;margin-bottom: 10px;" placeholder="0.00" value="'.$data->total.'" readonly>
+	                <input type="number" name="allsubtotal" id="allsubtotal" style="width: 70px;float: right;margin-bottom: 10px;" placeholder="0.00" value="'.$data->total.'" readonly>
 	            </div>
 	            <div class="total col-lg-6 right" style="">
 	                <label>Order Tax :&nbsp;&nbsp;&nbsp;&nbsp;</label>
-	                <input type="number" name="alltotaltax" style="width: 70px;float: right;" placeholder="0.00" value="'.$data->totaltax.'" readonly>
+	                <input type="number" name="alltotaltax" id="alltotaltax" style="width: 70px;float: right;" placeholder="0.00" value="'.$data->totaltax.'" readonly>
 	            </div>
 	            <div class="total col-lg-6 right" style="">
 	                <label>Discount :&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -411,16 +457,61 @@ class func_pos extends CI_Controller {
 		}
 	
 	}
+	function deleteprohold(){
+		$id = $this->input->post('id');
+		$query = $this->D_get->deleteproholdpos($id);
+		// $this->db->select('pro_price');
+		// $this->db->from('tbl_holdproduct');
+		// $this->db->where('id', $id);
+		// $query1 = $this->db->get()->result();
+
+		// foreach ($query1 as $get) {
+		// 	echo $get->pro_price;
+		// }
+		if(empty($query)){
+			echo 'Tiada Data Ditemui';
+		} else {
+			foreach ($query as $data) 
+			{
+			
+
+			}
+			echo json_encode($data);
+
+		}
+	}
 
 	function deletehold(){
 		$id = $this->input->post('id');
+		$proid = $this->input->post('proid');
+		$proqty = $this->input->post('proqty');
+
+		$this->db->select('*');
+		// $this->db->from('tbl_product');
+		$this->db->where('p_id', $proid);
+		$queryselect = $this->db->get('tbl_product')->result();
+
+		foreach ($queryselect as $getqty) {
+			$qtyget = $getqty->p_quantity;
+		}
+
+		$calc = $qtyget + $proqty;
+		// echo $calc; exit();
+		$dataupdateqty = array(
+								'p_quantity'=>$calc
+							);
+		$this->db->where('p_id', $proid);
+		$this->db->update('tbl_product', $dataupdateqty);
+		
 		$this->db->where('id',$id);
 		$this->db->delete('tbl_holdproduct');
 	}
 
 	function addbuying(){
 		$holdid = $this->input->post('hold_value');
-		$cust = $this->input->post('customerlist');
+
+		$cust = $this->input->post('id_selected');
+
 		$total = $this->input->post('allsubtotal');
 		$uname = $this->input->post('uname');
 		$branch = $this->input->post('ubranch');
@@ -467,6 +558,12 @@ class func_pos extends CI_Controller {
 			);
 		$this->db->insert('tbl_revenue',$paymentrevenue);
 
+		// $this->db->select('*');
+		// $this->db->from('tbl_client');
+		// $queryclient = $this->db->get();
+		// foreach ($queryclient as $getclientid) {
+		// 	$getclientid->c_id;
+		// }
 		$buydata = array(
 						'c_id'=>$cust,
 						'total'=>$total,
@@ -546,17 +643,52 @@ class func_pos extends CI_Controller {
 		// var_dump($buydata); exit();
 		$this->db->insert('tbl_pospayment',$paydetails);
 
+		$logactivity = 'Add';
+        $moduleclient = 'tbl_pospayment'.'/tbl_posdetails'.'/tbl_holdproduct';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
 		// return $this->addpaymentpos($date,$transactionid,$holdid,$positive,$payref,$payamount,$paytype,$paynote);
 		return $this->printreceipt($cust,$holdid);
 	}
 
 	function printreceipt($cust,$holdid){
 		// $where = $this->input->post('reparationID');
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_pospayment'.'/tbl_posdetails';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		$data = array(
-			'custinfo' => $this->d_get->get_custinfo($cust)->result(),
-			'productinfo' => $this->d_get->get_productinfo($holdid)->result(),
-            'paymentinfo' => $this->d_get->get_paymentinfo($holdid)->result(),
-            'paidinfo' => $this->d_get->get_paidinfo($holdid)->result()
+			'custinfo' => $this->D_get->get_custinfo($cust)->result(),
+			'productinfo' => $this->D_get->get_productinfo($holdid)->result(),
+            'paymentinfo' => $this->D_get->get_paymentinfo($holdid)->result(),
+            'paidinfo' => $this->D_get->get_paidinfo($holdid)->result()
         );
 	$this->load->view('admin/header/header.php');
 	$this->load->view('admin/body/print-pos-receipt.php',$data);

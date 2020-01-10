@@ -1,22 +1,25 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_purchase extends CI_Controller {
+class Func_purchase extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
-
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 
 	function getDetails()
 	{
 		$id = $this->input->post('id');
-		$query = $this->d_get->getDetails($id);
+		$query = $this->D_get->getDetails($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -152,8 +155,6 @@ class func_purchase extends CI_Controller {
 	}
 
 	function addpurchase(){
-		
-
 		$key = $this->input->post('holdd');
 		$test0 = $this->input->post('itemid');
 		$test1 = $this->input->post('itemname');
@@ -211,10 +212,24 @@ class func_purchase extends CI_Controller {
 
         if ( ! $this->upload->do_upload('file'))
         {
-                $error = array('error' => $this->upload->display_errors());
-                var_dump($error); exit();
+                $datain = array(
+					'pur_date' => $date,
+					'pur_ref' => $refno,
+					'pur_status' => $status,
+					'purSupplier' => $supplier,
+					'hold_id' => $key,
+					'pur_total' => $total,
+					// 'pur_tax' => $tax,
+					'pur_discount' => $discount,
+					'pur_ship' => $ship,
+					'pur_note' => $content,
+					'afterDisc' => $alltotal,
+					'u_branch' => $ubranch
+					);
+				$query = $this->D_post->addpurchase($datain,'tbl_purchase');
 
-                echo 'tak jadi';
+				$this->db->where('random_id',$key);
+				$this->db->delete('tbl_hold');
         }
         else
         {
@@ -230,23 +245,40 @@ class func_purchase extends CI_Controller {
 					'purSupplier' => $supplier,
 					'hold_id' => $key,
 					'pur_total' => $total,
-					'pur_tax' => $tax,
+					// 'pur_tax' => $tax,
 					'pur_discount' => $discount,
 					'pur_ship' => $ship,
 					'pur_note' => $content,
 					'afterDisc' => $alltotal,
 					'u_branch' => $ubranch
 					);
-				$query = $this->d_post->addpurchase($datain,'tbl_purchase');
+				$query = $this->D_post->addpurchase($datain,'tbl_purchase');
 
 				$this->db->where('random_id',$key);
 				$this->db->delete('tbl_hold');
-				redirect(base_url('admin/view_purchase'));
+				
         }
+
+        $logactivity = 'Add';
+        $moduleclient = 'tbl_purchase_item'.'/tbl_purchase';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+	    redirect(base_url('admin/view_purchase'));
 	}
 	function updatepurchase(){
-		
-
 		$key = $this->input->post('holdd');
 		$test1 = $this->input->post('itemname');
 		$test2 = $this->input->post('itemprice');
@@ -311,19 +343,19 @@ class func_purchase extends CI_Controller {
 					'purSupplier' => $supplier,
 					'hold_id' => $key,
 					'pur_total' => $total,
-					'pur_tax' => $tax,
+					// 'pur_tax' => $tax,
 					'pur_discount' => $discount,
 					'pur_ship' => $ship,
 					'pur_note' => $content,
 					'afterDisc' => $alltotal,
 					'u_branch' => $ubranch
 					);
-				// $query = $this->d_post->addpurchase($datain,'tbl_purchase');
+				// $query = $this->D_post->addpurchase($datain,'tbl_purchase');
 				$where = array(
 					'hold_id' => $key
 				);
-				$this->d_post->updatePurchase($where,$datain,'tbl_purchase');
-				redirect(base_url('admin/view_purchase'));
+				$this->D_post->updatePurchase($where,$datain,'tbl_purchase');
+				// redirect(base_url('admin/view_purchase'));
         }
         else
         {
@@ -339,7 +371,7 @@ class func_purchase extends CI_Controller {
 					'purSupplier' => $supplier,
 					'hold_id' => $key,
 					'pur_total' => $total,
-					'pur_tax' => $tax,
+					// 'pur_tax' => $tax,
 					'pur_discount' => $discount,
 					'pur_ship' => $ship,
 					'pur_note' => $content,
@@ -349,14 +381,33 @@ class func_purchase extends CI_Controller {
                 $where = array(
 					'hold_id' => $key
 				);
-				$this->d_post->updatePurchase($where,$datain,'tbl_purchase');
+				$this->D_post->updatePurchase($where,$datain,'tbl_purchase');
 
-				redirect(base_url('admin/view_purchase'));
+				
         }
+        $logactivity = 'Edit';
+        $moduleclient = 'tbl_purchase_item'.'/tbl_purchase';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
+	    redirect(base_url('admin/view_purchase'));
 	}
 	function getDetailsPurchase(){
 		$id = $this->input->post('id');
-		$query = $this->d_get->getDetailsPurchase($id);
+		$query = $this->D_get->getDetailsPurchase($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -418,6 +469,24 @@ class func_purchase extends CI_Controller {
 		$this->db->delete('tbl_purchase');
 		}
 		
+		$logactivity = 'Delete';
+        $moduleclient = 'tbl_purchase';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url('admin/view_purchase'));
 
 	}

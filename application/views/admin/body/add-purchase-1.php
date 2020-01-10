@@ -160,7 +160,7 @@
                 <select class="form-control" name="itemid" id="dropdownItems" onchange="totalIt(this.value)" required>
                   <option value="">No Selected</option>
                   <?php foreach($item as $row):?>
-                  <option value="<?php echo $row->id;?>"><?php echo $row->i_name;?></option>
+                  <option value="<?php echo $row->p_id;?>"><?php echo $row->p_name;?></option>
                   <?php endforeach;?>
                 </select>  
             </div>
@@ -200,7 +200,7 @@
             <div class="div1 col-lg-12" id="fn">
               <br>
               <div class="flex-more col-lg-12" >
-                <div class="form-group input-group col-lg-4">
+                <!-- <div class="form-group input-group col-lg-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"> <i class="fas fa-fw fa-folder"></i> </span>
                 </div>
@@ -208,7 +208,7 @@
                     <option selected="">No Tax</option>
                     <option value="VAT">VAT</option>
                   </select>
-                </div> 
+                </div>  -->
                 <div class="form-group input-group col-lg-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"> <i class="fas fa-fw fa-percentage"></i> </span>
@@ -307,9 +307,9 @@
                     },
                     success: function(response){
 
-                      var id = response.id;
-                      var i_name = response.i_name;
-                      var i_price = response.i_price;
+                      var id = response.p_id;
+                      var i_name = response.p_name;
+                      var i_price = response.p_price;
 
                       var id_dummy = id;
 

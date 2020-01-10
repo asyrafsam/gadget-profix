@@ -87,7 +87,7 @@ button{
           <!-- </a> -->
         </div>
         <div class="container">
-          <div class="collapse navbar-collapse" id="navbar">
+          <!-- <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i><i class="fas fa-fw fa-print"></i> Export <span class="badge"></span></a>
@@ -97,11 +97,11 @@ button{
                 </ul>
               </li>
             </ul>
-          </div>
+          </div> -->
         </div>
 
         <div class="card-body">
-          <div class="table-responsive">
+          <div class="table-responsive" id="tablereportsales">
             <hr>
             <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size: 13px;color: #000;">
               <thead>
@@ -155,10 +155,30 @@ button{
 <script type="text/javascript">
 $(document).ready(function() {
   $('#dataTable').DataTable( {
+      "order": [2,'asc'],
       "dom": 'Bfrtip',
-      "buttons": ['csv', 'excel', 'pdf'],   
-      "pageLength": 100,
-      "processing": false,   
+            "buttons": [
+                        {
+                           extend: 'pdf',
+                           text: '<i class="fa fa-file-pdf"></i> PDF',
+                           title: $('h1').text(),
+                           orientation: 'landscape',
+                           exportOptions: {
+                           columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+                            //Your Colume value those you want
+                           }
+                         },
+                         {
+                            extend: 'excel',
+                            text: '<i class="fa fa-file-excel"></i> EXCEL',
+                            title: $('h1').text(),
+                            exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6 ] //Your Colume value those you want
+                         }
+                       },
+                     ],   
+            "pageLength": 100,
+            "processing": false,     
       });
   });
   $(function() {

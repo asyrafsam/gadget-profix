@@ -1,22 +1,26 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_stock extends CI_Controller {
+class Func_stock extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		$this->load->library('session','upload');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	function getCategoryDetails(){
 		$id = $this->input->post('send');
-		// $query = $this->d_get->getCategoryDetails($id);
+		// $query = $this->D_get->getCategoryDetails($id);
 		$this->db->where('cat_id', $id);
 		$query =  $this->db->get('tbl_lookup_subcategory')->result();
 		$empty = '-';
@@ -35,7 +39,7 @@ class func_stock extends CI_Controller {
 	}	
 	function getCategoryDetailsHoldid(){
 		$id = $this->input->post('send');
-		$data = $this->d_get->get_categorydetails($id);
+		$data = $this->D_get->get_categorydetails($id);
 		echo json_encode($data);
 
 		// This part need to adjust
@@ -56,8 +60,10 @@ class func_stock extends CI_Controller {
 	  	$pmodel = $this->input->post('pmodel');
 	  	$palertquantity = $this->input->post('palertquantity');
 	  	$pquantity = $this->input->post('pquantity');
-	  	$ptax = $this->input->post('ptax');
-	  	$ptaxmethod = $this->input->post('ptaxmethod');
+
+	  	// $ptax = $this->input->post('ptax');
+	  	// $ptaxmethod = $this->input->post('ptaxmethod');
+
 	  	$ubranch = $this->input->post('ubranch');
 	  	$holdid = $this->input->post('formid');
 
@@ -143,10 +149,53 @@ class func_stock extends CI_Controller {
 
         if ( ! $this->upload->do_upload('pimage'))
         {
-                $error = array('error' => $this->upload->display_errors());
-                var_dump($error); exit();
+                // $fname = base_url().'/uploads/'.$fname;
 
-                echo 'tak jadi';
+                $datain = array(
+					'p_type' => $ptype,
+					'p_code' => $pcode,
+					'p_name' => $pname,
+					'p_category' => $pcategory,
+					'p_subCategory' => $psubcategory,
+					'p_detail' => $pdetail,
+					'p_unit' => $punit,
+					'p_cost' => $pcost,
+					'p_price' => $pprice,
+					'p_supplier' => $psupplier,
+					'p_model' => $pmodel,
+					'p_alertQuantity' => $palertquantity,
+					'p_quantity' => $pquantity,
+					// 'p_tax' => $ptax,
+					// 'p_taxMethod' => $ptaxmethod,
+					'hold_id' => $holdid,
+					'u_branch' => $ubranch
+					);
+
+				$query = $this->D_post->addproduct($datain,'tbl_product');
+
+				$logactivity = 'Add';
+		        $moduleclient = 'tbl_product';
+		        $logid = $this->session->userdata('id');
+		        $loguser = $this->session->userdata('name');
+		        $logip = $this->input->ip_address();
+		        $branch = $this->session->userdata('branch');
+		        $currentdate = date('Y-m-d H:i:s');
+		        $datalog = array(
+		        			'log_activity' => $logactivity,
+		        			'log_module' => $moduleclient,
+		        			'log_id' => $logid,
+		        			'log_user' =>$loguser,
+		        			'log_ipaddress' => $logip,
+		        			'u_branch' => $branch,
+		        			'log_date' => $currentdate
+		        		);
+			    $this->db->insert('tbl_log_activity', $datalog);
+
+				redirect(base_url('admin/stock'));
+				// $error = array('error' => $this->upload->display_errors());
+    //             var_dump($error); exit();
+
+    //             echo 'tak jadi';
         }
         else
         {
@@ -169,13 +218,31 @@ class func_stock extends CI_Controller {
 					'p_model' => $pmodel,
 					'p_alertQuantity' => $palertquantity,
 					'p_quantity' => $pquantity,
-					'p_tax' => $ptax,
-					'p_taxMethod' => $ptaxmethod,
+					// 'p_tax' => $ptax,
+					// 'p_taxMethod' => $ptaxmethod,
 					'hold_id' => $holdid,
 					'u_branch' => $ubranch
 					);
 
-				$query = $this->d_post->addproduct($datain,'tbl_product');
+				$query = $this->D_post->addproduct($datain,'tbl_product');
+
+				$logactivity = 'Add';
+		        $moduleclient = 'tbl_product';
+		        $logid = $this->session->userdata('id');
+		        $loguser = $this->session->userdata('name');
+		        $logip = $this->input->ip_address();
+		        $branch = $this->session->userdata('branch');
+		        $currentdate = date('Y-m-d H:i:s');
+		        $datalog = array(
+		        			'log_activity' => $logactivity,
+		        			'log_module' => $moduleclient,
+		        			'log_id' => $logid,
+		        			'log_user' =>$loguser,
+		        			'log_ipaddress' => $logip,
+		        			'u_branch' => $branch,
+		        			'log_date' => $currentdate
+		        		);
+			    $this->db->insert('tbl_log_activity', $datalog);
 
 				redirect(base_url('admin/stock'));
 			
@@ -184,9 +251,26 @@ class func_stock extends CI_Controller {
 	}
 
 	function edit_client($id){
+		$logactivity = 'Edit';
+        $moduleclient = 'tbl_client';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
 
-    	$data['clientt'] = $this->d_get->show_client($id);
-    	$data['clientreparation'] = $this->d_get->show_clientReparation($id);
+    	$data['clientt'] = $this->D_get->show_client($id);
+    	$data['clientreparation'] = $this->D_get->show_clientReparation($id);
 		echo json_encode($data);
     }
 
@@ -306,15 +390,15 @@ class func_stock extends CI_Controller {
 					'p_supplier' => $upsupplier,
 					'p_model' => $upmodel,
 					'p_alertQuantity' => $upalertquantity,
-					'p_quantity' => $upquantity,
-					'p_tax' => $uptax,
-					'p_taxMethod' => $uptaxmethod
+					'p_quantity' => $upquantity
+					// 'p_tax' => $uptax,
+					// 'p_taxMethod' => $uptaxmethod
 				);
 	            $where = array(
 					'p_id' => $upid
 				);
 
-				$this->d_post->updateProduct($where,$datain,'tbl_product');
+				$this->D_post->updateProduct($where,$datain,'tbl_product');
 
 				redirect(base_url('admin/stock'));
         }
@@ -338,14 +422,32 @@ class func_stock extends CI_Controller {
 					'p_supplier' => $upsupplier,
 					'p_model' => $upmodel,
 					'p_alertQuantity' => $upalertquantity,
-					'p_quantity' => $upquantity,
-					'p_tax' => $uptax,
-					'p_taxMethod' => $uptaxmethod
+					'p_quantity' => $upquantity
+					// 'p_tax' => $uptax,
+					// 'p_taxMethod' => $uptaxmethod
 					);
                 $where = array(
 					'p_id' => $upid
 				);
-				$this->d_post->updateProduct($where,$datain,'tbl_product');
+				$this->D_post->updateProduct($where,$datain,'tbl_product');
+
+				$logactivity = 'Edit';
+		        $moduleclient = 'tbl_product';
+		        $logid = $this->session->userdata('id');
+		        $loguser = $this->session->userdata('name');
+		        $logip = $this->input->ip_address();
+		        $branch = $this->session->userdata('branch');
+		        $currentdate = date('Y-m-d H:i:s');
+		        $datalog = array(
+		        			'log_activity' => $logactivity,
+		        			'log_module' => $moduleclient,
+		        			'log_id' => $logid,
+		        			'log_user' =>$loguser,
+		        			'log_ipaddress' => $logip,
+		        			'u_branch' => $branch,
+		        			'log_date' => $currentdate
+		        		);
+			    $this->db->insert('tbl_log_activity', $datalog);
 
 				redirect(base_url('admin/stock'));
 			
@@ -354,13 +456,32 @@ class func_stock extends CI_Controller {
 
 	function updateProduct($id){
 		$where = array('c_id' => $id);
-		$this->d_post->deleteClient($where,'tbl_client');
+		$this->D_post->deleteClient($where,'tbl_client');
 		redirect(base_url('admin/stock'));
 	}
 
 	function deleteStock($id){
+		$logactivity = 'Delete';
+        $moduleclient = 'tbl_product';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		$where = array('p_id' => $id);
-		$this->d_post->deleteProduct($where,'tbl_product');
+		$this->D_post->deleteProduct($where,'tbl_product');
+
 		redirect(base_url('admin/stock'));
 	}
 	function add_category(){
@@ -390,6 +511,25 @@ class func_stock extends CI_Controller {
 			'u_branch' => $ubranch
 		);
 		$this->db->insert('tbl_lookup_category',$datacat);
+
+		$logactivity = 'Add';
+        $moduleclient = 'tbl_lookup_category'.'/tbl_lookup_subcategory';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url('admin/add_stock'));
 	}
 	function add_subcategory(){
@@ -414,12 +554,31 @@ class func_stock extends CI_Controller {
 			);
 			$this->db->insert('tbl_lookup_subcategory',$subcategory);
 		}
+
+		$logactivity = 'Add';
+        $moduleclient = 'tbl_lookup_subcategory';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+	    
 		redirect(base_url('admin/add_stock'));
 	}
 
 	function getDetailsStock(){
 		$id = $this->input->post('id');
-		$query = $this->d_get->getDetailsStock($id);
+		$query = $this->D_get->getDetailsStock($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -469,14 +628,11 @@ class func_stock extends CI_Controller {
 
 		$this->db->delete('tbl_print_stock');
 	}
-
-		
-
 	function view1()
 	{
 		$id = $this->input->post('id');
 
-        $data['productdataa'] = $this->d_get->get_productposjoin($id)->result();
+        $data['productdataa'] = $this->D_get->get_productposjoin($id)->result();
 		return $this->load->view('admin/body/possubcategory-1',$data);
 	}	
 }

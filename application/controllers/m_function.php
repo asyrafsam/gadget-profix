@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class m_function extends CI_Controller {
+class M_function extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
 		// $this->load->model('d_post', 'dp');
-		$this->load->model('m_data', 'md');
+		$this->load->model('M_data', 'md');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		// $this->load->library('form_validation');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	// Need to continue, public/tr_registerpublic
 	public function validatelogin(){
@@ -35,6 +39,7 @@ class m_function extends CI_Controller {
  				$role = $data->u_role;
  				$branch = $data->u_branch;
  				$name = $data->u_name;
+ 				$profile = $data->u_image;
  				$id = $data->id; 
  			}
 
@@ -44,6 +49,7 @@ class m_function extends CI_Controller {
 				'role' => $role,
 				'branch' => $branch,
 				'id' => $id,
+				'picture' => $profile,
 				'status' => "login"
 				);
  			
@@ -200,6 +206,24 @@ class m_function extends CI_Controller {
 
 			$this->session->set_userdata($data_session);
 
+			$logactivity = 'Auth';
+	        $moduleclient = 'tbl_user';
+	        // $logid = $this->session->userdata('id');
+	        // $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        // $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $id,
+	        			'log_user' =>$name,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+		    $this->db->insert('tbl_log_activity', $datalog);
+
 			redirect(base_url("admin"));
  
 		}else{
@@ -237,7 +261,102 @@ class m_function extends CI_Controller {
 		}
 	}
 	public function adminlogout(){
+		$logactivity = 'Log Out';
+        $moduleclient = 'tbl_user';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		$this->session->sess_destroy();
-		redirect(base_url('main/index'));
+		redirect(base_url('main/adminlogin'));
+	}
+	public function resetpassword(){
+		$email = $this->input->post('u_email');
+
+		$this->db->select('*');
+		$this->db->from('tbl_user');
+		$this->db->where('u_email', $email);
+		$query = $this->db->get();
+
+		if($query->num_rows() > 0)
+		{
+			$this->db->select('*');
+			$this->db->from('tbl_user');
+			$this->db->where('u_email', $email);
+			$query2 = $this->db->get()->result();
+			foreach ($query2 as $getDetails) {
+				$cid = $getDetails->id;
+			}
+			$pass = 'abc@123';
+			$data = array(
+						'u_pass' => $pass
+					);
+			$this->db->where('id', $cid);
+			$this->db->update('tbl_user', $data);
+
+			include('assets/php-mailer-master/PHPMailerAutoload.php');
+			$mail = new PHPMailer;
+
+                   //$mail->SMTPDebug = 2;                               // Enable verbose debug output
+
+		      $mail->IsSMTP();                                      // Set mailer to use SMTP
+		      $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+		      $mail->SMTPAuth = true;
+		      // $mail->SMTPDebug = 2;
+		      $mail->SMTPAutoTLS = false;
+		      $mail->Host = gethostbyname('tls://smtp.gmail.com');                               // Enable SMTP authentication
+		      $mail->Username = 'systemcharity14@gmail.com';                 // SMTP username
+		      $mail->Password = 'systemcharity1996';                           // SMTP password
+		      $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+		      $mail->Port = 587;                                    // TCP port to connect to
+
+		      $mail->setFrom('systemcharity14@gmail.com', 'Gadget Profix');     // Add a recipient
+		      $mail->addAddress($email);              // Name is optional
+		      //$mail->addReplyTo('info@example.com', 'Information');
+		      //$mail->addCC('cc@example.com');
+		      //$mail->addBCC('bcc@example.com');
+
+		            // Set email format to HTML
+
+		      $mail->Subject = 'Respond for Forgot Password';
+		     // $mail->Body    = 'Your new Password is'.$pass;'<br/>;
+		      $mail->Body    = 'Hi! Your password has been changed. Your login information: -
+
+	          Email : '.$email.'
+	          Your Default Password: abc@123
+	          
+	          
+	          Note:Please Login to the system and change your password';
+		      $mail->send();
+		      redirect(base_url('Main/index'));
+		}else{
+			redirect(base_url('Main/forgotpassword2nd'));
+		}
+	}
+	function searchrepair(){
+		$repairno = $this->input->post('repairno');
+		$this->db->select('*, SUM(tbl_reparation.r_tax) as totaltax, SUM(tbl_payment.pay_amount) as totalpaid');
+    	$this->db->from('tbl_hold');
+    	$this->db->join('tbl_repair_details', 'tbl_repair_details.hold_id = tbl_hold.random_id');
+    	$this->db->join('tbl_payment', 'tbl_payment.hold_id = tbl_repair_details.hold_id');
+    	$this->db->join('tbl_reparation', 'tbl_reparation.hold_id = tbl_payment.hold_id');
+    	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_reparation.c_id');
+    	$this->db->where('tbl_reparation.r_repairno', $repairno);
+    	$this->db->group_by('tbl_hold.random_id');
+    	$query['selectrepair'] = $this->db->get()->result();
+    	// echo $this->db->last_query(); exit();
+    	return $this->load->view('public/searchresult',$query);
 	}
 }

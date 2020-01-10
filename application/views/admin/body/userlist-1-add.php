@@ -22,7 +22,7 @@
           </div>
           <div class="card-body">
             <input type="hidden" name="uname" value="<?php echo $this->session->userdata('name');?>">
-              <input type="hidden" name="ubranch" value="<?php echo $this->session->userdata('branch');?>">
+              <!-- <input type="hidden" name="ubranch" value="<?php echo $this->session->userdata('branch');?>"> -->
               <div class="flex-parent">
                 <div class="col-lg-12">
                   <div class="form-group input-group">
@@ -60,7 +60,20 @@
                       <span class="input-group-text"> Phone </span>
                    </div>
                       <input name="phone" class="form-control" type="number">
-                  </div> 
+                  </div>
+                  <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"> Branch </span>
+                   </div>
+                      <!-- <input name="branch" class="form-control" type="dropdown"> -->
+                    <select class="form-control" name="ubranch">
+                        <option value="">Select Branch</option>
+                        <?php foreach($getBranch as $branch):?>
+                        <option value="<?php echo $branch->branch;?>"><?php echo $branch->branch;?></option>
+                        <?php endforeach;?>
+                        <!-- <option value="test">Test</option> -->
+                    </select>
+                  </div>  
                   <div class="form-group input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text"> Password </span>

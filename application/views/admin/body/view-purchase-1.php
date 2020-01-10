@@ -134,6 +134,12 @@
 </div>
 </div>
 <script type="text/javascript">
+  $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        "order": [1,'desc']
+        
+        });
+    });
         function getDetailPurchase(id)
         {
           $("#id_purchase").val(id);

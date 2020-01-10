@@ -8,7 +8,7 @@
 <!-- Here the latest need to update -->
 
 <a onclick="totalIt('<?php echo $posproduct->p_id?>');" class="box1 col-lg-2 col-sm-4" style="margin-top:50px;">
-	<img src="../images/nature.jpg">
+	<img src="<?php echo base_url('./uploads/'. $posproduct->p_image);?>">
 	<p><?php echo $posproduct->p_name?></p>
 </a>
 <?php
@@ -16,6 +16,7 @@
 if(empty($test)){
     $test2 = '';
     ?>
+    
     <p style="color: #ff0000;position: absolute;">Product Not Registered</p>
     <?php
     foreach ($posdata as $pos) {
@@ -277,17 +278,25 @@ if(empty($test)){
     // if(confirm('Are you sure?')) {
         var data = {'id':id}
       $.ajax({
-                      url: '<?= base_url() ?>func_pos/deletehold',
+                      url: '<?= base_url() ?>func_pos/deleteprohold',
                       type: 'POST',
-                      dataType: 'html',
+                      dataType: 'json',
                       data: data,
                       beforeSend: function() {
 
                       },
                       success: function(response){
 
-                          var hold_value = $("#hold_value").val();
-                          getDetailHold(hold_value);
+                          var a = Number(document.getElementById('alltotaltax').value);
+                          var b = response.pro_price;
+                          var c = parseFloat(a) - parseFloat(b);
+                          var d = Number(document.getElementById('allsubtotal').value);
+                          var e = parseFloat(d) - parseFloat(b);
+                          // $('[name="alltotaltax"]').val(c);
+                          var proid = response.pro_id;
+                          var proqty = response.pro_qty;
+                          $('[name="allsubtotal"]').val(e);
+                          deleteholdconfirm(id,proid,proqty);
                       },
                         error: function (jqXHR, textStatus, errorThrown){
                           alert('error at deleting data');
@@ -296,4 +305,27 @@ if(empty($test)){
       //ajax delete data dari database
     // }
     }
+
+    function deleteholdconfirm(id,proid,proqty){
+        // if(confirm('Are you sure?')) {
+            var data = {'id':id,'proid':proid,'proqty':proqty}
+          $.ajax({
+                          url: '<?= base_url() ?>func_pos/deletehold',
+                          type: 'POST',
+                          dataType: 'html',
+                          data: data,
+                          beforeSend: function() {
+
+                          },
+                          success: function(response){
+                              var hold_value = $("#hold_value").val();
+                              getDetailHold(hold_value);
+                          },
+                            error: function (jqXHR, textStatus, errorThrown){
+                              alert('error at deleting data');
+                          }
+                  });
+          //ajax delete data dari database
+        // }
+        }
 </script>

@@ -98,7 +98,7 @@
             <tr>
               <th>Reparation Code</th>
               <th>Name</th>
-              <th>IMEI</th>
+              <th>Type</th>
               <th>Telephone</th>
               <th>Defect</th>
               <th>Model</th>
@@ -118,7 +118,7 @@
             <tr>
               <th>Reparation Code</th>
               <th>Name</th>
-              <th>IMEI</th>
+              <th>Type</th>
               <th>Telephone</th>
               <th>Defect</th>
               <th>Model</th>
@@ -142,25 +142,26 @@
             {
               $totaltax = $r->r_subtotal + $r->r_tax;
               $all = $totaltax - $r->payTotal;
-              if($r->r_status != "Pending"){
+              if($r->r_statuscompleted == 1){
           ?>
             <tr>
               <td><?php echo $r->r_repairno?></td>
               <td><?php echo $r->r_name?></td>
-              <td><?php echo $r->r_imei?></td>
+              <td><?php echo $r->r_type?></td>
               <td><?php echo $r->r_telephone?></td>
               <td><?php echo $r->r_defect?></td>
               <td><?php echo $r->r_model?></td>
               <td><?php echo $r->r_opened?></td>
-              <?php if($r->r_status == "Pending"){?>
-              <td><button class="btn btn-warning" style="width: 80px;height: 30px;font-size: 12px;"><?php echo $r->r_status?></button></td>
-              <?php }else{?>
-              <td><button class="btn btn-success" style="font-size: 12px;"><?php echo $r->r_status?></button></td>
-              <?php }?>
+              <td>
+                <!-- <button class="btn btn-success" style="font-size: 12px;"><?php echo $r->r_status?></button> -->
+                <span style="font-size: 16px; border-radius: 5px; background-color:<?php echo $r->r_statusBGColor?>;color: <?php echo $r->r_statusTextColor?>;font-weight: bold;" onclick="updateStatus('<?php echo $r->r_code?>');"><?php echo $r->r_status?></span>
+                <!-- <a href="" onclick="choose();"><span style="font-size: 16px; border-radius: 5px; background-color:<?php echo $r->r_statusBGColor?>;color: <?php echo $r->r_statusTextColor?>;font-weight: bold;"><?php echo $r->r_status?></span></a> -->
+              <!-- <button class="btn" style="background-color:<?php echo $r->r_statusBGColor?>;color: <?php echo $r->r_statusTextColor?>;font-weight: bold;"><?php echo $r->r_status?></button> -->
+              </td>
               <td><?php echo $r->r_assigned?></td>
               <td><?php echo $r->r_created?></td>
               <td><?php echo $r->r_lastmodified?></td>
-              <td><?php echo $r->r_file?></td>
+              <td><a class="dropdown-item" href="<?php echo base_url(). 'func_reparation/download_file/'.$r->r_repairno; ?>"><button class="btn btn-success" style="width: 70px;font-size: 10px;">Download</button></td>
               <td><?php echo $totaltax?>.00</td>
               <td><?php echo $all?>.00</td>
               <td><?php echo $r->payTotal?></td>
@@ -177,8 +178,9 @@
                     <a class="dropdown-item" href="#" onclick="view_reparationlog('<?php echo $r->r_repairno?>')"><i class="fa fa-fw fa-clipboard"> &nbsp;View Log</i></a>
                     <a class="dropdown-item" href="#" onclick="view_payment('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;View Payments</i></a>
                     <a class="dropdown-item" href="#" onclick="add_payment('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-money-bill-alt"> &nbsp;Add Payment</i></a>
-                    <a class="dropdown-item" href="#" onclick="editReparation('<?php echo $r->r_code?>')"><i class="fa fa-fw fa-edit"> &nbsp;Edit</i></a>
+                    <?php if($this->session->userdata('repairdelete') > 0){?>
                     <a class="dropdown-item" href="#" onclick="deleteReparation('<?php echo $r->r_repairno?>')"><i class="fa fa-fw fa-trash"> &nbsp;Delete</i></a>
+                    <?php }?>
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-fw fa-barcode"> &nbsp;Print Barcode</i></a> -->
                   </div>
                 </div>
@@ -189,7 +191,6 @@
                   echo '';
                 }
               $test++;
-            
               }
             ?>
           </tbody>
@@ -221,10 +222,15 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-mobile-alt"></i> </span>
                       </div>
-                        <input type="text" name="addimei" id="search" class="form-control" placeholder="IMEI" list="imei" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <select class="form-control" name="addtype">
+                        <option value="">Repair Type</option>
+                        <option value="PNP">PNP</option>
+                        <option value="HSS">HSS</option>
+                      </select>
+                        <!-- <input type="text" name="addimei" id="search" class="form-control" placeholder="IMEI" list="imei" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
                         <datalist id="imei">
                           <?= lookup_r_imei();?>
-                        </datalist>
+                        </datalist> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
@@ -254,13 +260,21 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-user"></i> </span>
                       </div>
-                        <input type="text" name="addassign" class="form-control" placeholder="Assigned To ">
+                      <input type="text" name="addassign" class="form-control" placeholder="Assigned to" list="assignselect" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <datalist id="assignselect">
+                        <?= lookup_r_assign();?>
+                      </datalist>
+                        <!-- <input type="text" name="addassign" class="form-control" placeholder="Assigned To "> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-building"></i> </span>
                       </div>
-                        <input type="text" name="addmanufacturer" class="form-control" placeholder="Manufacturer">
+                      <input type="text" name="addmanufacturer" class="form-control" placeholder="Manufacturer" list="manufacturerselect" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <datalist id="manufacturerselect">
+                        <?= lookup_r_manufacturer();?>
+                      </datalist>
+                        <!-- <input type="text" name="addmanufacturer" class="form-control" placeholder="Manufacturer"> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
@@ -310,7 +324,7 @@
                 </div>
                 <div class="flex-child col-lg-6">
                   <div class="flex-row">
-                    <div class="form-group input-group col-lg-12">
+                    <!-- <div class="form-group input-group col-lg-12">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-laptop-code"></i> </span>
                       </div>
@@ -319,7 +333,7 @@
                         <option value="No Tax">No Tax</option>
                         <option value="VAT">VAT</option>
                       </select>
-                    </div>
+                    </div> -->
                     <div class="form-group input-group col-lg-12">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-link"></i> </span>
@@ -327,7 +341,7 @@
                         <select class="form-control" name="additem" id="dropdownItems" onchange="totalIt(this.value);grandTotall();">
                           <option value="">No Selected</option>
                           <?php foreach($item as $row):?>
-                          <option value="<?php echo $row->id;?>"><?php echo $row->i_name;?></option>
+                          <option value="<?php echo $row->p_id;?>"><?php echo $row->p_name;?></option>
                           <?php endforeach;?>
                         </select>            
                     </div>
@@ -365,7 +379,7 @@
                       </table>
                     </div>
                     <div class="form-group input-group col-lg-12">
-                        <textarea class="form-control" name="adddiagnostics" style="height: 150px;" placeholder="Diagnostics"></textarea>
+                        <textarea class="form-control" name="adddiagnostics" style="height: 150px;margin-top: 70px;" placeholder="Diagnostics"></textarea>
                     </div>
                   </div>
                 </div>
@@ -379,7 +393,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text span-modal"> <i class="fas fa-fw fa-calendar"></i> </span>
                 </div>
-                  <input type="text" name="addrepairstatus" class="form-control" placeholder="Status" list="repair-status" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                  <input type="text" name="addrepairstatus" id="addrepairstatus" class="form-control" placeholder="Status" list="repair-status" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
                   <datalist id="repair-status">
                     <?= lookup_reparation_status();?>
                   </datalist>
@@ -426,7 +440,7 @@
               </div>
               <br /> 
 
-              <textarea id='output' name='sig'></textarea>
+              <textarea id='output' name='sig' style="display:none;"></textarea>
               <img src='' id='sign_prev' style='display: none;' /> 
               
 
@@ -442,6 +456,7 @@
     </div>
 
     <input type="hidden" id="hold_value" name="hold_value" value="<?= rand();?>">
+    <input type="hidden" id="id_selected" name="id_selected" value="">
   </form>
   </div>
 </div>
@@ -460,12 +475,17 @@
             "buttons": [
                         {
                        extend: 'pdf',
+                       text: '<i class="fa fa-file-pdf"></i> PDF',
+                       title: $('h1').text(),
+                       orientation: 'landscape',
                        exportOptions: {
                        columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
                            }
                          },
                          {
                           extend: 'excel',
+                          text: '<i class="fa fa-file-pdf"></i> PDF',
+                          title: $('h1').text(),
                           exportOptions: {
                           columns: [ 0, 1, 2, 3, 4, 5, 6, 8, 12, 13, 14 ] //Your Colume value those you want
                          }
@@ -556,9 +576,9 @@
                           },
                           success: function(response){
 
-                            var id = response.id;
-                            var i_name = response.i_name;
-                            var i_price = response.i_price;
+                            var id = response.p_id;
+                            var i_name = response.p_name;
+                            var i_price = response.p_price;
 
                             var id_dummy = id;
 
@@ -682,7 +702,7 @@
         // if(confirm('Are you sure?')) {
             var data = {'id':id}
           $.ajax({
-                          url: '<?= base_url() ?>func_reparation/deletehold',
+                          url: '<?= base_url() ?>func_reparation/deleteprohold',
                           type: 'POST',
                           dataType: 'html',
                           data: data,
@@ -691,6 +711,34 @@
                           },
                           success: function(response){
 
+                              var a = Number(document.getElementById('grandTotal').value);
+                              var b = response;
+                              var c = parseFloat(a) - parseFloat(b);
+                              var d = Number(document.getElementById('total_subtotal').value);
+                              var e = parseFloat(d) - parseFloat(b);
+                              $('[name="alltotal"]').val(c);
+                              $('[name="subtotal"]').val(e);
+                              deleteholdconfirm(id);
+                          },
+                            error: function (jqXHR, textStatus, errorThrown){
+                              alert('error at deleting data');
+                          }
+                  });
+          //ajax delete data dari database
+        // }
+        }
+        function deleteholdconfirm(id){
+        // if(confirm('Are you sure?')) {
+            var data = {'id':id}
+          $.ajax({
+                          url: '<?= base_url() ?>func_reparation/deletehold',
+                          type: 'POST',
+                          dataType: 'html',
+                          data: data,
+                          beforeSend: function() {
+
+                          },
+                          success: function(response){
                               var hold_value = $("#hold_value").val();
                               getDetailHold(hold_value);
                           },
@@ -723,6 +771,11 @@
             //ajax delete data dari database
           // }
         }
+        $("#addrepairstatus").change(function() {
+          var g = $('#addrepairstatus').val();
+          var id = $('#repair-status option[value="' + g +'"]').attr('id');
+          $("#id_selected").val(id);
+        });
   </script>
 
 

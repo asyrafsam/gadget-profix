@@ -61,7 +61,7 @@ thead, tfoot{
   <!-- DataTales Example -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <div class="header-card col-md-3 py-2" style="float: left; width: 500px;">
+      <div class="header-card col-md-3 py-2" style="float: left;left: 18px; width: 500px;">
         <button class="btn btn-dark" style="text-align: center;height: 33px" data-toggle="modal" data-target="#clientModal"><h6 class="font-weight-bold center">+ New Client</h6></button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </div>
@@ -86,6 +86,7 @@ thead, tfoot{
         <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size: 13px;">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Check</th>
               <th>Client Name</th>
               <th>Company</th>
@@ -97,6 +98,7 @@ thead, tfoot{
           </thead>
           <tfoot>
             <tr>
+              <th>ID</th>
               <th>Check</th>
               <th>Client Name</th>
               <th>Company</th>
@@ -111,6 +113,7 @@ thead, tfoot{
               foreach ($client as $c) {
             ?>
             <tr>
+              <td><?php echo $c->c_id?></td>
               <td><input type="checkbox" class="chkbox" name="checkclient" id="checkclient" onclick="getDetailClient(<?php echo $c->c_id; ?>)" value="<?php echo $c->c_id?>"></td>
               <td><?php echo $c->c_name?></td>
               <td><?php echo $c->c_company?></td>
@@ -581,7 +584,7 @@ thead, tfoot{
                       <thead>
                         <tr>
                           <th>Reparation Code</th>
-                          <th>IMEI</th>
+                          <th>Type</th>
                           <th>Defect</th>
                           <th>Model</th>
                           <th>Opened At</th>
@@ -594,7 +597,7 @@ thead, tfoot{
                       <tfoot>
                         <tr>
                           <th>Reparation Code</th>
-                          <th>IMEI</th>
+                          <th>Type</th>
                           <th>Defect</th>
                           <th>Model</th>
                           <th>Opened At</th>
@@ -647,6 +650,12 @@ thead, tfoot{
 
 
 <script type="text/javascript">
+  $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        "order": [0,'desc']
+        
+        });
+    });
       $("#btn_submit").click(function (){
           var cname = $("#cname").val();
           var clocate = $("#clocate").val();

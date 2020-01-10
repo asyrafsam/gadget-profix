@@ -138,32 +138,32 @@
         </div>
       </div>
       <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <!-- <div class="card-header py-3">
           <h6 class="m-0 font-weight-bold text-primary">Product Tax</h6>
         </div>
         <div class="card-body">
-            <div class="form-group input-group">
-              <div class="input-group-prepend">
-                  <span class="input-group-text"> <i class="fas fa-fw fa-dollar-sign"></i></span>
-              </div>
-              <select name="uptax" class="form-control">
-                <option selected="" value="<?php echo $p2->p_tax?>"> <?php echo $p2->p_tax?></option>
-                <option>Galaxy S10</option>
-                <option>Service</option>
-              </select>
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"> <i class="fas fa-fw fa-dollar-sign"></i></span>
             </div>
-            <div class="form-group input-group">
-              <div class="input-group-prepend">
-                  <span class="input-group-text"> <i class="fas fa-fw fa-search-dollar"></i></span>
-              </div>
-              <select name="uptaxmethod" class="form-control">
-                <option selected="" value="<?php echo $p2->p_taxMethod?>"> <?php echo $p2->p_taxMethod?></option>
-                <option>Galaxy S10</option>
-                <option>Service</option>
-              </select>
-            </div>
+            <select name="uptax" class="form-control">
+              <option selected="" value="<?php echo $p2->p_tax?>"> <?php echo $p2->p_tax?></option>
+              <option>Galaxy S10</option>
+              <option>Service</option>
+            </select>
           </div>
-        </div>
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"> <i class="fas fa-fw fa-search-dollar"></i></span>
+            </div>
+            <select name="uptaxmethod" class="form-control">
+              <option selected="" value="<?php echo $p2->p_taxMethod?>"> <?php echo $p2->p_taxMethod?></option>
+              <option>Galaxy S10</option>
+              <option>Service</option>
+            </select>
+          </div>
+        </div> -->
+      </div>
         <?php 
           }
         ?>

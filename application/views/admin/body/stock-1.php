@@ -68,6 +68,7 @@ button{
             <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0" style="font-size: 13px;">
               <thead>
                 <tr>
+                  <!-- <th>Bil</th> -->
                   <th>Check</th>
                   <th>Image</th>
                   <th>Code</th>
@@ -81,6 +82,7 @@ button{
               </thead>
               <tfoot>
                 <tr>
+                  <!-- <th>Bil</th> -->
                   <th>Check</th>
                   <th>Image</th>
                   <th>Code</th>
@@ -108,6 +110,7 @@ button{
                 <?php }else{?>
                 <tr style="background-color: #fdfafa;">
                 <?php }?>
+                <!-- <td><?php echo $test?></td> -->
                   <td><input type="checkbox" class="chkbox" name="checkstock" id="checkstock" onclick="getDetailStock(<?php echo $p->p_id; ?>)" value="<?php echo $p->p_id?>"></td>
                   <td><?php echo $p->p_name?></td>
                   <td><?php echo $p->p_code?></td>
@@ -147,6 +150,12 @@ button{
     </div>
   </div>
   <script type="text/javascript">
+    $(document).ready(function() {
+      $('#dataTable').DataTable( {
+          "order": [0,'desc']
+          
+          });
+      });
     function getDetailStock(id)
         {
           $("#id_stock").val(id);

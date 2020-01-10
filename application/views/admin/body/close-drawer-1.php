@@ -162,7 +162,7 @@
                 </div>                                   
               </div>
               <div class="col-lg-12">
-                  <button class="btn btn-primary col-lg-12">Open Shift</button>
+                  <button class="btn btn-primary col-lg-12">Close Shift</button>
               </div>                                       
           </div>                         
         </div>

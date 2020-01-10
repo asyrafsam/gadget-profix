@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_dashboard extends CI_Controller {
+class Func_dashboard extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		// $this->load->library('form_validation');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	
 	function sendMailDirect(){
@@ -47,7 +51,28 @@ class func_dashboard extends CI_Controller {
 	      $mail->Subject = ''.$subject.'';
 	     // $mail->Body    = 'Your new Password is'.$pass;'<br/>;
 	      $mail->Body    = ''.$details.'';
-	      $mail->send();
+	      if($mail->send() == FALSE){
+	      	echo 'Error'; exit();
+	      }else{
+
+	      	$logactivity = 'Sent Mail';
+	        $moduleclient = 'tbl_client';
+	        $logid = $this->session->userdata('id');
+	        $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $logid,
+	        			'log_user' =>$loguser,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+	        $this->db->insert('tbl_log_activity', $datalog);
+	    }
 	      redirect(base_url('admin/index'));
 	}
 	public function get_events()
@@ -65,7 +90,7 @@ class func_dashboard extends CI_Controller {
 	     $enddt->setTimestamp($end); // Set the date based on timestamp
 	     $end_format = $enddt->format('Y-m-d H:i:s');
 
-	     $events = $this->d_get->get_events($start_format, $end_format, $branch);
+	     $events = $this->D_get->get_events($start_format, $end_format, $branch);
 
 	     $data_events = array();
 
@@ -112,7 +137,7 @@ class func_dashboard extends CI_Controller {
 	       $end_date_timestamp = time();
 	    }
 
-	    $this->d_post->add_event(array(
+	    $this->D_post->add_event(array(
 	       "title" => $name,
 	       "description" => $desc,
 	       "start" => $start_date,
@@ -121,12 +146,30 @@ class func_dashboard extends CI_Controller {
 	       )
 	    );
 
+	    $logactivity = 'Add Event';
+        $moduleclient = 'tbl_calendar_events';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 	    redirect(base_url('admin/index'));
 	}
 	public function edit_event()
      {
           $eventid = intval($this->input->post("eventid"));
-          $event = $this->d_get->get_event($eventid);
+          $event = $this->D_get->get_event($eventid);
           if($event->num_rows() == 0) {
                echo"Invalid Event";
                exit();
@@ -161,7 +204,7 @@ class func_dashboard extends CI_Controller {
                     $end_date_timestamp = time();
                }
 
-               $this->d_post->update_event($eventid, array(
+               $this->D_post->update_event($eventid, array(
                     "title" => $name,
                     "description" => $desc,
                     "start" => $start_date,
@@ -170,10 +213,27 @@ class func_dashboard extends CI_Controller {
                );
 
           } else {
-               $this->d_post->delete_event($eventid);
+               $this->D_post->delete_event($eventid);
           }
 
-          redirect(base_url('admin/index'));
+        $logactivity = 'Edit Event';
+        $moduleclient = 'tbl_calendar_events';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+        redirect(base_url('admin/index'));
      }
 
 }

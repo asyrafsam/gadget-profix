@@ -120,11 +120,18 @@
               <div class="input-group-prepend">
                   <span class="input-group-text"> <i class="fas fa-fw fa-mobile-alt"></i></span>
               </div>
-              <select name="pmodel" class="form-control">
+              <select class="form-control" name="pmodel">
+                <option value="">Select Models</option>
+                <?php foreach($getModels as $getm):?>
+                <option value="<?php echo $getm->md_name;?>"><?php echo $getm->md_name;?></option>
+                <?php endforeach;?>
+                <!-- <option value="test">Test</option> -->
+              </select>
+              <!-- <select name="pmodel" class="form-control">
                 <option selected=""> Model</option>
                 <option>Galaxy S10</option>
                 <option>Service</option>
-              </select>
+              </select> -->
             </div> 
             <div class="form-group input-group">
               <div class="input-group-prepend">
@@ -141,44 +148,44 @@
         </div>
       </div>
       <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <!-- <div class="card-header py-3">
           <h6 class="m-0 font-weight-bold text-primary">Product Tax</h6>
         </div>
         <div class="card-body">
-            <div class="form-group input-group">
-              <div class="input-group-prepend">
-                  <span class="input-group-text"> <i class="fas fa-fw fa-dollar-sign"></i></span>
-              </div>
-              <select name="ptax" class="form-control">
-                <option selected=""> Product Tax</option>
-                <option>Galaxy S10</option>
-                <option>Service</option>
-              </select>
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"> <i class="fas fa-fw fa-dollar-sign"></i></span>
             </div>
-            <div class="form-group input-group">
-              <div class="input-group-prepend">
-                  <span class="input-group-text"> <i class="fas fa-fw fa-search-dollar"></i></span>
-              </div>
-              <select name="ptaxmethod" class="form-control">
-                <option selected=""> Tax Method</option>
-                <option>Galaxy S10</option>
-                <option>Service</option>
-              </select>
+            <select name="ptax" class="form-control">
+              <option selected=""> Product Tax</option>
+              <option>No Tax</option>
+              <option>VAT</option>
+            </select>
+          </div>
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"> <i class="fas fa-fw fa-search-dollar"></i></span>
             </div>
+            <select name="ptaxmethod" class="form-control">
+              <option selected=""> Tax Method</option>
+              <option>Inclusive</option>
+              <option>Exclusive</option>
+            </select>
           </div>
-        </div>
-        <div class="card shadow mb-4">
-          <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Submit Section</h6>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-block"> Register New Product  </button>
-          </div> <!-- form-group// -->      
-          <p class="text-center" style="color: red;">Please ensure that all the fill are inserted before submit </p> 
-          </div>
-        </div> 
+        </div> -->
       </div>
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Submit Section</h6>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block"> Register New Product  </button>
+        </div> <!-- form-group// -->      
+        <p class="text-center" style="color: red;">Please ensure that all the fill are inserted before submit </p> 
+        </div>
+      </div> 
+    </div>
   </form>
 </div>
 <script type="text/javascript">

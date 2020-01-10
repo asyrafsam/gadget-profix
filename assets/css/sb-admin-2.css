@@ -10297,12 +10297,12 @@ a:focus {
       height: 40px;
       background: transparent;
     border: none;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #fff;
   }
 
 
   .nav-link > input[type=text]::-webkit-input-placeholder {
-    color: #000;
+    color: #fff;
     font-weight: bold;
 }
 

@@ -24,6 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['base_url'] = 'http://localhost/profix-gadget/';
+// $config['base_url'] = 'https://product.nexticks.com/app/';
 
 /*
 |--------------------------------------------------------------------------

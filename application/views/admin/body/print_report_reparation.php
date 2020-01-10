@@ -72,8 +72,8 @@
         <table class="table1 col-lg-12" border="0" cellspacing="0" cellpadding="0">
           <tbody style="border: 2px solid #000000;">
             <tr>
-              <td class="titletd" style="">IMEI:</td>
-              <td colspan="2" style="text-align: left;background-color: #f8f8f8"><?php echo $d->r_imei?></td>
+              <td class="titletd" style="">Type:</td>
+              <td colspan="2" style="text-align: left;background-color: #f8f8f8"><?php echo $d->r_type?></td>
               <td class="titletd" style="">Category:</td>
               <td colspan="2" style="text-align: left;"><?php echo $d->r_category?></td>
             </tr>

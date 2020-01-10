@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_setting extends CI_Controller {
+class Func_setting extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		// $this->load->library('form_validation');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	function updateInvoice(){
 		$result1 = $this->input->post('name');
@@ -73,6 +77,24 @@ class func_setting extends CI_Controller {
 				// echo $this->db->last_query();exit();
         }
 
+        $logactivity = 'Edit';
+        $moduleclient = 'tbl_invoice_details';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url('admin/setting'));
 	}
 	function adduser(){
@@ -126,6 +148,24 @@ class func_setting extends CI_Controller {
 					);
 				// $this->db->where('u_branch', $ubranch);
 				$this->db->insert('tbl_user', $datain);
+				$logactivity = 'Edit';
+		        $moduleclient = 'tbl_invoice_details';
+		        $logid = $this->session->userdata('id');
+		        $loguser = $this->session->userdata('name');
+		        $logip = $this->input->ip_address();
+		        $branch = $this->session->userdata('branch');
+		        $currentdate = date('Y-m-d H:i:s');
+		        $datalog = array(
+		        			'log_activity' => $logactivity,
+		        			'log_module' => $moduleclient,
+		        			'log_id' => $logid,
+		        			'log_user' =>$loguser,
+		        			'log_ipaddress' => $logip,
+		        			'u_branch' => $branch,
+		        			'log_date' => $currentdate
+		        		);
+			    $this->db->insert('tbl_log_activity', $datalog);
+
 				?>
 			<script type="text/javascript">
 	            alert("Insert Success");
@@ -193,6 +233,24 @@ class func_setting extends CI_Controller {
 				$this->db->update('tbl_user', $datain);
             }
             
+            $logactivity = 'Edit';
+	        $moduleclient = 'tbl_user';
+	        $logid = $this->session->userdata('id');
+	        $loguser = $this->session->userdata('name');
+	        $logip = $this->input->ip_address();
+	        $branch = $this->session->userdata('branch');
+	        $currentdate = date('Y-m-d H:i:s');
+	        $datalog = array(
+	        			'log_activity' => $logactivity,
+	        			'log_module' => $moduleclient,
+	        			'log_id' => $logid,
+	        			'log_user' =>$loguser,
+	        			'log_ipaddress' => $logip,
+	        			'u_branch' => $branch,
+	        			'log_date' => $currentdate
+	        		);
+		    $this->db->insert('tbl_log_activity', $datalog);
+
 			?>
 			<script type="text/javascript">
 	            alert("Update Successfully without Image");
@@ -242,6 +300,24 @@ class func_setting extends CI_Controller {
 					$this->db->update('tbl_user', $datain);
         		}
                 
+                $logactivity = 'Edit';
+		        $moduleclient = 'tbl_user';
+		        $logid = $this->session->userdata('id');
+		        $loguser = $this->session->userdata('name');
+		        $logip = $this->input->ip_address();
+		        $branch = $this->session->userdata('branch');
+		        $currentdate = date('Y-m-d H:i:s');
+		        $datalog = array(
+		        			'log_activity' => $logactivity,
+		        			'log_module' => $moduleclient,
+		        			'log_id' => $logid,
+		        			'log_user' =>$loguser,
+		        			'log_ipaddress' => $logip,
+		        			'u_branch' => $branch,
+		        			'log_date' => $currentdate
+		        		);
+			    $this->db->insert('tbl_log_activity', $datalog);
+
 				?>
 			<script type="text/javascript">
 	            alert("Update Successfully with Image");
@@ -280,12 +356,31 @@ class func_setting extends CI_Controller {
 					'u_branch'=>$branch
 				);
 		$this->db->insert('tbl_group_permission',$query1);
+
+		$logactivity = 'Add';
+        $moduleclient = 'tbl_group';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url('admin/usergroup'));
 	}
 	function getgroup(){
 		$id = $this->input->post('id');
 
-		$query = $this->d_get->getGroup($id);
+		$query = $this->D_get->getGroup($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -312,7 +407,25 @@ class func_setting extends CI_Controller {
 					'groupDescription' => $groupdescription,
 				);
 
-		$this->d_post->updateGroup($where,$datain,'tbl_user_group');
+		$this->D_post->updateGroup($where,$datain,'tbl_user_group');
+
+		$logactivity = 'Edit';
+        $moduleclient = 'tbl_group';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
 		redirect(base_url("admin/usergroup"));
 	}
 	function orderby(){
@@ -341,21 +454,39 @@ class func_setting extends CI_Controller {
 		$statustextcolor = $this->input->post('statustextcolor');
 		$ubranch = $this->input->post('ubranch');
 
-		$content = '<button class="btn" style="background-color:'.$statusbgcolor.';color: '.$statustextcolor.';font-weight: bold;">'.$statusname.'</button>';
+		// $content = '<button class="btn" style="background-color:'.$statusbgcolor.';color: '.$statustextcolor.';font-weight: bold;">'.$statusname.'</button>';
 		$query = array(
-					'statusName'=>$content,
+					'statusName'=>$statusname,
 					'statusBGColor'=>$statusbgcolor,
 					'statusTextColor'=>$statustextcolor,
 					'u_branch'=>$ubranch
 				);
 		$this->db->insert('tbl_repair_status', $query);
 
+		$logactivity = 'Add';
+        $moduleclient = 'tbl_repair_status';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url("admin/repairstatus"));
 	}
 	function getstatus(){
 		$id = $this->input->post('id');
 
-		$query = $this->d_get->getStatus($id);
+		$query = $this->D_get->getStatus($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -384,12 +515,50 @@ class func_setting extends CI_Controller {
 					'statusTextColor' => $editstatustextcolor
 				);
 
-		$this->d_post->updateGroup($where,$datain,'tbl_repair_status');
+		$this->D_post->updateGroup($where,$datain,'tbl_repair_status');
+
+		$logactivity = 'Edit';
+        $moduleclient = 'tbl_repair_status';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url("admin/repairstatus"));
 	}
 	function deletestatus($id){
 		$this->db->where('id', $id);
 		$this->db->delete('tbl_repair_status');
+
+		$logactivity = 'Delete';
+        $moduleclient = 'tbl_repair_status';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url("admin/repairstatus"));
 	}
 	function getpermission(){
@@ -404,7 +573,7 @@ class func_setting extends CI_Controller {
 			$name = $getName->groupName;
 		}
 		// echo $this->db->last_query();exit();
-		$query = $this->d_get->getPermission($name);
+		$query = $this->D_get->getPermission($name);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
@@ -568,6 +737,25 @@ class func_setting extends CI_Controller {
 		$this->db->where('u_branch', $branch);
 		$this->db->update('tbl_group_permission', $changedata);
 
+
+		$logactivity = 'Edit';
+        $moduleclient = 'tbl_group_permission';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		redirect(base_url("admin/usergroup"));
 	}
 	function backup(){
@@ -578,24 +766,220 @@ class func_setting extends CI_Controller {
 
 		//load database
 		$this->load->dbutil();
+		$branch = $this->session->userdata('branch');
+		$id = 1;
+		$currentdate = date('Y-m-d');
+		$this->other_db = $this->load->database();
+		$this->myutil = $this->load->dbutil($this->other_db, TRUE);
+			$prefs = array(
+					'format'      => 'zip',  
+					'filename' => 'backup-on-'.date('Y-m-d') . '.sql'
+				);
+			$backup = $this->myutil->backup($prefs);
+			$db_name = 'backup-on-' . date('Y-m-d') . '.zip' ;
+			$pathtorestore = 'backup-on-' . date('Y-m-d') . '.sql' ;
+			$save = './database/' . $db_name;
 
-		//create format
-		$db_format=array('format'=>'zip','filename'=>'backup.sql');
+			$this->load->helper('file');
+			write_file($save, $backup);
 
-		$backup=& $this->dbutil->backup($db_format);
 
-		// file name
+			// var_dump($backup); exit();
 
-		$dbname='backup-on-'.date('d-m-y H:i').'.zip';
-		$save='assets/db_backup/'.$dbname;
-		$save='./database/'.$dbname;
+			// $prefs = array(     
+			//     'format'      => 'zip',             
+			//     'filename'    => 'my_db_backup.sql'
+			//     );
 
-		// write file
 
-		write_file($save,$backup);
+			// $backup =& $this->dbutil->backup($prefs); 
 
-		// and force download
-		force_download($dbname,$backup);
+			// $db_name = 'backup-on-'. date("Y-m-d-H-i-s") .'.zip';
+			// $save = 'database/'.$db_name;
+
+			// $this->load->helper('file');
+			// write_file($save, $backup); 
+		$filename = $db_name;
+		$zip = new ZipArchive;
+        $res = $zip->open("./database/".$filename);
+        if ($res === TRUE) {
+
+               // Unzip path
+               $extractpath = "./database/";
+
+               // Extract file
+               $zip->extractTo($extractpath);
+               $zip->close();
+        }
+
+		$datain = array(
+						'file_name' => $pathtorestore,
+						'version' => $currentdate,
+						'u_branch' => $branch
+					);
+		$this->db->where('id', $id);
+		$this->db->update('tbl_database', $datain);
+
+		$logactivity = 'Backup';
+        $moduleclient = 'tbl_database';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
+		redirect(base_url("admin/viewdatabase"));
 	}
+	// function restoreDB(){
+	// 	// $this->load->helper('url');
+	//  //    $this->load->helper('file');
+	// 	// $this->load->helper('download');
+	// 	// $this->load->library('zip');
+
+	// 	// //load database
+	// 	// $this->load->dbutil();
+	// 	// $branch = $this->session->userdata('branch');
+	// 	// $id = 1;
+	// 	// $currentdate = date('Y-m-d');
+	// 	// $this->other_db = $this->load->database();
+	// 	// $this->myutil = $this->load->dbutil($this->other_db, TRUE);
+	// 	// 	$prefs = array(
+	// 	// 			'filename' => date('Y-m-d') . '.sql'
+	// 	// 		);
+	// 	// 	$backup = $this->myutil->backup($prefs);
+	// 	// 	$db_name = 'backup-on-' . date('Y-m-d') . '.sql' ;
+	// 	// 	$save = './database/' . $db_name;
+
+	// 	// 	$this->load->helper('file');
+	// 	// 	write_file($save, $backup);
+
+	// 	// $datain = array(
+	// 	// 				'file_name' => $save,
+	// 	// 				'version' => $currentdate,
+	// 	// 				'u_branch' => $branch
+	// 	// 			);
+	// 	// $this->db->where('id', $id);
+	// 	// $this->db->update('tbl_database', $datain);
+
+	// 	// redirect(base_url("admin/viewdatabase"));
+		
+
+	// 	$this->db->select('*');
+	// 	$this->db->from('tbl_database');
+	// 	$query11 = $this->db->get()->result();
+	// 	//var_dump($query11); exit();
+	// 	foreach ($query11 as $pathrow) {
+	// 		$filename = $pathrow->file_name;
+	// 	}
+
+	// 	#var_dump($filename); exit();
+
+	// 	// $sql = 'DROP DATABASE profix';
+	// 	// $query = $this->db->query($sql);
+	// 	// if ($query) {
+	// 	//     echo "Database profix was successfully dropped\n";
+	// 	// } else {
+	// 	//     echo "Error dropping database";
+	// 	// }
+		
+	// 	// $sql = 'CREATE DATABASE profix';
+	// 	// $query = $this->db->query($sql);
+	// 	// if ($query) {
+	// 	//     echo "Database profix was successfully created\n";
+	// 	// } else {
+	// 	//     echo "Error creating database";
+	// 	// }
+	// 	// $path = 'database/';
+	// 	// $sql_filename = 'backup-on-2019-12-30.sql';
+		
+
+
+	// 	$path = './database/';
+	// 	#var_dump($path);
+	// 	#var_dump($filename);
+	// 	$sql_contents = file_get_contents($path.$filename);
+	// 	$sql_contents = explode(";", $sql_contents);
+
+
+	// 	#$sql_contents = 'CREATE DATABASE profix'.$sql_contents;
+
+	// 	$x = 0;
+	// 	foreach($sql_contents as $query)
+	// 	{
+	// 		#var_dump($sql_contents); 
+	// 		#exit();
+			
+	// 		if($x==0){
+	// 			$sql = 'CREATE DATABASE profix12';
+	// 			$this->db->query($sql);
+	// 		}
+
+
+	// 		$pos = strpos($query,'ci_sessions');
+	// 		#var_dump($pos);
+	// 		if($pos == false)
+	// 		{
+	// 			$result = $this->db->query($query);
+	// 		}
+	// 		else 
+	// 		{
+	// 			continue;
+	// 		}
+	// 		$x++;
+	// 	}
+	// 	echo "Successfully restore";
+	// }
+
+
+
+
+	function changeEmailstatus(){
+		$id = $this->input->post('id');
+		$statusemail = 1;
+		$datain = array(
+						'status_email' => $statusemail
+						);
+		$this->db->where('id', $id);
+		$this->db->update('tbl_repair_status', $datain);
+	}
+	function changeEmailstatus0(){
+		$id = $this->input->post('id');
+		$statusemail = 0;
+		$datain = array(
+						'status_email' => $statusemail
+						);
+		$this->db->where('id', $id);
+		$this->db->update('tbl_repair_status', $datain);
+	}
+	function changeCompletedstatus(){
+		$id = $this->input->post('id');
+		$statuscompleted = 1;
+		$datain = array(
+						'status_completed' => $statuscompleted
+						);
+		$this->db->where('id', $id);
+		$this->db->update('tbl_repair_status', $datain);
+	}
+	function changeCompletedstatus0(){
+		$id = $this->input->post('id');
+		$statuscompleted = 0;
+		$datain = array(
+						'status_completed' => $statuscompleted
+						);
+		$this->db->where('id', $id);
+		$this->db->update('tbl_repair_status', $datain);
+	}
+
+
 
 }

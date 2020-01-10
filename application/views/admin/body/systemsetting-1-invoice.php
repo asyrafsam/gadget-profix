@@ -79,9 +79,9 @@
       <ul class="nav nav-tabs" style="float: left;">
         <li class="active"><a href="#">Invoice Template</a></li>
         <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li>
+<!--         <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li>
         <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li>
-        <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li>
-        <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li>
+        <li><a href="<?php echo base_url('admin/reparation_completed') ;?>">Completed Repairs</a></li> -->
       </ul>
     </div>
     <div class="card-body">

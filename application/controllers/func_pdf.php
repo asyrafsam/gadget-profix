@@ -1,13 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_pdf extends CI_Controller {
+class Func_pdf extends CI_Controller {
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper('pdf_helper');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	// function send_client(){
 
@@ -17,6 +21,24 @@ class func_pdf extends CI_Controller {
 	{
 		// $where = array('hold_id' => $hold_value);
 		// $hold_value = $this->input->post('hold_value');
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_client';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
     	$this->db->from('tbl_client');
 		$this->db->join('tbl_print_client', 'tbl_print_client.c_id = tbl_client.c_id');
 		$this->db->where('tbl_print_client.hold_id', $hold_value);
@@ -96,6 +118,24 @@ class func_pdf extends CI_Controller {
 	    
 	}
 	function pdf_purchase_unit($hold_value){
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_purchase';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		$this->db->from('tbl_purchase');
 		$this->db->join('tbl_purchase_item', 'tbl_purchase.hold_id = tbl_purchase_item.hold_id');
 		$this->db->where('tbl_purchase.hold_id', $hold_value);
@@ -170,6 +210,23 @@ class func_pdf extends CI_Controller {
 		$pdf->Output(md5(time()).'.pdf', 'D');
 	}
 	function pdf_purchase($hold_value){
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_purchase';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
 		// echo $hold_value;
 		// SELECT * FROM `tbl_purchase` JOIN tbl_purchase_item ON tbl_purchase_item.hold_id = tbl_purchase.hold_id JOIN tbl_print_purchase ON tbl_print_purchase.pur_id = tbl_purchase.id WHERE tbl_purchase.hold_id = '1711842569'
 		$this->db->from('tbl_purchase');
@@ -249,6 +306,24 @@ class func_pdf extends CI_Controller {
 		$pdf->Output(md5(time()).'.pdf', 'D');
 	}
 	function print_reparation_invoice(){
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_invoice_details';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		include('assets/fpdf18/fpdf.php');
 		$pdf = new FPDF('P','mm','A4');
 
@@ -427,6 +502,24 @@ class func_pdf extends CI_Controller {
 
 	}
 	function print_reparation_report(){
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_reparation';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		include('assets/fpdf18/fpdf.php');
 		$pdf = new FPDF('P','mm','A4');
 
@@ -606,6 +699,24 @@ class func_pdf extends CI_Controller {
 	}
 	function pdf_stock($hold_value)
 	{
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_product';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		// $where = array('hold_id' => $hold_value);
 		// $hold_value = $this->input->post('hold_value');
     	$this->db->from('tbl_print_stock');
@@ -688,6 +799,24 @@ class func_pdf extends CI_Controller {
 	}
 	function pdf_sales($hold_value)
 	{
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_revenue';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
 		// $where = array('hold_id' => $hold_value);
 		// $hold_value = $this->input->post('hold_value');
     	$this->db->from('tbl_print_sales');
@@ -747,6 +876,107 @@ class func_pdf extends CI_Controller {
 
 		foreach ($query as $sf):
 			$this->table->add_row($sf->transaction_id, $sf->pro_name, $sf->custName, $sf->custPhone, $sf->custEmail, $sf->pro_qty, $sf->pro_price, $sf->pro_tax, $sf->pro_disc);
+		endforeach;
+		
+		$html = $this->table->generate();
+		//Generate HTML table data from MySQL - end
+		
+		// add a page
+		$pdf->AddPage();
+		
+		// output the HTML content
+		$pdf->writeHTML($html, true, false, true, false, '');
+		
+		// reset pointer to the last page
+		$pdf->lastPage();
+
+		
+		//Close and output PDF document
+		$pdf->Output(md5(time()).'.pdf', 'D');
+		
+		// return $this->deleteHoldClient($hold_value);
+	    // $this->load->view('admin/body/testpdf.php', $query);
+	    
+	}
+	function pdf_sales_reparation($hold_value)
+	{
+		$logactivity = 'Print';
+        $moduleclient = 'tbl_revenue';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+	    $this->db->insert('tbl_log_activity', $datalog);
+
+		// $where = array('hold_id' => $hold_value);
+		// $hold_value = $this->input->post('hold_value');
+    	$this->db->from('tbl_print_sales_repair');
+		$this->db->join('tbl_reparation', 'tbl_reparation.r_repairno = tbl_print_sales_repair.r_repairno');
+		$this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_reparation.hold_id');
+		$this->db->where('tbl_print_sales_repair.hold_id', $hold_value);
+		
+	    
+	    $this->load->library('PdfSales');
+	
+		$pdf = new PdfSales(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		// set document information
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor('https://www.roytuts.com');
+		$pdf->SetTitle('Client Information/Report');
+		$pdf->SetSubject('Report generated using Codeigniter and TCPDF');
+		$pdf->SetKeywords('TCPDF, PDF, MySQL, Codeigniter');
+
+		// set default header data
+		//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+		// set header and footer fonts
+		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+		// set default monospaced font
+		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+		// set margins
+		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+		// set auto page breaks
+		$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+		// set image scale factor
+		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+		// set font
+		$pdf->SetFont('times', 'BI', 12);
+		
+		// ---------------------------------------------------------
+		
+		
+		//Generate HTML table data from MySQL - start
+		$template = array(
+			'table_open' => '<table border="1" cellpadding="2" cellspacing="1">'
+		);
+
+		$this->table->set_template($template);
+
+		$this->table->set_heading('Repair No', 'Product', 'Customer', 'Phone', 'Email', 'Quantity', 'Price Nett');
+		
+		// $salesinfo = $this->product_model->get_salesinfo();
+		$query = $this->db->get()->result();
+
+		foreach ($query as $sf):
+			$this->table->add_row($sf->r_repairno, $sf->product_name, $sf->custName, $sf->custPhone, $sf->custEmail, $sf->quantity, $sf->unit_price);
 		endforeach;
 		
 		$html = $this->table->generate();

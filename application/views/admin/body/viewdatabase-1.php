@@ -93,14 +93,14 @@ button{
                 <tr>
                   <th>Version</th>
                   <th>File Path</th>
-                  <th>Action</th>
+                  <!-- <th>Action</th> -->
                 </tr>
               </thead>
               <tfoot>
                 <tr>
                   <th>Version</th>
                   <th>File Path</th>
-                  <th>Action</th>
+                  <!-- <th>Action</th> -->
                 </tr>
               </tfoot>
               <tbody class="row_position" id="tablereportsales">
@@ -116,10 +116,10 @@ button{
                     <td>
                       <?php echo $p->file_name?>
                     </td>
-                    <td>
-                      <button class="btn btn-warning" onclick="editModal(<?php echo $p->id;?>);"><i class="fa fa-fw fa-pen" ></i></button>
-                      <a href="<?php echo base_url(). 'func_setting/deletestatus/'.$p->id; ?>" onclick="return confirm('Are you sure you want to delete this status?');"><button class="btn btn-danger"><i class="fa fa-fw fa-trash"></i></button></a>
-                    </td>
+                    <!-- <td>
+                      <a href="<?php echo base_url(). 'func_setting/restoreDB/' ?>" onclick="return confirm('Database will be restore once you click OK');"><button class="btn btn-warning"><i class="fa fa-fw fa-pen" ></i>Restore</button></a>
+                      <a href="<?php echo base_url(). 'func_setting/deletestatus/'.$p->id; ?>" onclick="return confirm('Are you sure you want to delete this status?');"><button class="btn btn-danger"><i class="fa fa-fw fa-trash"></i>Remove</button></a>
+                    </td> -->
                 </tr>
               <?php
                 }

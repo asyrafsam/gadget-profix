@@ -2,7 +2,7 @@
       <div class="modal-dialog modal-custom" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add New Reparation</h5>
+            <h5 class="modal-title" id="exampleModalLabel">View Reparation</h5>
             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
@@ -14,69 +14,69 @@
                   <div class="flex-row">
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
-                        <span class="input-group-text span-modal" style="width: 150px;"><i class="fas fa-fw fa-mobile-alt"></i>| IMEI</span>
+                        <span class="input-group-text span-modal" style="width: 150px;"><i class="fas fa-fw fa-mobile-alt"></i>| TYPE</span>
                       </div>
-                        <input type="text" name="r_imei" class="form-control">
+                        <input type="text" name="r_type" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-users"></i>| CLIENT</span>
                       </div>
-                        <input type="text" name="r_name" class="form-control">
+                        <input type="text" name="r_name" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-file-alt"></i>| CONDITION</span>
                       </div>
-                        <input type="text" name="addcategory" class="form-control">
+                        <input type="text" name="r_statuss" id="r_statuss" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-user"></i>| OPENED AT</span>
                       </div>
-                        <input type="text" name="r_opened" class="form-control">
+                        <input type="text" name="r_opened" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-building"></i>| DEFECT</span>
                       </div>
-                        <input type="text" name="r_defect" class="form-control">
+                        <input type="text" name="r_defect" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-mobile-alt"></i>| CATEGORY</span>
                       </div>
-                        <input type="text" name="r_category" class="form-control">
+                        <input type="text" name="r_category" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-file-archive"></i>| MODEL</span>
                       </div>
-                        <input type="text" name="r_model" class="form-control">
+                        <input type="text" name="r_model" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-money-bill-alt"></i>| PRICE</span>
                       </div>
-                        <input type="text" name="r_total" class="form-control">
+                        <input type="text" name="r_total" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-calendar"></i>| TELEPHONE</span>
                       </div>
-                        <input type="number" name="r_telephone" class="form-control">
+                        <input type="number" name="r_telephone" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 200px;"> <i class="fas fa-fw fa-wrench"></i>| REPARATION CODE</span>
                       </div>
-                        <input type="text" name="hold_id" class="form-control">
+                        <input type="text" name="hold_id" class="form-control" readonly>
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal" style="width: 150px;"> <i class="fas fa-fw fa-wrench"></i>| WARRANTY</span>
                       </div>
-                        <input type="text" name="addservicecharge" class="form-control" id="taxTotal">
+                        <input type="text" name="addservicecharge" class="form-control" id="taxTotal" readonly>
                     </div>
                   </div>
                   <div class="flex-row col-lg-12">
@@ -136,8 +136,9 @@
             /*cara nak tarik value form data menggunakan name*/
             $('[name="rcode"]').val(data.r_code);
             $('[name="reparationID"]').val(data.r_repairno);
+            $('[name="r_statuss"]').val(data.r_status);
             $('[name="r_code"]').val(data.r_code);
-            $('[name="r_imei"]').val(data.r_imei);
+            $('[name="r_type"]').val(data.r_type);
             $('[name="r_name"]').val(data.r_name);
             $('[name="r_opened"]').val(data.r_opened);
             $('[name="r_defect"]').val(data.r_defect);

@@ -1,16 +1,19 @@
+
 <body id="page-top">
   <div id="wrapper">
   <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="box-shadow:inset 0 0 10px #000000;">
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?php echo base_url('admin/index') ;?>">
     <div class="sidebar-brand-text mx-1"><img src="<?php echo base_url('images/ProfixLogin.png') ;?>" width="200" height="50"> </div>
   </a>
   <!-- Divider -->
-  <li class="nav-item active">
-    <div class="nav-link">
-      <i class="fas fa-fw fa-search"></i>
-      <input type="text" name="search" placeholder="Search Reparation" class="col-md-10">
-    </div>
-  </li>
+  <form action="<?php echo base_url('admin/reparationsearch');?>" method="post">
+    <li class="nav-item active" style="margin-bottom: -5px;">
+      <div class="nav-link">
+        <button type="submit" style="background: transparent;border: none;"><i class="fas fa-fw fa-search"></i></button>
+        <input type="text" name="searchby" placeholder="Search Reparation" class="col-md-9">
+      </div>
+    </li>
+  </form>
 
   <hr class="sidebar-divider my-0">
   <!-- Nav Item - Dashboard -->
@@ -107,7 +110,10 @@
         <a class="collapse-item" href="<?php echo base_url('admin/reportstock') ;?>">Quantity Alert</a>
         <?php }?>
         <?php if($this->session->userdata('reportsale') > 0){?>
-        <a class="collapse-item" href="<?php echo base_url('admin/viewsales') ;?>">Sales</a>
+        <a class="collapse-item" href="<?php echo base_url('admin/viewsalesreparation') ;?>">Reparation Sales</a>
+        <?php }?>
+        <?php if($this->session->userdata('reportsale') > 0){?>
+        <a class="collapse-item" href="<?php echo base_url('admin/viewsales') ;?>">POS Sales</a>
         <?php }?>
         <?php if($this->session->userdata('reportdrawer') > 0){?>
         <a class="collapse-item" href="<?php echo base_url('admin/viewdrawer') ;?>">Drawer Report</a>
@@ -116,7 +122,7 @@
     </div>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="tables.html">
+      <a class="nav-link" href="<?php echo base_url('admin/logactivity') ;?>">
       <i class="fas fa-fw fa-undo-alt"></i>
       <span>Activity Log</span></a>
   </li>
@@ -143,14 +149,14 @@
         <a class="collapse-item" href="<?php echo base_url('admin/usergroup') ;?>">User Group</a>
         <?php }?>
         <a class="collapse-item" href="<?php echo base_url('admin/repairstatus') ;?>">Repair Statuses</a>
-        <a class="collapse-item" href="cards.html">Tax Rates</a>
+        <!-- <a class="collapse-item" href="cards.html">Tax Rates</a> -->
         <a class="collapse-item" href="<?php echo base_url('admin/viewdatabase') ;?>">Database Utilities</a>
       </div>
     </div>
   </li>
 
   <!-- Nav Item - Utilities Collapse Menu -->
-  <li class="nav-item">
+  <!-- <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
       <i class="fas fa-fw fa-wrench"></i>
       <span>Help Support</span>
@@ -164,7 +170,7 @@
         <a class="collapse-item" href="utilities-other.html">Other</a>
       </div>
     </div>
-  </li>
+  </li> -->
   <hr class="sidebar-divider d-none d-md-block">
 
   <!-- Sidebar Toggler (Sidebar) -->

@@ -1,6 +1,6 @@
 <?php 
  
-class d_post extends CI_Model{
+class D_post extends CI_Model{
 
 	var $table = 'tbl_client';
 	var $tablesupplier = 'tbl_supplier';

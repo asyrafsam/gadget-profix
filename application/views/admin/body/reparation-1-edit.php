@@ -20,10 +20,15 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-mobile-alt"></i> </span>
                       </div>
-                        <input type="text" name="editImei" id="search" class="form-control" placeholder="IMEI" list="imei" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <select class="form-control" name="editType">
+                        <option value="" id="editType"></option>
+                        <option value="PNP">PNP</option>
+                        <option value="HSS">HSS</option>
+                      </select>
+                        <!-- <input type="text" name="editImei" id="search" class="form-control" placeholder="IMEI" list="imei" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
                         <datalist id="imei">
                           <?= lookup_r_imei();?>
-                        </datalist>
+                        </datalist> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
@@ -49,13 +54,21 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-user"></i> </span>
                       </div>
-                        <input type="text" name="editAssign" class="form-control" placeholder="Assigned To ">
+                      <input type="text" name="editAssign" class="form-control" placeholder="Assigned to" list="assignselectedit" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <datalist id="assignselectedit">
+                        <?= lookup_r_assign();?>
+                      </datalist>
+                        <!-- <input type="text" name="editAssign" class="form-control" placeholder="Assigned To "> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-building"></i> </span>
                       </div>
-                        <input type="text" name="editManufacturer" class="form-control" placeholder="Manufacturer">
+                      <input type="text" name="editManufacturer" class="form-control" placeholder="Manufacturer" list="manufacturerselectedit" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                      <datalist id="manufacturerselectedit">
+                        <?= lookup_r_manufacturer();?>
+                      </datalist>
+                        <!-- <input type="text" name="editManufacturer" class="form-control" placeholder="Manufacturer"> -->
                     </div>
                     <div class="form-group input-group col-lg-4">
                       <div class="input-group-prepend">
@@ -105,7 +118,7 @@
                 </div>
                 <div class="flex-child col-lg-6">
                   <div class="flex-row">
-                    <div class="form-group input-group col-lg-12">
+                    <!-- <div class="form-group input-group col-lg-12">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-laptop-code"></i> </span>
                       </div>
@@ -114,7 +127,7 @@
                         <option value="No Tax">No Tax</option>
                         <option value="VAT">VAT</option>
                       </select>
-                    </div>
+                    </div> -->
                     <div class="form-group input-group col-lg-12">
                       <div class="input-group-prepend">
                         <span class="input-group-text span-modal"> <i class="fas fa-fw fa-link"></i> </span>
@@ -122,7 +135,7 @@
                         <select class="form-control" name="editItem" id="dropdownItems" onchange="getItem(this.value);">
                           <option value="">No Selected</option>
                           <?php foreach($item as $row):?>
-                          <option value="<?php echo $row->id;?>"><?php echo $row->i_name;?></option>
+                          <option value="<?php echo $row->p_id;?>"><?php echo $row->p_name;?></option>
                           <?php endforeach;?>
                         </select>            
                     </div>
@@ -160,7 +173,7 @@
                       </table>
                     </div>
                     <div class="form-group input-group col-lg-12">
-                        <textarea class="form-control" name="editDiagnostics" style="height: 150px;" placeholder="Diagnostics"></textarea>
+                        <textarea class="form-control" name="editDiagnostics" style="height: 150px;margin-top: 70px;" placeholder="Diagnostics"></textarea>
                     </div>
                   </div>
                 </div>
@@ -174,7 +187,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text span-modal"> <i class="fas fa-fw fa-calendar"></i> </span>
                 </div>
-                  <input type="text" name="editRepairstatus" class="form-control" placeholder="Status" list="editrepair-status" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
+                  <input type="text" name="editRepairstatus" id="editRepairstatus" class="form-control" placeholder="Status" list="editrepair-status" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;">
                   <datalist id="editrepair-status">
                     <?= lookup_reparation_status();?>
                   </datalist>
@@ -197,7 +210,7 @@
               </div>
               <input type="checkbox" class="chkbox" name="editEmail" id="editEmail">Send Mail &nbsp;&nbsp;&nbsp;&nbsp;
               <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button class="btn btn-primary" type="submit">Add Reparation</button>
+              <button class="btn btn-primary" type="submit">Edit Reparation</button>
             </div>      
           
         </div>
@@ -221,7 +234,7 @@
               </div>
               <br/> 
 
-              <textarea id='editoutput' name='editSig'></textarea>
+              <textarea id='editoutput' name='editSig' style="display:none;"></textarea>
               <img src='' id='sign_prev2' style='display: none;' /> 
               
 
@@ -237,6 +250,7 @@
     </div>
 
     <input type="hidden" id="hold_editvalue" name="hold_editvalue">
+    <input type="hidden" id="id_selectededit" name="id_selectededit" value="">
   </form>
 <script type="text/javascript">
 var save_method;
@@ -254,7 +268,9 @@ function editReparation(id){
     success: function(data){
       /*cara nak tarik value form data menggunakan name*/
       $('[name="hold_editvalue"]').val(data.hold_id);
-      $('[name="editImei"]').val(data.r_imei);
+      $("#editType").html(data.r_type);
+      $('[name="editType"]').val(data.r_type);
+      // $('[name="editImei"]').val(data.r_imei);
       $('[name="editClientid"]').val(data.c_id);
       $('[name="editName"]').val(data.r_name);
       $('[name="editTelephone"]').val(data.r_telephone);
@@ -267,7 +283,7 @@ function editReparation(id){
       $('[name="editDate"]').val(data.r_closedate);
       $('[name="editPeriod"]').val(data.r_period);
       $('[name="editComment"]').val(data.r_comment);
-      $('[name="editTax"]').val(data.r_taxtype);
+      // $('[name="editTax"]').val(data.r_taxtype);
       $('[name="editSubtotal"]').val(data.r_subtotal);
       $('[name="editTaxshow"]').val(data.r_tax);
       $('[name="editAlltotal"]').val(data.r_total);
@@ -367,9 +383,9 @@ function getDetailEdit(id)
                   },
                   success: function(response){
 
-                    var id = response.id;
-                    var i_name = response.i_name;
-                    var i_price = response.i_price;
+                    var id = response.p_id;
+                    var i_name = response.p_name;
+                    var i_price = response.p_price;
 
                     var id_dummy = id;
 
@@ -391,6 +407,7 @@ function getDetailEdit(id)
 // Pengiraan berlaku disini
 function kiraa(id_dummy)
 {
+  var itemidd = $("#itemidd"+id_dummy+"").val();
   var qt = $("#vall"+id_dummy+"").val();
   var unit = $("#unitt"+id_dummy+"").val();
 
@@ -398,7 +415,7 @@ function kiraa(id_dummy)
   //$("#unit"+id_dummy+"").val(total_unit);
   var hold_value = $("#hold_editvalue").val();
 
-  update_storeEdit(id_dummy,qt,unit,hold_value);
+  update_storeEdit(itemidd,id_dummy,qt,unit,hold_value);
   //alert(total_unit);
 }
 
@@ -420,9 +437,9 @@ function storeEdit(id,name,price,hold_value)
 }
 
 
-function update_storeEdit(id,qt,unit,hold_value)
+function update_storeEdit(itemidd,id,qt,unit,hold_value)
 {
-  var data = {'id':id,'qt':qt,'unit':unit,'hold_value':hold_value}
+  var data = {'itemid':itemidd,'id':id,'qt':qt,'unit':unit,'hold_value':hold_value}
   $.ajax({
                   url: '<?= base_url() ?>func_reparation/update_store',
                   type: 'POST',
@@ -491,19 +508,27 @@ function getDetailHoldEdit(hold_value)
 
 function deleteholdEdit(id){
 // if(confirm('Are you sure?')) {
-    var data = {'id':id}
+  var data = {'id':id}
   $.ajax({
-                  url: '<?= base_url() ?>func_reparation/deletehold',
+                  url: '<?= base_url() ?>func_reparation/deleteprohold',
                   type: 'POST',
-                  dataType: 'html',
+                  dataType: 'json',
                   data: data,
                   beforeSend: function() {
 
                   },
                   success: function(response){
-
-                      var hold_value = $("#hold_editvalue").val();
-                      getDetailHoldEdit(hold_value);
+                      var a = Number(document.getElementById('editAlltotal').value);
+                      var b = response.unit_price;
+                      var c = parseFloat(a) - parseFloat(b);
+                      var d = Number(document.getElementById('editTotal_subtotal').value);
+                      var e = parseFloat(d) - parseFloat(b);
+                      var proid = response.id_item;
+                      var proqty = response.quantity;
+                      $('[name="editAlltotal"]').val(c);
+                      $('[name="editSubtotal"]').val(e);
+                      deleteholdconfirm(id,proid,proqty);
+                      
                   },
                     error: function (jqXHR, textStatus, errorThrown){
                       alert('error at deleting data');
@@ -512,4 +537,35 @@ function deleteholdEdit(id){
   //ajax delete data dari database
 // }
 }
+function deleteholdconfirm(id,proid,proqty){
+        // if(confirm('Are you sure?')) {
+    var data = {'id':id,'proid':proid,'proqty':proqty}
+    $.ajax({
+                    url: '<?= base_url() ?>func_reparation/deletehold',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: data,
+                    beforeSend: function() {
+
+                    },
+                    success: function(response){
+                      var hold_value = $("#hold_editvalue").val();
+                      getDetailHoldEdit(hold_value);
+                    },
+                      error: function (jqXHR, textStatus, errorThrown){
+                        alert('error at deleting data');
+                    }
+            });
+    //ajax delete data dari database
+  // }
+  }
+  $("#editRepairstatus").change(function() {
+        var g = $('#editRepairstatus').val();
+        var id = $('#editrepair-status option[value="' + g +'"]').attr('id');
+        $("#id_selectededit").val(id);
+      });
+
+       function choose(){
+          var popup = $('#popup');
+       }
 </script>

@@ -88,5 +88,33 @@ if ( ! function_exists('lookup_p_category'))
 		$ci->lookup->lookup_p_category();
     }   
 }
+if ( ! function_exists('lookup_r_manufacturer'))
+{
+    function lookup_r_manufacturer($var = '')
+    {
+		$ci = & get_instance();
+		$ci->load->model('d_get','lookup');
+		$ci->lookup->lookup_r_manufacturer();
+    }   
+}
+if ( ! function_exists('lookup_r_assign'))
+{
+    function lookup_r_assign($var = '')
+    {
+		$ci = & get_instance();
+		$ci->load->model('d_get','lookup');
+		$ci->lookup->lookup_r_assign();
+    }   
+}
+if ( ! function_exists('lookup_r_product'))
+{
+    function lookup_r_product($var = '')
+    {
+    	
+		$ci = & get_instance();
+		$ci->load->model('d_get','lookup');
+		$ci->lookup->lookup_r_product($branch);
+    }   
+}
 
 ?>

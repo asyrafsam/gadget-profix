@@ -140,12 +140,22 @@
   <div class="row">
     <div class="col-lg-7">
       <div class="test span12 col-lg-12">
-        <form id="custom-search-form" class="form-search form-horizontal pull-right">
-            <div class="input-append span12">
-                <input type="text" class="search-query mac-style" placeholder="Search Product" style="border-radius: 10px;border: 1.2px solid #e6e6e6;height: 40px;">
-                <button type="submit" class="btn"><i class="fas fa-search"></i></button>
-            </div>
-        </form>
+        <div class="input-append span12">
+          <?php $branch = $this->session->userdata('branch');?>
+            <input type="text" class="search-query mac-style" placeholder="Search Product" name="listsearch" id="listsearch" list="listaddproduct" style="border-radius: 10px;border: 1.2px solid #e6e6e6;height: 40px;">
+            <datalist id="listaddproduct">
+              <?=lookup_r_product($branch);?>
+            </datalist>
+            <input type="hidden" name="id_selectedproduct" id="id_selectedproduct">
+            <!-- <button type="submit" class="btn"><i class="fas fa-search"></i></button> -->
+        </div>
+
+        <!-- <select class="form-control" name="additem" id="dropdownItems" onchange="totalIt(this.value);grandTotall();" required>
+           <option value="">No Selected</option>
+           <?php foreach($item as $row):?>
+           <option value="<?php echo $row->p_id;?>"><?php echo $row->p_name;?></option>
+           <?php endforeach;?>
+        </select> -->
       </div>
       
         <div class="flex-head" id="view1">
@@ -154,7 +164,7 @@
             foreach ($posdata as $pos) {
           ?>
           <a onclick="view1('<?php echo $pos->hold_id?>')" class="box1 col-lg-2 col-sm-4" style="margin-top:50px;">
-            <img src="../images/nature.jpg">
+            <img src="../images/ProfixLogin.png">
             <p><?php echo $pos->cat_name?></p>
           </a>
           <?php 
@@ -168,10 +178,15 @@
         <div class="card shadow mb-4">
           <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary" style="float: left;">POS Section</h6>
-            <input type="text" name="customerlist" id="search" class="form-control" placeholder="Customer Name" list="customerlist" style="float: right; width: 250px;border:1px solid #989898;" required>
-            <datalist id="customerlist">
+            <input type="text" name="customerlist" id="customerlist" class="form-control" placeholder="Customer Name" list="customerlist-list" style="float: right; width: 250px;border:1px solid #989898;" required>
+            <datalist id="customerlist-list">
               <?= lookup_rr_client();?>
             </datalist>
+
+            <!-- <input type="text" name="addrepairstatus" id="addrepairstatus" class="form-control" placeholder="Status" list="repair-status" style="border-top-right-radius: 5px;border-bottom-right-radius: 5px;" required>
+                  <datalist id="repair-status">
+                    <?= lookup_reparation_status();?>
+                  </datalist> -->
           </div>
           <div class="card-body" >
             <table class="table" width="100%" style="font-size: 11px;margin-bottom: 50px;" cellpadding="0" cellspacing="0">
@@ -193,13 +208,14 @@
             <div class="row pos-result" style="font-weight: bold;" id="totaldisctax">
               
             </div>
-            <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,10000);?>">
+            <input type="hidden" name="hold_value" id="hold_value" value="<?= rand(10,20000);?>">
             <input type="hidden" name="uname" value="<?php echo $this->session->userdata('name');?>">
             <input type="hidden" name="ubranch" value="<?php echo $this->session->userdata('branch');?>">
-            <input type="hidden" name="transactionid" class="form-control" placeholder="Repair" value="POS<?= rand(10,10000);?>">
+            <input type="hidden" name="transactionid" class="form-control" placeholder="Repair" value="POS<?= rand(10,20000);?>">
             <hr>
             <div class="col-lg-12" style="text-align: center;">
-              <button class="btn btn-danger" style="width: 40%; height: 100px;">Clear Sale</button>
+             <a href="<?php echo base_url('admin/pos'); ?>"><button class="btn btn-danger" type="button" style="width: 40%; height: 100px;">Clear Sale</button></a>
+              <!-- <button class="btn btn-danger" style="width: 40%; height: 100px;" >Clear Sale</button> -->
               <a href="" data-toggle="modal" data-target="#signModal"><button class="btn btn-success" style="width: 40%; height: 100px;">Payment</button></a>
             </div>                                                      
           </div>
@@ -263,6 +279,7 @@
                   </div>
                 </div>
               </div>
+              <input type="hidden" id="id_selected" name="id_selected" value="">
               <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                 <!-- <input type='button' id='click' value='click'> -->
@@ -278,10 +295,284 @@
 
 
 <script type="text/javascript">
+  $("#listsearch").change(function() {
+    var g = $('#listsearch').val();
+    var id = $('#listaddproduct option[value="' + g +'"]').attr('id');
+    $("#id_selectedproduct").val(id);
 
+    totalIt(id);
+  });
+  function totalIt(id)
+        {
+          getDetailsProduct(id);
+        }
+
+    function getDetailsProduct(id)
+    {
+      var data = {'id':id}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/getDetailsProduct',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                        var id = response.p_id;
+                        var p_name = response.p_name;
+                        var p_price = response.p_price;
+                        var p_tax = response.p_tax;
+                        // var p_price = response.p_;
+
+                        var id_dummy = id;
+
+
+                        var hold_value = $("#hold_value").val();
+
+                        // alert(i_name);
+                        //$("#lab_cerner").val(response.CERNER_MRN);
+
+                        storeproduct(id_dummy,p_name,p_price,hold_value,p_tax); // add 
+
+
+                      }
+              });
+    }
+
+    // Pengiraan berlaku disini
+    function kira(id_dummy)
+    {
+      var qt = $("#val"+id_dummy+"").val();
+      var unit = $("#unit"+id_dummy+"").val();
+
+      //var total_unit = val*unit;
+      //$("#unit"+id_dummy+"").val(total_unit);
+      var hold_value = $("#hold_value").val();
+
+      update_store(id_dummy,qt,unit,hold_value);
+      //alert(total_unit);
+    }
+    function kiratax(id_dummy)
+    {
+      var tax = $("#valtax"+id_dummy+"").val();
+      var unit = $("#unit"+id_dummy+"").val();
+
+      //var total_unit = val*unit;
+      //$("#unit"+id_dummy+"").val(total_unit);
+      var hold_value = $("#hold_value").val();
+
+      update_storetax(id_dummy,tax,unit,hold_value);
+      //alert(total_unit);
+    }
+    function kiradisc(id_dummy)
+    {
+      var disc = $("#valdisc"+id_dummy+"").val();
+      var unit = $("#unit"+id_dummy+"").val();
+
+      //var total_unit = val*unit;
+      //$("#unit"+id_dummy+"").val(total_unit);
+      var hold_value = $("#hold_value").val();
+
+      update_storedisc(id_dummy,disc,unit,hold_value);
+      //alert(total_unit);
+    }
+
+    function storeproduct(id,name,price,hold_value,p_tax)
+    {
+      var data = {'id':id,'name':name,'price':price,'hold_value':hold_value,'p_tax':p_tax}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/saveValue',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+                        getTotalPos();
+                      }
+            });
+    }
+
+
+    function update_store(id,qt,unit,hold_value)
+    {
+      var data = {'id':id,'qt':qt,'unit':unit,'hold_value':hold_value}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/update_store',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+                        getTotalPos();
+                      }
+            });
+    }
+    function update_storetax(id,tax,unit,hold_value)
+    {
+      var data = {'id':id,'tax':tax,'unit':unit,'hold_value':hold_value}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/update_storetax',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+                        getTotalPos();
+                      }
+            });
+    }
+    function update_storedisc(id,disc,unit,hold_value)
+    {
+      var data = {'id':id,'disc':disc,'unit':unit,'hold_value':hold_value}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/update_storedisc',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+                        getTotalPos();
+                      }
+            });
+    }
+
+    function getTotalPos()
+    {
+      var hold_value = $("#hold_value").val();
+      var data = {'hold_value':hold_value}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/getTotal',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+                        // var test1 = response + tax;
+                        // $("#total_subtotal").val(response.total);
+                        $("#totaldisctax").html(response);
+                        getDetailHold(hold_value);
+                      
+                        // var a = Number(document.getElementById('valtax').value);
+                        // //var b = Number(document.getElementById('total_subtotal').value);
+                        // var b = response;
+                        // var c = parseFloat(a);
+
+                        // $('[name="alltotaltax"]').val(c);
+                      }
+            });
+    }
+
+    function getDetailHold(hold_value)
+    {
+      var data = {'hold_value':hold_value}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/getDetailsHold',
+                      type: 'POST',
+                      dataType: 'html',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                          var id = response.id;
+                          var p_name = response.pro_name;
+                          var p_price = response.pro_price;
+
+                          var id_dummy = id;
+
+
+                          $('#dataList').html(response);
+                      }
+              });
+    }
+
+    function deletehold(id){
+    // if(confirm('Are you sure?')) {
+        var data = {'id':id}
+      $.ajax({
+                      url: '<?= base_url() ?>func_pos/deleteprohold',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: data,
+                      beforeSend: function() {
+
+                      },
+                      success: function(response){
+
+                          var a = Number(document.getElementById('alltotaltax').value);
+                          var b = response.pro_price;
+                          var c = parseFloat(a) - parseFloat(b);
+                          var d = Number(document.getElementById('allsubtotal').value);
+                          var e = parseFloat(d) - parseFloat(b);
+                          // $('[name="alltotaltax"]').val(c);
+                          var proid = response.pro_id;
+                          var proqty = response.pro_qty;
+                          $('[name="allsubtotal"]').val(e);
+                          deleteholdconfirm(id,proid,proqty);
+                      },
+                        error: function (jqXHR, textStatus, errorThrown){
+                          alert('error at deleting data');
+                      }
+              });
+      //ajax delete data dari database
+    // }
+    }
+
+    function deleteholdconfirm(id,proid,proqty){
+        // if(confirm('Are you sure?')) {
+            var data = {'id':id,'proid':proid,'proqty':proqty}
+          $.ajax({
+                          url: '<?= base_url() ?>func_pos/deletehold',
+                          type: 'POST',
+                          dataType: 'html',
+                          data: data,
+                          beforeSend: function() {
+
+                          },
+                          success: function(response){
+                              var hold_value = $("#hold_value").val();
+                              getDetailHold(hold_value);
+                          },
+                            error: function (jqXHR, textStatus, errorThrown){
+                              alert('error at deleting data');
+                          }
+                  });
+          //ajax delete data dari database
+        // }
+        }
   $(document).ready(function (){
     //view1();
   });
+  // function clearsale(){
+  //   var holdidd = document.getElementById("hold_value").value;
+  //   var data = {'id':holdidd}
+  //   $.ajax({
+  //           url: '<?= base_url() ?>func_pos/clearpos',
+  //           type: 'POST',
+  //           dataType: 'html',
+  //           data: data,
+  //           beforeSend: function() {
+
+  //           },
+  //           success: function(response){
+
+  //               // $('#view1').html(response);
+  //           }
+  //   });
+  // }
   function view1(id)
   {
     var data = {'id':id}
@@ -303,4 +594,10 @@
   function addpayment(){
     $('#addpaymentModal').modal('show');
   }
+
+  $("#customerlist").change(function() {
+    var g = $('#customerlist').val();
+    var id = $('#customerlist-list option[value="' + g +'"]').attr('id');
+    $("#id_selected").val(id);
+  });
 </script>

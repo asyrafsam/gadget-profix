@@ -58,7 +58,7 @@ label{
   <!-- DataTales Example -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <div class="header-card col-md-3 py-2" style="float: left; width: 500px;">
+      <div class="header-card col-md-3 py-2" style="float: left; left: 18px; width: 500px;">
         <button class="btn btn-dark" style="text-align: center;height: 33px" data-toggle="modal" data-target="#addModal"><h6 class="font-weight-bold center">+ New Model</h6></button>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </div>
@@ -207,6 +207,13 @@ label{
 <script type="text/javascript">
   var save_method;
   var table;
+
+  $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        "order": [0,'desc']
+        
+        });
+    });
 
   function edit_model(id){
     save_method = 'update';

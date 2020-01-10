@@ -1,6 +1,6 @@
 <?php 
  
-class d_get extends CI_Model{
+class D_get extends CI_Model{
 	var $table = 'tbl_client';
 	var $table1 = 'tbl_reparation';
 	var $table2 = 'tbl_supplier';
@@ -18,6 +18,20 @@ class d_get extends CI_Model{
 		$this->load->database();
 	}
 	// Dashboard
+	function getNotification($branch){
+		$this->db->select('COUNT(*) as notification');
+		$this->db->from('tbl_product');
+		$this->db->where('p_alertQuantity = p_quantity');
+		return $this->db->get();
+	}
+	function getNotificationDetails($branch){
+		$this->db->select('*');
+		$this->db->from('tbl_product');
+		$this->db->where('u_branch', $branch);
+		$this->db->where('p_alertQuantity = p_quantity');
+		$this->db->limit('10');
+		return $this->db->get();
+	}
 	function get_invoicedetails($branch,$tbl_invoice_details){
 		$this->db->select('*');
 		$this->db->from('tbl_invoice_details');
@@ -88,6 +102,37 @@ class d_get extends CI_Model{
         $this->db->where('tbl_reparation.u_branch', $branch);
         $this->db->group_by('tbl_hold.random_id');
 		return $this->db->get();
+	}
+	function view_reparationsearch($branch,$searchby){
+		$this->db->select('*, SUM(DISTINCT(tbl_hold.unit_price)) as creditTotal, SUM(DISTINCT(tbl_payment.pay_amount)) as payTotal');
+        $this->db->from('tbl_reparation');
+        $this->db->join('tbl_payment', 'tbl_payment.r_repairno = tbl_reparation.r_repairno','LEFT');
+        $this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_payment.hold_id','LEFT');
+        $this->db->where('tbl_reparation.u_branch', $branch);
+        $this->db->like('tbl_reparation.r_repairno', $searchby);
+        $this->db->or_like('tbl_reparation.c_id', $searchby);
+        $this->db->or_like('tbl_reparation.r_name', $searchby);
+        $this->db->or_like('tbl_reparation.r_email', $searchby);
+        $this->db->or_like('tbl_reparation.r_type', $searchby);
+        $this->db->or_like('tbl_reparation.r_defect', $searchby);
+        $this->db->or_like('tbl_reparation.r_telephone', $searchby);
+        $this->db->or_like('tbl_reparation.r_defect', $searchby);
+        $this->db->or_like('tbl_reparation.r_model', $searchby);
+        $this->db->or_like('tbl_reparation.r_assigned', $searchby);
+        $this->db->or_like('tbl_reparation.r_category', $searchby);
+        $this->db->or_like('tbl_reparation.r_manufacturer', $searchby);
+        $this->db->or_like('tbl_reparation.r_period', $searchby);
+        $this->db->group_by('tbl_hold.random_id');
+		return $this->db->get();
+	}		
+	function view_reparationcompleted($branch){
+		$this->db->select('*, SUM(DISTINCT(tbl_hold.unit_price)) as creditTotal, SUM(DISTINCT(tbl_payment.pay_amount)) as payTotal');
+        $this->db->from('tbl_reparation');
+        $this->db->join('tbl_payment', 'tbl_payment.r_repairno = tbl_reparation.r_repairno','LEFT');
+        $this->db->join('tbl_hold', 'tbl_hold.random_id = tbl_payment.hold_id','LEFT');
+        $this->db->where('tbl_reparation.u_branch', $branch);
+        $this->db->group_by('tbl_hold.random_id');
+		return $this->db->get();
 	}	
 
 	function lookup_r_imei()
@@ -119,11 +164,36 @@ class d_get extends CI_Model{
 	}
 	function lookup_r_defect()
 	{
-		$query = $this->db->get('tbl_reparation')->result();
+		$this->db->select('DISTINCT(r_defect)');
+		$this->db->from('tbl_reparation');
+
+		$query = $this->db->get()->result();
 		//var_dump($query); exit();
 		foreach ($query as $data) {
 			# code...
 			echo '<option value="'.$data->r_defect.'">';
+		}
+	}
+	function lookup_r_manufacturer(){
+		$this->db->select('DISTINCT(m_name)');
+		$this->db->from('tbl_manufacturer');
+
+		$query = $this->db->get()->result();
+		//var_dump($query); exit();
+		foreach ($query as $data) {
+			# code...
+			echo '<option value="'.$data->m_name.'">';
+		}
+	}
+	function lookup_r_assign(){
+		$this->db->select('*');
+		$this->db->from('tbl_user');
+
+		$query = $this->db->get()->result();
+		//var_dump($query); exit();
+		foreach ($query as $data) {
+			# code...
+			echo '<option value="'.$data->u_name.'">';
 		}
 	}
 	function lookup_reparation_status()
@@ -132,20 +202,20 @@ class d_get extends CI_Model{
 		//var_dump($query); exit();
 		foreach ($query as $data) {
 			# code...
-			echo '<option value="'.$data->statusName.'">';
+			echo '<option value="'.$data->statusName.'" id="'.$data->id.'">';
 		}
 	}
 	function get_item($branch){
         $this->db->select('*');
-        $this->db->from('tbl_lookup_item');
+        $this->db->from('tbl_product');
         $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
     function getDetails($id)
 	{
 		$result = array();
-        $where = "	SELECT * FROM tbl_lookup_item
-        			Where id='$id'
+        $where = "	SELECT * FROM tbl_product
+        			Where p_id='$id'
         		 ";
 
         //var_dump($where); exit();
@@ -199,7 +269,7 @@ class d_get extends CI_Model{
 		//var_dump($query); exit();
 		foreach ($query as $data) {
 			# code...
-			echo '<option value="'.$data->c_id.'">'.$data->c_name.'</option>';
+			echo '<option value="'.$data->c_name.'" id="'.$data->c_id.'">';
 		}
 	}
 	function get_reparationcode($where,$table1){
@@ -233,7 +303,6 @@ class d_get extends CI_Model{
         $this->db->where('tbl_reparation.r_repairno', $where);
 		return $this->db->get();
 	}
-
 	function show_payment($id){
 		$this->db->from($this->table1);
         $this->db->join('tbl_payment', 'tbl_payment.hold_id = tbl_reparation.hold_id');
@@ -242,20 +311,40 @@ class d_get extends CI_Model{
 
 		// echo $this->db->last_query(); die;
 	}
-
 	function show_reparationLog($id){
 		$this->db->from($this->table9);
 		$this->db->where('tbl_reparation_log.r_repairno', $id);
 		$query = $this->db->get();
 		return $query->row();
 	}
+	function deleteprohold($id)
+    {
+    	$result = array();
+        $where = "	SELECT * FROM tbl_hold
+        			Where id='$id'
+        		 ";
+
+        //var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+    }
 
 
     // Stock Section
     // Add Product
     function get_product($branch){
         $this->db->select('*');
-        $this->db->order_by("p_id", "asc");
+        $this->db->order_by("p_id", "desc");
         $this->db->from('tbl_product');
         $this->db->where('u_branch', $branch);
 		return $this->db->get();
@@ -272,6 +361,13 @@ class d_get extends CI_Model{
 	function get_productbyid($where,$table5)
 	{
 		return $this->db->get_where($table5,$where);
+	}
+	function get_models($branch)
+	{
+		$this->db->select('*');
+		$this->db->from('tbl_model');
+		$this->db->where('u_branch', $branch);
+		return $this->db->get();
 	}
 	function lookup_p_category()
 	{
@@ -344,6 +440,10 @@ class d_get extends CI_Model{
 		$query = $this->db->get();
 		return $query->row();
 	}
+
+
+	
+	
 	function show_clientReparation($id){
 		$this->db->from($this->table);
 		$this->db->join('tbl_reparation', 'tbl_reparation.c_id = tbl_client.c_id');
@@ -355,6 +455,13 @@ class d_get extends CI_Model{
 	function getClientJson($id){
 		$this->db->from($this->table);
 		$this->db->where('c_id', $id);
+		$query = $this->db->get();
+		return $query->row();
+	}
+	function show_status($id){
+		$this->db->from($this->table1);
+		$this->db->join('tbl_repair_details', 'tbl_repair_details.hold_id = tbl_reparation.hold_id');
+		$this->db->where('tbl_reparation.r_code', $id);
 		$query = $this->db->get();
 		return $query->row();
 	}
@@ -489,6 +596,14 @@ class d_get extends CI_Model{
 	// 	$this->db->group_by('p_category');
 	// 	return $this->db->get();
 	// }
+	function lookup_r_product($branch){
+		$query = $this->db->get('tbl_product')->result();
+		//var_dump($query); exit();
+		foreach ($query as $data) {
+			# code...
+			echo '<option value="'.$data->p_name.'" id="'.$data->p_id.'">';
+		}
+	}
 	function get_posdata($branch, $tbl_lookup_category){
 		$this->db->select('*');
 		$this->db->from('tbl_lookup_category');
@@ -602,6 +717,24 @@ class d_get extends CI_Model{
         			Where p_id='$id'
         		 ";
 
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+	function deleteproholdpos($id)
+    {
+    	$result = array();
+        $where = "	SELECT * FROM tbl_holdproduct
+        			Where id='$id'
+        		 ";
+
         //var_dump($where); exit();
 
 
@@ -615,7 +748,7 @@ class d_get extends CI_Model{
         }
 
         return $result;
-	}
+    }
 
 	// Report Section
 
@@ -633,9 +766,16 @@ class d_get extends CI_Model{
 	//     $result = $this->db->get('tbl_payment');
 	//     return $result;
 	// }
+	function get_productcount($branch){
+		$this->db->select('SUM(p_quantity) as totalquantity, count(*) as totalstock');
+		$this->db->from('tbl_product');
+		$this->db->where('u_branch', $branch);
+		return $this->db->get();
+	}
 	function get_financedata($branch){
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		// $this->db->group_by('r_repairno');
+		$this->db->group_by('revenue_date');
 		$this->db->where('MONTH(revenue_date)', date('m'));
 		$this->db->where('YEAR(revenue_date)', date('Y'));
 		$this->db->where('u_branch', $branch);
@@ -670,41 +810,56 @@ class d_get extends CI_Model{
 	//     // echo $this->db->last_query(); exit();
 	//     return $result;
 	// }
-	function get_financedataselected($m,$branch){
+	function get_financedataselected($m,$y,$branch){
 		$this->db->select('revenue_date, SUM(revenue_subtotal) as totalpaid');
 		$this->db->group_by('revenue_holdid');
 		$this->db->where('MONTH(revenue_date)', $m);
-		$this->db->where('YEAR(revenue_date)', date('Y'));
+		$this->db->where('YEAR(revenue_date)', $y);
 		$this->db->where('u_branch', $branch);
 	    $result = $this->db->get('tbl_revenue');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
 	}
-	function get_financedataselectedtotal($m){
+	function get_financedataselectedtotal($m,$y){
 		$this->db->select('pay_date, SUM(pay_amount) as totalpaid');
 		// $this->db->group_by('r_repairno');
 		$this->db->where('MONTH(pay_date)', $m);
-		$this->db->where('YEAR(pay_date)', date('Y'));
+		$this->db->where('YEAR(pay_date)', $y);
 	    $result = $this->db->get('tbl_payment');
 	    // echo $this->db->last_query(); exit();
 	    return $result;
 	}
-	function get_reportproduct(){
+	function get_reportproduct($branch){
         $this->db->select('*');
         $this->db->order_by("p_id", "asc");
         $this->db->from('tbl_product');
+        $this->db->where('u_branch', $branch);
 		return $this->db->get();
     }
-    function get_salesproduct($m,$branch){
+    function get_salesproduct($m,$y,$branch){
     	$this->db->select('*, SUM(tbl_holdproduct.pro_tax) as totaltax, SUM(DISTINCT(tbl_pospayment.pay_amount)) as totalpaid');
     	$this->db->from('tbl_holdproduct');
     	$this->db->join('tbl_pospayment', 'tbl_pospayment.hold_id = tbl_holdproduct.hold_id');
     	$this->db->join('tbl_posdetails', 'tbl_posdetails.hold_id = tbl_pospayment.hold_id');
     	$this->db->join('tbl_client', 'tbl_client.c_id = tbl_posdetails.c_id');
     	$this->db->where('MONTH(tbl_posdetails.date_pos)', $m);
+    	$this->db->where('YEAR(tbl_posdetails.date_pos)', $y);
     	$this->db->where('tbl_posdetails.u_branch', $branch);
     	$this->db->group_by('tbl_pospayment.hold_id');
     	return $this->db->get();
+	    // echo $this->db->last_query(); exit();
+    }
+    function get_salesreparation($m,$y,$branch){
+    	$this->db->select('*, SUM(DISTINCT(tbl_hold.unit_price)) as creditTotal, SUM(DISTINCT(tbl_payment.pay_amount)) as payTotal');
+        $this->db->from('tbl_hold');
+        $this->db->join('tbl_payment', 'tbl_payment.hold_id = tbl_hold.random_id');
+        $this->db->join('tbl_reparation', 'tbl_reparation.r_repairno = tbl_payment.r_repairno');
+        $this->db->join('tbl_client', 'tbl_client.c_id = tbl_reparation.c_id');
+        $this->db->where('MONTH(tbl_reparation.r_opened)', $m);
+    	$this->db->where('YEAR(tbl_reparation.r_opened)', $y);
+        $this->db->where('tbl_reparation.u_branch', $branch);
+        $this->db->group_by('tbl_hold.random_id');
+		return $this->db->get();
 	    // echo $this->db->last_query(); exit();
     }
     function get_drawerreport($m,$branch){
@@ -738,6 +893,30 @@ class d_get extends CI_Model{
         			JOIN tbl_posdetails ON tbl_posdetails.hold_id = tbl_holdproduct.hold_id 
         			JOIN tbl_client ON tbl_client.c_id = tbl_posdetails.c_id 
         			WHERE tbl_posdetails.id = '$id'
+
+        		 ";
+
+        // var_dump($where); exit();
+
+
+        $query = $this->db->query($where);
+        if ($query->num_rows() >0){ 
+            foreach ($query->result() as $data) {
+
+            	//var_dump($data); exit();
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+	}
+	function getDetailsSalesReparation($id){
+		$result = array();
+        $where = "
+        			SELECT *, tbl_client.u_branch as custbranch FROM tbl_hold 
+        			JOIN tbl_reparation ON tbl_reparation.hold_id = tbl_hold.random_id 
+        			JOIN tbl_client ON tbl_client.c_id = tbl_reparation.c_id 
+        			WHERE tbl_reparation.hold_id = '$id'
 
         		 ";
 
@@ -799,6 +978,11 @@ class d_get extends CI_Model{
 		$this->db->select('*');
 		$this->db->from('tbl_user_group');
 		$this->db->where('u_branch', $branch);
+		return $this->db->get();
+	}
+	function getBranchAdd(){
+		$this->db->select('DISTINCT(u_branch) as branch');
+		$this->db->from('tbl_user');
 		return $this->db->get();
 	}
 	function getGroup($id){
@@ -876,5 +1060,15 @@ class d_get extends CI_Model{
 		$this->db->from('tbl_database');
 		$this->db->where('u_branch', $branch);
 		return $this->db->get();
+	}
+
+	// Log Activity Section
+	function getActivity($branch,$tbl_log_activity,$id){
+		$this->db->select('*');
+		$this->db->from('tbl_log_activity');
+		$this->db->where('u_branch', $branch);
+		$this->db->where('log_id', $id);
+		return $this->db->get();
+
 	}
 }

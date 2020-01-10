@@ -56,7 +56,7 @@ label{
 <!-- DataTales Example -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <div class="header-card col-md-3 py-2" style="float: left; width: 500px;">
+        <div class="header-card col-md-3 py-2" style="float: left; left: 18px; width: 500px;">
           <?php if($this->session->userdata('supplieradd') > 0){?>
           <button class="btn btn-dark" style="text-align: center;height: 33px" data-toggle="modal" data-target="#addSupplierModal"><h6 class="font-weight-bold center">+ New Suppliers</h6></button>
           <?php }?>
@@ -422,7 +422,12 @@ label{
 <script type="text/javascript">
       var save_method;
       var table;
-
+      $(document).ready(function() {
+        $('#dataTable').DataTable( {
+            "order": [0,'desc']
+            
+            });
+        });
       function edit_supplier(id){
         save_method = 'update';
         $('#formX')[0].reset();
@@ -442,7 +447,7 @@ label{
             $('[name="semail-1"]').val(data.s_email);
             $('[name="scompany-1"]').val(data.s_company);
             $('[name="scity-1"]').val(data.s_city);
-            $('[name="sstates-1"]').val(data.s_states);
+            $('[name="sstate-1"]').val(data.s_state);
             $('[name="sphone-1"]').val(data.s_phone);
             $('[name="svat-1"]').val(data.s_vat);
 

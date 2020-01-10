@@ -1,18 +1,22 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class func_client extends CI_Controller {
+class Func_client extends CI_Controller {
 
 
 	public function __construct()
 	{
 		parent:: __construct();
-		$this->load->model('d_post');
-		$this->load->model('d_get');
+		$this->load->model('D_post');
+		$this->load->model('D_get');
 		$this->load->helper("URL", "DATE", "URI", "FORM","lookup_helper");
 		$this->load->library('session','upload');
 		// $this->load->library('upload');
 		// $this->load->model('m_upload');
+		if(ini_get('date.timezone') == ''){
+		    date_default_timezone_set('UTC');
+		    
+		}
 	}
 	function add_client(){
 		
@@ -47,10 +51,21 @@ class func_client extends CI_Controller {
 
         if ( ! $this->upload->do_upload('cfile'))
         {
-                $error = array('error' => $this->upload->display_errors());
-                var_dump($error); exit();
-
-                echo 'tak jadi';
+                $datain = array(
+					'c_name' => $c_name,
+					'c_geolocate' => $c_geolocate,
+					'c_city' => $c_city,
+					'c_telephone' => $c_telephone,
+					'c_vat' => $c_vat,
+					'c_company' => $c_company,
+					'c_address' => $c_address,
+					'c_postal' => $c_postal,
+					'c_email' => $c_email,
+					'c_ssn' => $c_ssn,
+					'c_comment' => $c_comment,
+					'u_branch' => $ubranch
+					);
+				$query = $this->D_post->addclient($datain,'tbl_client');
         }
         else
         {
@@ -73,17 +88,35 @@ class func_client extends CI_Controller {
 					'c_comment' => $c_comment,
 					'u_branch' => $ubranch
 					);
-				$query = $this->d_post->addclient($datain,'tbl_client');
+				$query = $this->D_post->addclient($datain,'tbl_client');
 
-				redirect(base_url('admin/client'));
+				
         }
+        $logactivity = 'add';
+        $moduleclient = 'tbl_client';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+        $this->db->insert('tbl_log_activity', $datalog);
+        redirect(base_url('admin/client'));
     	
 	}
 
 	function edit_client($id){
-
-    	$data = $this->d_get->show_client($id);
+    	$data = $this->D_get->show_client($id);
 		echo json_encode($data);
+		
     }
     function viewClient(){
     	$id = $this->input->post('id');
@@ -96,7 +129,7 @@ class func_client extends CI_Controller {
 		{
 
 			echo
-					'<tr><td>'.$data->r_code.'</td><td>' .$data->r_imei. '</td><td>' .$data->r_defect. '</td><td>' .$data->r_model. '</td><td>' .$data->r_opened. '</td><td>' .$data->r_status. '</td><td>' .$data->r_created. '</td><td>' .$data->r_lastmodified. '</td><td>'  .$data->r_total.  '</td></tr>'
+					'<tr><td>'.$data->r_code.'</td><td>' .$data->r_type. '</td><td>' .$data->r_defect. '</td><td>' .$data->r_model. '</td><td>' .$data->r_opened. '</td><td>' .$data->r_status. '</td><td>' .$data->r_created. '</td><td>' .$data->r_lastmodified. '</td><td>'  .$data->r_total.  '</td></tr>'
 					;
 
 
@@ -104,7 +137,7 @@ class func_client extends CI_Controller {
     }
     function viewClientJson(){
     	$id = $this->input->post('id');
-    	$data = $this->d_get->getClientJson($id);
+    	$data = $this->D_get->getClientJson($id);
 		echo json_encode($data);
     }
     function viewClientRepair(){
@@ -117,7 +150,7 @@ class func_client extends CI_Controller {
 		foreach ($query as $data) 
 		{
 			echo
-					'<tr><td>'.$data->r_code.'</td><td>' .$data->r_imei. '</td><td>' .$data->r_defect. '</td><td>' .$data->r_model. '</td><td>' .$data->r_opened. '</td><td>' .$data->r_status. '</td><td>' .$data->r_created. '</td><td>' .$data->r_lastmodified. '</td><td>'  .$data->r_total.  '</td></tr>'
+					'<tr><td>'.$data->r_code.'</td><td>' .$data->r_type. '</td><td>' .$data->r_defect. '</td><td>' .$data->r_model. '</td><td>' .$data->r_opened. '</td><td>' .$data->r_status. '</td><td>' .$data->r_created. '</td><td>' .$data->r_lastmodified. '</td><td>'  .$data->r_total.  '</td></tr>'
 					;
 
 
@@ -174,9 +207,8 @@ class func_client extends CI_Controller {
 	            $where = array(
 					'c_id' => $c_id
 				);
-				$this->d_post->updateClients($where,$datain,'tbl_client');
+				$this->D_post->updateClients($where,$datain,'tbl_client');
 
-				redirect(base_url('admin/client'));
         }
         else
         {
@@ -201,22 +233,54 @@ class func_client extends CI_Controller {
                 $where = array(
 					'c_id' => $c_id
 				);
-				$this->d_post->updateClients($where,$datain,'tbl_client');
-
-				redirect(base_url('admin/client'));
+				$this->D_post->updateClients($where,$datain,'tbl_client');
 			
         }
+        $logactivity = 'edit';
+        $moduleclient = 'tbl_client';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
+        $this->db->insert('tbl_log_activity', $datalog);
+        redirect(base_url('admin/client'));
 	}
 
 	function deleteClient($id){
+		$logactivity = 'delete';
+        $moduleclient = 'tbl_client';
+        $logid = $this->session->userdata('id');
+        $loguser = $this->session->userdata('name');
+        $logip = $this->input->ip_address();
+        $branch = $this->session->userdata('branch');
+        $currentdate = date('Y-m-d H:i:s');
+        $datalog = array(
+        			'log_activity' => $logactivity,
+        			'log_module' => $moduleclient,
+        			'log_id' => $logid,
+        			'log_user' =>$loguser,
+        			'log_ipaddress' => $logip,
+        			'u_branch' => $branch,
+        			'log_date' => $currentdate
+        		);
 		$where = array('c_id' => $id);
-		$this->d_post->deleteClient($where,'tbl_client');
+		$this->D_post->deleteClient($where,'tbl_client');
 		redirect(base_url('admin/client'));
 	}
 
 	function getDetailsClient(){
 		$id = $this->input->post('id');
-		$query = $this->d_get->getDetailsClient($id);
+		$query = $this->D_get->getDetailsClient($id);
 
 		if(empty($query)){
 			echo 'Tiada Data Ditemui';
